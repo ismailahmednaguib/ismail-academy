@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# استكمال تصميم الموقع — دليل التركيب
 
-## Getting Started
+## 1) الملفات اللي هتستبدلها بالكامل
+انسخ الملفات دي فوق الموجودة في مشروعك بنفس المسار:
 
-First, run the development server:
+- `app/page.tsx`
+- `app/layout.tsx`
+- `app/globals.css`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 2) ملفات جديدة (اعملها بنفس المسار بالظبط)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `lib/content.ts`
+- `components/SiteHeader.tsx`
+- `components/SiteFooter.tsx`
+- `components/MajlisInterestModal.tsx`
+- `app/not-found.tsx`
+- `app/courses/page.tsx`
+- `app/courses/[slug]/page.tsx`  ← لاحظ اسم الفولدر فيه أقواس مربعة [slug]
+- `app/lessons/page.tsx`
+- `app/lessons/[slug]/page.tsx`
+- `app/articles/page.tsx`
+- `app/articles/[slug]/page.tsx`
+- `app/library/page.tsx`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`lib/supabase.ts` متلمسوش، هو زي ما هو.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 3) الخطوة الوحيدة اللي لازم تعملها يدويًا
+افتح **Supabase Dashboard → SQL Editor** وشغّل محتوى ملف `supabase/majlis_interest.sql` مرة واحدة بس. ده بيعمل الجدول اللي بيستقبل تسجيلات "سجّل اهتمامك" في قسم المجالس، وبيمنع أي حد غير المالك من قراءة البيانات دي.
 
-## Learn More
+من غيرها، زرار "سجّل اهتمامك" هيدّي رسالة خطأ لما حد يحاول يسجل.
 
-To learn more about Next.js, take a look at the following resources:
+## 4) اللي اتصلح فعليًا
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| الزرار | قبل | دلوقتي |
+|---|---|---|
+| عرض كل الدورات / فتح دورة | مالوش أي أكشن | صفحة `/courses` + صفحة تفصيلية لكل دورة مع دروسها |
+| استمع ← (درس) | مالوش أي أكشن | صفحة `/lessons/...` — بتشغّل الصوت لو مضاف رابط، أو بتقول "قريبًا" بصدق بدل ما توهم إنها شغالة |
+| اقرأ المقال ← | مالوش أي أكشن | صفحة `/articles/...` بمحتوى المقال كامل |
+| تحميل ↓ (مكتبة) | مالوش أي أكشن | تحميل فعلي لو الرابط مضاف، أو حالة "قريبًا" واضحة |
+| سجّل اهتمامك ← | مالوش أي أكشن | نافذة تسجيل بتحفظ في Supabase (بعد خطوة الـ SQL) |
+| لوحة المالك | شغالة في الرئيسية بس | تفتح من أي صفحة (بترجعك للرئيسية وتفتح اللوحة تلقائيًا) |
+| React.ReactNode في layout.tsx | خطأ TypeScript | متصلح |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 5) إضافة محتوى حقيقي (اختياري، من لوحة المالك)
+لكل صف بتضيفه في مربعات "الدروس / المقالات / المكتبة" داخل لوحة المالك، تقدر تضيف حقل إضافي اختياري آخر السطر بعد `|`:
 
-## Deploy on Vercel
+- **درس:** `العنوان | التفاصيل | رابط الملف الصوتي`
+- **مقال:** `العنوان | التصنيف | زمن القراءة | فقرة أولى\nفقرة ثانية\nفقرة ثالثة` (لاحظ `\n` بين الفقرات)
+- **كتاب:** `العنوان | الوصف | رابط تحميل مباشر (PDF)`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+لو سبتها فاضية، الصفحة هتعرض حالة "قريبًا" بدل ما توهم إن الملف موجود.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 6) ملاحظة على إصدار Next.js
+الكود مكتوب على افتراض **Next.js 15** (حيث `params` في الصفحات الديناميكية بيكون `Promise` لازم تعمله `await`) — استنتجت ده من وجود `next.config.ts` عندك. لو ظهر خطأ عن `params` وقت البناء، يبقى نسختك أقدم، وهيبقى الحل إنك تشيل `await` وتستخدم `params.slug` مباشرة في الملفات اللي فيها `[slug]`.
+
+## 7) اللي متأجل عمدًا (مش "شغال" بس مقبول كـ v1)
+- نموذج النشرة البريدية (Newsletter) لسه بيدي رسالة تأكيد بس من غير ربط حقيقي بخدمة بريد — يحتاج قرار تاني (Mailchimp/Brevo/غيره) لو عايز تفعّله بجد.
+- زرار "لوحة المالك" في الصفحات الفرعية بيرجعك للرئيسية بدل ما يفتح مباشرة في مكانه — قرار لتقليل التعقيد، ممكن نطوره بعدين لو حبيت.
