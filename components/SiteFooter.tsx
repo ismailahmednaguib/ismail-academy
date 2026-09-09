@@ -24,7 +24,7 @@ export default function SiteFooter({ settings }: { settings: Settings }) {
   return (
     <footer className="site-footer">
       <div className="brand">
-        <i>{settings.mark}</i>
+        <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
         <span>
           {settings.name}
           <small>{settings.tagline}</small>

@@ -23,6 +23,7 @@ const options: [VisibilityKey, string, string][] = [
   ["showNewsletter", "النشرة البريدية", "أسفل الرئيسية"],
   ["showContactLinks", "روابط التواصل", "الفوتر"],
   ["showFooter", "الفوتر", "أسفل كل الصفحات"],
+  ["showBrandImage", "صورة الشعار", "بدل الحرف داخل الدائرة"],
   ["showMobileBar", "شريط الهاتف", "التنقل السريع"],
   ["showBackToTop", "زر أعلى الصفحة", "بعد التمرير"],
   ["showReadingProgress", "تقدم القراءة", "صفحات المحتوى"],

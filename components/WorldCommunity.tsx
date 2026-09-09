@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import type { Settings } from "@/lib/content";
 import { countryName } from "@/lib/countries";
 import { supabase } from "@/lib/supabase";
@@ -44,9 +44,28 @@ function useCountryStats() {
   return stats;
 }
 
-function WorldMap({ compact, nodes, connections, showLabels = true }: { compact: boolean; nodes: PositionedCountry[]; connections: [PositionedCountry, PositionedCountry, number][]; showLabels?: boolean }) {
+export function WorldMap({ compact, nodes, connections, showLabels = true }: { compact: boolean; nodes: PositionedCountry[]; connections: [PositionedCountry, PositionedCountry, number][]; showLabels?: boolean }) {
   const arrowId = `world-arrow-${compact ? "hero" : "community"}`;
-  return <div className="world-globe-sphere" aria-label="خريطة عالمية تفاعلية لأعضاء الأكاديمية">
+  const [rotation, setRotation] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ active: false, startX: 0, startRotation: 0 });
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    dragRef.current = { active: true, startX: event.clientX, startRotation: rotation };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragging(true);
+  }
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (!dragRef.current.active) return;
+    setRotation(dragRef.current.startRotation + (event.clientX - dragRef.current.startX) * 0.62);
+  }
+  function handlePointerUp(event: PointerEvent<HTMLDivElement>) {
+    if (!dragRef.current.active) return;
+    dragRef.current.active = false;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  }
+  return <div className={`world-globe-sphere${dragging ? " is-dragging" : ""}`} aria-label="خريطة عالمية تفاعلية لأعضاء الأكاديمية" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp}>
+    <div className="world-globe-surface" style={{ transform: `perspective(900px) rotateY(${rotation}deg)` }}>
     <span className="world-latitude latitude-one" /><span className="world-latitude latitude-two" />
     <span className="world-meridian meridian-one" /><span className="world-meridian meridian-two" />
     <svg className="world-land" viewBox="0 0 100 100" aria-hidden="true">
@@ -91,10 +110,117 @@ function WorldMap({ compact, nodes, connections, showLabels = true }: { compact:
     {nodes.map((node) => <span className="world-node" key={node.country_code} style={{ left: `${node.point[0]}%`, top: `${node.point[1]}%` }} title={showLabels ? node.label : undefined}>
       <i />{showLabels && <span className="world-node-label">{node.label}</span>}
     </span>)}
+    </div>
   </div>;
 }
 
-export function WorldGlobe({ compact = false, labels, visualOnly = false }: { compact?: boolean; labels?: GlobeLabels; visualOnly?: boolean }) {
+const countryCoordinates: Record<string, [number, number]> = {
+  CA: [-106, 56], US: [-100, 39], MX: [-102, 23], GB: [-3, 55], FR: [2, 46], ES: [-4, 40], IT: [12, 42], DE: [10, 51], TR: [35, 39],
+  MA: [-6, 32], DZ: [2, 28], TN: [9, 34], LY: [17, 27], EG: [31, 27], SD: [30, 13], NG: [8, 9], SA: [45, 24], AE: [54, 24], QA: [51, 25], KW: [47, 29], BH: [50, 26], OM: [57, 21],
+  JO: [36, 31], PS: [35, 32], IQ: [44, 33], SY: [38, 35], YE: [48, 15], PK: [69, 30], IN: [79, 22], MY: [102, 4], ID: [117, -2],
+};
+
+const earthLand: [number, number][][] = [
+  [[-168, 72], [-145, 70], [-130, 58], [-115, 52], [-105, 48], [-96, 30], [-82, 8], [-66, 10], [-53, 25], [-60, 45], [-78, 55], [-100, 65], [-130, 73]],
+  [[-82, 12], [-72, 8], [-60, -8], [-52, -25], [-58, -45], [-70, -55], [-80, -34], [-78, -10]],
+  [[-18, 36], [8, 37], [30, 43], [48, 52], [72, 58], [105, 68], [145, 62], [178, 52], [160, 38], [142, 28], [125, 20], [105, 7], [86, 9], [72, 22], [54, 27], [40, 15], [20, 22], [8, 35]],
+  [[-18, 35], [8, 36], [30, 30], [42, 10], [35, -5], [26, -34], [12, -35], [2, -20], [-8, 4]],
+  [[112, -10], [154, -12], [153, -30], [128, -27], [114, -22]],
+  [[-52, 72], [-20, 82], [-12, 70], [-35, 60]],
+];
+
+function fallbackCoordinates(node: PositionedCountry): [number, number] {
+  return [(node.point[0] / 100) * 360 - 180, 90 - (node.point[1] / 100) * 180];
+}
+
+function RealGlobeCanvas({ nodes, connections, showLabels }: { nodes: PositionedCountry[]; connections: [PositionedCountry, PositionedCountry, number][]; showLabels: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rotation, setRotation] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ active: false, startX: 0, startRotation: 0 });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const draw = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(rect.width * ratio);
+      canvas.height = Math.floor(rect.height * ratio);
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const width = rect.width;
+      const height = rect.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) / 2 - 5;
+      const rotationValue = ((rotation % 360) + 360) % 360;
+      const project = (longitude: number, latitude: number): [number, number, number] | null => {
+        const longitudeRadians = ((longitude - rotationValue) * Math.PI) / 180;
+        const latitudeRadians = (latitude * Math.PI) / 180;
+        const depth = Math.cos(latitudeRadians) * Math.cos(longitudeRadians);
+        if (depth < -0.03) return null;
+        return [centerX + radius * Math.cos(latitudeRadians) * Math.sin(longitudeRadians), centerY - radius * Math.sin(latitudeRadians), depth];
+      };
+      const drawProjectedPath = (points: [number, number][], close: boolean) => {
+        let open = false;
+        points.forEach(([longitude, latitude]) => {
+          const projected = project(longitude, latitude);
+          if (!projected) { open = false; return; }
+          if (!open) { ctx.moveTo(projected[0], projected[1]); open = true; } else ctx.lineTo(projected[0], projected[1]);
+        });
+        if (close && open) ctx.closePath();
+      };
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.clip();
+      const ocean = ctx.createRadialGradient(centerX - radius * .34, centerY - radius * .4, radius * .05, centerX + radius * .38, centerY + radius * .45, radius * 1.08);
+      ocean.addColorStop(0, "#4b9d8a"); ocean.addColorStop(.35, "#17645d"); ocean.addColorStop(.78, "#0b3840"); ocean.addColorStop(1, "#041e2b");
+      ctx.fillStyle = ocean; ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+      ctx.lineWidth = .55; ctx.strokeStyle = "rgba(186,235,218,.22)";
+      for (let latitude = -60; latitude <= 60; latitude += 30) { ctx.beginPath(); drawProjectedPath(Array.from({ length: 73 }, (_, index) => [-180 + index * 5, latitude] as [number, number]), false); ctx.stroke(); }
+      for (let longitude = -150; longitude <= 180; longitude += 30) { ctx.beginPath(); drawProjectedPath(Array.from({ length: 37 }, (_, index) => [longitude, -90 + index * 5] as [number, number]), false); ctx.stroke(); }
+
+      const land = ctx.createLinearGradient(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
+      land.addColorStop(0, "#dceeb5"); land.addColorStop(.45, "#8bbf83"); land.addColorStop(1, "#3b786d");
+      earthLand.forEach((polygon) => { ctx.beginPath(); drawProjectedPath(polygon, true); ctx.fillStyle = land; ctx.fill(); ctx.strokeStyle = "rgba(226,244,199,.68)"; ctx.lineWidth = .8; ctx.stroke(); });
+
+      ctx.strokeStyle = "rgba(238,255,220,.22)"; ctx.lineWidth = .55;
+      for (let latitude = -30; latitude <= 45; latitude += 15) { ctx.beginPath(); drawProjectedPath(Array.from({ length: 73 }, (_, index) => [-180 + index * 5, latitude] as [number, number]), false); ctx.stroke(); }
+
+      const nodePoints = new Map<string, [number, number, number]>();
+      nodes.forEach((node) => {
+        const [longitude, latitude] = countryCoordinates[node.country_code] ?? fallbackCoordinates(node);
+        const projected = project(longitude, latitude);
+        if (projected) nodePoints.set(node.country_code, projected);
+      });
+      connections.forEach(([from, to]) => { const start = nodePoints.get(from.country_code); const end = nodePoints.get(to.country_code); if (!start || !end) return; ctx.beginPath(); ctx.moveTo(start[0], start[1]); ctx.quadraticCurveTo((start[0] + end[0]) / 2, Math.min(start[1], end[1]) - radius * .12, end[0], end[1]); ctx.strokeStyle = "rgba(248,216,143,.75)"; ctx.lineWidth = 1.1; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]); });
+      nodePoints.forEach(([x, y], code) => { const node = nodes.find((item) => item.country_code === code); if (!node) return; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fillStyle = "#ffe19d"; ctx.shadowColor = "rgba(255,215,119,.95)"; ctx.shadowBlur = 13; ctx.fill(); ctx.shadowBlur = 0; if (showLabels) { const text = node.label; ctx.font = "700 11px Cairo, sans-serif"; const textWidth = ctx.measureText(text).width; const labelX = x + (x > centerX ? -textWidth - 15 : 15); const labelY = y + 4; ctx.fillStyle = "rgba(2,25,30,.88)"; ctx.fillRect(labelX - 6, labelY - 12, textWidth + 12, 18); ctx.fillStyle = "#fff0c2"; ctx.textAlign = x > centerX ? "right" : "left"; ctx.fillText(text, labelX, labelY + 1); } });
+      ctx.restore();
+      const atmosphere = ctx.createRadialGradient(centerX - radius * .45, centerY - radius * .5, radius * .2, centerX, centerY, radius * 1.04);
+      atmosphere.addColorStop(0, "rgba(255,255,255,.12)"); atmosphere.addColorStop(.78, "rgba(120,226,207,.08)"); atmosphere.addColorStop(1, "rgba(104,219,200,.38)");
+      ctx.beginPath(); ctx.arc(centerX, centerY, radius, 0, Math.PI * 2); ctx.strokeStyle = atmosphere; ctx.lineWidth = 6; ctx.stroke();
+    };
+    draw();
+    const observer = new ResizeObserver(draw);
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [connections, nodes, rotation, showLabels]);
+
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) { dragRef.current = { active: true, startX: event.clientX, startRotation: rotation }; event.currentTarget.setPointerCapture(event.pointerId); setDragging(true); }
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) { if (dragRef.current.active) setRotation(dragRef.current.startRotation + (event.clientX - dragRef.current.startX) * .62); }
+  function handlePointerUp(event: PointerEvent<HTMLDivElement>) { if (!dragRef.current.active) return; dragRef.current.active = false; setDragging(false); if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); }
+
+  return <div className={`world-globe-sphere real-globe${dragging ? " is-dragging" : ""}`} aria-label="كرة أرضية تفاعلية لأعضاء الأكاديمية" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp}><canvas ref={canvasRef} className="real-globe-canvas" /></div>;
+}
+
+export function WorldGlobe({ compact = false, labels, visualOnly = false, showCountryLabels = true }: { compact?: boolean; labels?: GlobeLabels; visualOnly?: boolean; showCountryLabels?: boolean }) {
   const stats = useCountryStats();
   const nodes = useMemo(() => stats.map((item, index) => ({ ...item, label: item.country_name || countryName(item.country_code), point: positionFor(item.country_code, index) })), [stats]);
   const connections = useMemo(() => nodes.flatMap((node, index) => {
@@ -105,7 +231,7 @@ export function WorldGlobe({ compact = false, labels, visualOnly = false }: { co
   const featured = stats.slice(0, compact ? 6 : 12);
 
   return <div className={`world-globe-card${compact ? " compact" : ""}${visualOnly ? " visual-only" : ""}`}>
-    <div className="world-globe-visual"><WorldMap compact={compact} nodes={nodes} connections={connections} showLabels={!visualOnly} /><div className="world-orbit orbit-one" /><div className="world-orbit orbit-two" /></div>
+    <div className="world-globe-visual"><RealGlobeCanvas nodes={nodes} connections={connections} showLabels={showCountryLabels} /><div className="world-orbit orbit-one" /><div className="world-orbit orbit-two" /></div>
     {!visualOnly && <div className="world-globe-info"><p className="world-overline">{labels?.eyebrow ?? "شبكة معرفة حقيقية"}</p><h3>{labels?.title ?? (stats.length ? (compact ? "أسماء على الخريطة" : `${stats.length} دول حول العالم`) : "العالم يفتح بابه")}</h3><p>{labels?.text ?? (stats.length ? "تظهر هنا أسماء الدول المسجلة فقط، فوق مواقعها التقريبية على الكرة." : "اختر دولتك عند إنشاء الحساب لتظهر أول نقطة على الخريطة.")}</p><div className="world-country-list">{featured.length ? featured.map((item) => <div className="world-country" key={item.country_code}><span className="country-flag">{countryFlag(item.country_code)}</span><b>{item.country_name || countryName(item.country_code)}</b><small>{compact ? "على الخريطة" : `${item.member_count} عضو`}</small></div>) : <div className="world-country empty"><span>◎</span><b>كن أول عضو</b><small>من بلدك</small></div>}</div></div>}
   </div>;
 }

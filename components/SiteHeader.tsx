@@ -31,7 +31,7 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
       <a href="#main" className="skip-link" onClick={focusMain}>تخطى إلى المحتوى</a>
       <header className="nav">
         <div className="nav-identity"><Link className="brand" href="/">
-          <i>{settings.mark}</i>
+          <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
           <span>
             {settings.name}
             <small>{settings.tagline}</small>

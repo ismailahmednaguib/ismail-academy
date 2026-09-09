@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 
 export type Settings = {
   mark: string;
+  brandImage: string;
   heroKicker: string;
   heroVerse: string;
   heroVerseSource: string;
@@ -34,6 +35,7 @@ export type Settings = {
   showWorldGlobe: boolean;
   showLearningShelf: boolean;
   showFooter: boolean;
+  showBrandImage: boolean;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -138,6 +140,7 @@ export type Settings = {
 
 export const defaultSettings: Settings = {
   mark: "ا",
+  brandImage: "",
   heroKicker: "بِسْمِ اللهِ نَبْدَأُ",
   heroVerse: "وَقُلْ رَبِّ زِدْنِي عِلْمًا",
   heroVerseSource: "طه · 114",
@@ -170,6 +173,7 @@ export const defaultSettings: Settings = {
   showWorldGlobe: true,
   showLearningShelf: true,
   showFooter: true,
+  showBrandImage: true,
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
