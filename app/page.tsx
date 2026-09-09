@@ -16,6 +16,8 @@ import {
 import MajlisInterestModal from "@/components/MajlisInterestModal";
 import OwnerContentEditor from "@/components/OwnerContentEditor";
 import { LearningShelf } from "@/components/LearningTools";
+import SiteFooter from "@/components/SiteFooter";
+import MemberAccount from "@/components/MemberAccount";
 
 export default function Home() {
   const [settings, setSettings] = useState(defaults);
@@ -54,7 +56,9 @@ export default function Home() {
   async function openAdmin() {
     if (!supabase) { setNotice("أضف إعدادات Supabase في ملف .env.local أولًا."); return; }
     const { data: { session } } = await supabase.auth.getSession();
-    setOwnerSession(Boolean(session));
+    const { data: isOwner } = session ? await supabase.rpc("is_site_owner") : { data: false };
+    setOwnerSession(isOwner === true);
+    if (session && isOwner !== true) setNotice("هذا الحساب عضو عادي. سجّل دخولك بحساب المالك لفتح لوحة الإدارة.");
     setAdmin(true);
   }
   useEffect(() => {
@@ -89,6 +93,13 @@ export default function Home() {
     if (!supabase) return;
     const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
     if (error) { setNotice("تعذر تسجيل الدخول. تأكد من البريد وكلمة المرور."); return; }
+    const { data: isOwner } = await supabase.rpc("is_site_owner");
+    if (isOwner !== true) {
+      await supabase.auth.signOut();
+      setOwnerSession(false);
+      setNotice("تم الدخول، لكن الحساب ليس حساب المالك.");
+      return;
+    }
     setOwnerSession(true);
     setNotice("تم تسجيل الدخول كمالك للموقع.");
   }
@@ -143,8 +154,8 @@ export default function Home() {
     <a href="#top" className="skip-link">تخطى إلى المحتوى</a>
     {settings.showAnnouncement && <div className="announcement"><span>✦</span> {settings.announcement} {settings.showMajlis && <button onClick={() => scroll("majalis")}>{settings.announcementButton}</button>}</div>}
     <header className="nav"><a className="brand" href="#top"><i>{settings.mark}</i><span>{settings.name}<small>{settings.tagline}</small></span></a>
-      <nav className={menu ? "links open" : "links"}>{[[settings.navHome,"top"], ...(settings.showCourses ? [[settings.navCourses,"courses"]] : []), ...(settings.showLessons ? [[settings.navLessons,"lessons"]] : []), ...(settings.showMajlis ? [[settings.navMajlis,"majalis"]] : []), ...(settings.showArticles ? [[settings.navArticles,"articles"]] : []), ...(settings.showLibrary ? [[settings.navLibrary,"library"]] : [])].map(([label,id]) => <button key={id} onClick={() => scroll(id)}>{label}</button>)}<button className="mobile-owner" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button></nav>
-      <div className="nav-actions"><button className="search-button" aria-label="البحث" onClick={() => document.getElementById("site-search")?.focus()}>⌕</button><button className="owner-button" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button><button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>☰</button></div>
+      <nav className={menu ? "links open" : "links"}>{[[settings.navHome,"top"], ...(settings.showCourses ? [[settings.navCourses,"courses"]] : []), ...(settings.showLessons ? [[settings.navLessons,"lessons"]] : []), ...(settings.showMajlis ? [[settings.navMajlis,"majalis"]] : []), ...(settings.showArticles ? [[settings.navArticles,"articles"]] : []), ...(settings.showLibrary ? [[settings.navLibrary,"library"]] : [])].map(([label,id]) => <button key={id} onClick={() => scroll(id)}>{label}</button>)}<button className="mobile-owner" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button><span className="mobile-owner"><MemberAccount /></span></nav>
+      <div className="nav-actions"><button className="search-button" aria-label="البحث" onClick={() => document.getElementById("site-search")?.focus()}>⌕</button><MemberAccount compact /><button className="owner-button" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button><button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>☰</button></div>
     </header>
     <main id="top">
       <section className="hero"><div className="hero-copy"><p className="kicker">{settings.heroKicker}</p><h1>{settings.heroTitle}</h1><p>{settings.heroText}</p><div className="hero-actions"><button className="primary" onClick={() => scroll("courses")}>{settings.heroPrimaryCta} <b>←</b></button><button className="ghost" onClick={() => scroll("majalis")}>{settings.heroSecondaryCta}</button></div><div className="hero-metrics"><span><b>+{lessons.length}</b> {settings.heroMetricLessonsLabel}</span><span><b>{courses.length}</b> {settings.heroMetricCoursesLabel}</span><span><b>{settings.heroMetricFreeValue}</b> {settings.heroMetricFreeLabel}</span></div></div><div className="hero-art"><div className="arch"><span>{settings.heroVerse}</span><small>{settings.heroVerseSource}</small></div><div className="floating-card"><b>{settings.floatingCardTitle}</b><span>{settings.floatingCardText}</span><em>{settings.floatingCardStatus}</em></div></div></section>
@@ -158,7 +169,7 @@ export default function Home() {
       {settings.showLibrary && <section className="section library" id="library"><div><p className="kicker">{settings.libraryEyebrow}</p><h2>{settings.libraryTitle}</h2><p>{settings.libraryText}</p><Link href="/library" className="primary">{settings.libraryButton}</Link></div><div className="book-list">{books.filter((row) => isFeatured(row, 3)).map(([title,meta,fileUrl]) => <article key={title}><span>PDF</span><div><b>{title}</b><small>{meta}</small></div>{fileUrl ? <a href={fileUrl} download aria-label={`تحميل ${title}`}>↓</a> : <span className="coming-soon" title={settings.downloadSoonLabel}>↓</span>}</article>)}</div></section>}
       {settings.showNewsletter && <section className="newsletter"><div><p className="kicker">{settings.newsletterEyebrow}</p><h2>{settings.newsletterTitle}</h2><p>{settings.newsletterText}</p></div><form onSubmit={subscribeNewsletter}><input type="email" name="newsletter-email" placeholder={settings.newsletterInputPlaceholder} required /><label className="hp-field" aria-hidden="true">الموقع الإلكتروني<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label><button className="primary" disabled={newsletterSending}>{newsletterSending ? "جارٍ الاشتراك..." : settings.newsletterButton}</button></form></section>}
     </main>
-    <footer><div className="brand"><i>{settings.mark}</i><span>{settings.name}<small>{settings.tagline}</small></span></div><p>© {new Date().getFullYear()} {settings.footerCopyright}</p><div><a href={`mailto:${settings.email}`}>{settings.emailLabel}</a><a href={settings.telegram.startsWith("http") ? settings.telegram : `https://t.me/${settings.telegram.replace(/^@/, "")}`} target="_blank" rel="noreferrer">{settings.telegramLabel}</a></div></footer>
+    <SiteFooter settings={settings} />
     {notice && <div className="toast">{notice}<button onClick={() => setNotice("")}>×</button></div>}
     {admin && (
       <div className="modal" role="dialog" aria-modal="true">

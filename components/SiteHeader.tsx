@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Settings } from "@/lib/content";
+import MemberAccount from "@/components/MemberAccount";
 
 function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
@@ -42,14 +43,15 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
             </Link>
           ))}
           <Link className="mobile-owner" href="/?admin=1" onClick={() => setMenu(false)}>
-            لوحة المالك
+            {settings.ownerPanelLabel}
           </Link>
+          <span className="mobile-owner"><MemberAccount /></span>
         </nav>
         <div className="nav-actions">
           <Link className="header-search" href="/search" aria-label="البحث في الموقع">⌕</Link>
-          {/* لوحة إدارة المحتوى متاحة من الصفحة الرئيسية فقط حاليًا */}
+          <MemberAccount compact />
           <Link className="owner-button" href="/?admin=1">
-            لوحة المالك
+            {settings.ownerPanelLabel}
           </Link>
           <button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>
             ☰

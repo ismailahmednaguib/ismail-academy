@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Settings } from "@/lib/content";
+import OwnerNotifications from "@/components/OwnerNotifications";
 
 type SubmissionTab = "overview" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
 
@@ -90,6 +91,9 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["ownerPanelLabel", "اسم زر لوحة المالك", false],
   ["emailLabel", "اسم رابط البريد", false],
   ["telegramLabel", "اسم رابط تيليجرام", false],
+  ["whatsappLabel", "اسم رابط واتساب", false],
+  ["instagramLabel", "اسم رابط إنستجرام", false],
+  ["youtubeLabel", "اسم رابط يوتيوب", false],
   ["searchNoResults", "رسالة عدم وجود نتائج", false],
   ["listenLabel", "رابط الاستماع", false],
   ["readArticleLabel", "رابط قراءة المقال", false],
@@ -101,6 +105,10 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["announcement", "شريط الإعلان", true],
   ["email", "البريد الإلكتروني", false],
   ["telegram", "رابط تيليجرام أو اسم المستخدم", false],
+  ["whatsapp", "رقم واتساب أو الرابط", false],
+  ["instagram", "رابط إنستجرام", false],
+  ["youtube", "رابط يوتيوب", false],
+  ["showContactLinks", "إظهار روابط التواصل في الفوتر", false],
   ["introEyebrow", "العنوان الصغير لقسم التعريف", false],
   ["introTitle", "عنوان قسم التعريف", false],
   ["introText", "وصف قسم التعريف", true],
@@ -115,7 +123,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showContactLinks"]);
 
 const themePresets = [
   { label: "أكاديمي أخضر", inkColor: "#173a35", goldColor: "#b8893e", goldSoftColor: "#e4c888", paperColor: "#fbfaf5", creamColor: "#f3f0e6", sageColor: "#dce9df" },
@@ -259,7 +267,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     }
   }
 
-  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["settings", "إعدادات الموقع"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "المشتركون والاهتمام"], ["backup", "النسخ الاحتياطي"]];
+  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["settings", "إعدادات الموقع"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الإشعارات والأعضاء"], ["backup", "النسخ الاحتياطي"]];
 
   return <form onSubmit={onSave} className="owner-editor">
     <div className="owner-toolbar"><p className="admin-note">أنت داخل وضع المالك. عدّل المحتوى، ارفع الملفات، ثم اضغط «حفظ ونشر للجميع».</p><div className="owner-toolbar-actions"><a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
@@ -278,6 +286,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
 
         {tab === "books" && <section className="owner-section"><div className="owner-section-head"><div><h3>الكتب والملفات</h3><p className="admin-note">اسم الملف | الوصف والحجم | رابط PDF</p></div><button type="button" className="ghost small-owner-button" onClick={() => setBooks([...books, ["ملف جديد", "PDF", "", "true"]])}>+ إضافة ملف</button></div>{books.map((row, index) => <div className="owner-card" key={`book-${index}`}><div className="owner-card-head"><b>{row[0] || "ملف بلا عنوان"}</b><div className="owner-card-controls"><button type="button" disabled={index === 0} onClick={() => moveRow(setBooks, books, index, -1)} aria-label="تحريك لأعلى">↑</button><button type="button" disabled={index === books.length - 1} onClick={() => moveRow(setBooks, books, index, 1)} aria-label="تحريك لأسفل">↓</button><button type="button" onClick={() => duplicateRow(setBooks, books, index)}>نسخ</button><button type="button" className="danger-link" onClick={() => removeRow(setBooks, books, index)}>حذف</button></div></div><div className="owner-fields compact"><label>اسم الملف<input value={row[0] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 0, event.target.value)} /></label><label>الوصف والحجم<input value={row[1] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 1, event.target.value)} /></label><label className="wide-field">رابط PDF<input value={row[2] ?? ""} placeholder="https://... أو ارفع ملفًا من الزر" onChange={(event) => updateRow(setBooks, books, index, 2, event.target.value)} /></label><label className="owner-featured"><input type="checkbox" checked={row[3] !== "false"} onChange={(event) => updateRow(setBooks, books, index, 3, event.target.checked ? "true" : "false")} /> يظهر في الرئيسية</label></div><UploadButton label="رفع ملف PDF" accept="application/pdf" uploading={uploading === `book-${index}`} currentUrl={row[2]} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile("book", index, file); event.currentTarget.value = ""; }} /></div>)}</section>}
 
+        {tab === "submissions" && <OwnerNotifications />}
         {tab === "submissions" && <section className="owner-section"><div className="owner-section-head"><div><h3>المشتركون وطلبات الاهتمام</h3><p className="admin-note">بيانات خاصة بالمالك فقط، ويتم تحميل آخر 100 سجل.</p></div><button type="button" className="ghost small-owner-button" onClick={() => void loadSubmissions()}>تحديث</button></div><div className="submission-grid"><div className="submission-box"><h4>النشرة البريدية ({subscribers.length})</h4>{subscribers.length ? subscribers.map((row) => <div className="submission-row" key={row.id}><span>{row.email}<small>{new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("newsletter_subscribers", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد اشتراكات ظاهرة أو لم يتم تشغيل جدول النشرة بعد.</p>}</div><div className="submission-box"><h4>اهتمام بالمجلس ({interests.length})</h4>{interests.length ? interests.map((row) => <div className="submission-row" key={row.id}><span>{row.name}<small>{row.contact} · {new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("majlis_interest", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد طلبات ظاهرة أو لم يتم تشغيل جدول المجلس بعد.</p>}</div></div></section>}
         {tab === "backup" && <section className="owner-section"><div className="owner-section-head"><div><h3>النسخ الاحتياطي</h3><p className="admin-note">احتفظ بنسخة من كل محتوى الموقع قبل أي تعديل كبير، واستوردها عند الحاجة.</p></div></div><div className="backup-actions"><button type="button" className="primary" onClick={exportBackup}>تنزيل نسخة احتياطية</button><button type="button" className="ghost" onClick={() => importInputRef.current?.click()}>استيراد نسخة JSON</button><input ref={importInputRef} type="file" accept="application/json,.json" hidden onChange={(event) => void importBackup(event)} /></div><p className="admin-note">الاستيراد يحمّل البيانات محليًا فقط. راجع المحتوى أولًا ثم اضغط «حفظ ونشر للجميع».</p></section>}
       </div>

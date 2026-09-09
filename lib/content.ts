@@ -58,6 +58,9 @@ export type Settings = {
   ownerPanelLabel: string;
   emailLabel: string;
   telegramLabel: string;
+  whatsappLabel: string;
+  instagramLabel: string;
+  youtubeLabel: string;
   searchNoResults: string;
   listenLabel: string;
   readArticleLabel: string;
@@ -69,6 +72,10 @@ export type Settings = {
   announcement: string;
   email: string;
   telegram: string;
+  whatsapp: string;
+  instagram: string;
+  youtube: string;
+  showContactLinks: boolean;
   introEyebrow: string;
   introTitle: string;
   introText: string;
@@ -140,6 +147,9 @@ export const defaultSettings: Settings = {
   ownerPanelLabel: "لوحة المالك",
   emailLabel: "البريد",
   telegramLabel: "تيليجرام",
+  whatsappLabel: "واتساب",
+  instagramLabel: "إنستجرام",
+  youtubeLabel: "يوتيوب",
   searchNoResults: "لا توجد نتائج مطابقة",
   listenLabel: "استمع ←",
   readArticleLabel: "اقرأ المقال ←",
@@ -152,6 +162,10 @@ export const defaultSettings: Settings = {
   announcement: "المجلس القادم: كيف نبدأ طلب العلم بثبات؟ الخميس بعد المغرب",
   email: "hello@example.com",
   telegram: "@your_username",
+  whatsapp: "",
+  instagram: "",
+  youtube: "",
+  showContactLinks: true,
   introEyebrow: "منصة متكاملة",
   introTitle: "كل ما تحتاجه في مكان واحد.",
   introText: "محتوى مرتب لا يزاحمك، وتجربة تعلّم تراعي وقتك وتعينك على الاستمرار.",
