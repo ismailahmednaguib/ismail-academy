@@ -1,12 +1,13 @@
 import { ImageResponse } from "next/og";
-import { getSiteContent } from "@/lib/content";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
-export const size = { width: 1200, height: 630 };
+export const size = {
+  width: 1200,
+  height: 630,
+};
 export const contentType = "image/png";
 
-export default async function OpengraphImage() {
-  const { settings } = await getSiteContent();
+export default function OpengraphImage() {
   return new ImageResponse(
     (
       <div
@@ -14,53 +15,61 @@ export default async function OpengraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           background: "#173a35",
-          direction: "rtl",
+          color: "#fbfaf5",
         }}
       >
         <div
           style={{
-            width: 120,
-            height: 120,
-            borderRadius: "50%",
-            background: "#0f2b27",
-            color: "#e4c888",
+            width: "100%",
+            height: "100%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 64,
-            fontWeight: 700,
-            marginBottom: 36,
+            flexDirection: "column",
           }}
         >
-          ا
-        </div>
-        <div
-          style={{
-            color: "#fbfaf5",
-            fontSize: 56,
-            fontWeight: 700,
-            textAlign: "center",
-            padding: "0 60px",
-          }}
-        >
-          {settings.name}
-        </div>
-        <div
-          style={{
-            color: "#c9d6cd",
-            fontSize: 28,
-            marginTop: 18,
-            textAlign: "center",
-          }}
-        >
-          {settings.tagline}
+          <div
+            style={{
+              width: 110,
+              height: 110,
+              borderRadius: "50%",
+              background: "#0f2b27",
+              color: "#e4c888",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 58,
+              fontWeight: 700,
+            }}
+          >
+            A
+          </div>
+
+          <div
+            style={{
+              marginTop: 30,
+              fontSize: 48,
+              fontWeight: 700,
+            }}
+          >
+            Ismail Ahmed Naguib Academy
+          </div>
+
+          <div
+            style={{
+              marginTop: 14,
+              fontSize: 26,
+              color: "#c9d6cd",
+            }}
+          >
+            Knowledge that is understood, impact that remains
+          </div>
         </div>
       </div>
     ),
-    { ...size }
+    size
   );
 }
