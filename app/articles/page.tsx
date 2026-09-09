@@ -31,7 +31,7 @@ export default async function ArticlesPage() {
           {articles.map(([title, cat, time, , cover], i) => (
             <article key={`article-${i}`}>
               <div className={`article-art art-${i % 3}${cover ? " has-cover" : ""}`} style={cover ? { backgroundImage: `url(${cover})` } : undefined} role={cover ? "img" : undefined} aria-label={cover ? title : undefined}>
-                {cover ? null : "✦"}
+                {cover ? null : <span className="article-placeholder" aria-hidden="true" />}
               </div>
               <small>
                 {cat} · {time}

@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import type { CSSProperties, ReactNode } from "react";
 import "./globals.css";
 import "./owner.css";
+import "./premium.css";
+import "./pages-premium.css";
+import "./world.css";
 import { getSiteContent } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -51,7 +54,7 @@ export default async function RootLayout({
   };
   return (
     <html lang="ar" dir="rtl">
-      <body style={themeStyle}>
+      <body style={themeStyle} data-density={settings.siteDensity} data-corners={settings.cornerStyle}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -11,6 +11,9 @@ export type Settings = {
   paperColor: string;
   creamColor: string;
   sageColor: string;
+  siteDensity: "airy" | "balanced" | "compact";
+  cornerStyle: "soft" | "rounded" | "sharp";
+  showBackToTop: boolean;
   showAnnouncement: boolean;
   showIntro: boolean;
   showCourses: boolean;
@@ -19,6 +22,7 @@ export type Settings = {
   showArticles: boolean;
   showLibrary: boolean;
   showNewsletter: boolean;
+  showCommunity: boolean;
   navHome: string;
   navCourses: string;
   navLessons: string;
@@ -54,6 +58,9 @@ export type Settings = {
   newsletterEyebrow: string;
   newsletterInputPlaceholder: string;
   newsletterButton: string;
+  communityEyebrow: string;
+  communityTitle: string;
+  communityText: string;
   footerCopyright: string;
   ownerPanelLabel: string;
   emailLabel: string;
@@ -100,6 +107,9 @@ export const defaultSettings: Settings = {
   paperColor: "#fbfaf5",
   creamColor: "#f3f0e6",
   sageColor: "#dce9df",
+  siteDensity: "balanced",
+  cornerStyle: "rounded",
+  showBackToTop: true,
   showAnnouncement: true,
   showIntro: true,
   showCourses: true,
@@ -108,6 +118,7 @@ export const defaultSettings: Settings = {
   showArticles: true,
   showLibrary: true,
   showNewsletter: true,
+  showCommunity: true,
   navHome: "الرئيسية",
   navCourses: "الدورات",
   navLessons: "الدروس",
@@ -143,6 +154,9 @@ export const defaultSettings: Settings = {
   newsletterEyebrow: "رسالة نافعة، بلا إزعاج",
   newsletterInputPlaceholder: "بريدك الإلكتروني",
   newsletterButton: "اشترك الآن",
+  communityEyebrow: "مجتمع الأكاديمية",
+  communityTitle: "علمٌ يتصل من بلد إلى بلد.",
+  communityText: "كل عضو جديد يضيف نقطة إلى خريطة التعلّم؛ مجتمع صغير، متصل، وينمو بهدوء.",
   footerCopyright: "جميع الحقوق محفوظة.",
   ownerPanelLabel: "لوحة المالك",
   emailLabel: "البريد",

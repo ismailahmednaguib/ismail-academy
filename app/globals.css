@@ -89,7 +89,7 @@ body{min-height:100vh;background:radial-gradient(circle at 8% 8%,rgba(220,233,22
 .section{padding-top:105px;padding-bottom:105px}
 .section-head{gap:20px}
 .section-head .kicker{position:relative}
-.section-head .kicker:before{content:"✦";margin-left:7px;color:var(--gold2)}
+.section-head .kicker:before{content:"";display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:var(--gold2);vertical-align:middle}
 .course-grid,.article-grid{gap:20px}
 .course-card{overflow:hidden;border-radius:var(--radius-lg);background:linear-gradient(160deg,#fffdf8,var(--paper));box-shadow:0 8px 22px rgba(23,58,53,.04);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
 .course-card:before{content:"";position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold2),transparent);opacity:.75}
@@ -113,7 +113,7 @@ body{min-height:100vh;background:radial-gradient(circle at 8% 8%,rgba(220,233,22
 .book-list article{border:1px solid transparent;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
 .book-list article:hover{transform:translateX(-4px);border-color:var(--gold2);box-shadow:0 9px 20px rgba(23,58,53,.08)}
 .newsletter{position:relative;overflow:hidden;border-top:1px solid rgba(23,58,53,.08);border-bottom:1px solid rgba(23,58,53,.08)}
-.newsletter:after{content:"✦";position:absolute;left:8%;bottom:-28px;color:rgba(23,58,53,.07);font:130px Amiri}
+.newsletter:after{content:"";position:absolute;left:8%;bottom:-70px;width:150px;height:150px;border:1px solid rgba(23,58,53,.08);border-radius:50%}
 .newsletter>div,.newsletter form{position:relative;z-index:1}
 .newsletter form{background:rgba(255,255,255,.38);padding:7px;border-radius:11px}
 .newsletter input{border-color:transparent;box-shadow:0 4px 12px rgba(23,58,53,.05)}

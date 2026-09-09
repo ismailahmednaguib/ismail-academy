@@ -44,6 +44,9 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["paperColor", "لون خلفية الموقع", false],
   ["creamColor", "لون الأقسام الهادئة", false],
   ["sageColor", "لون النشرة والبطاقات", false],
+  ["siteDensity", "كثافة وترفّق المساحات", false],
+  ["cornerStyle", "شكل حواف البطاقات", false],
+  ["showBackToTop", "إظهار زر الرجوع لأعلى", false],
   ["showAnnouncement", "إظهار شريط الإعلان", false],
   ["showIntro", "إظهار قسم التعريف", false],
   ["showCourses", "إظهار قسم الدورات", false],
@@ -52,6 +55,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["showArticles", "إظهار قسم المقالات", false],
   ["showLibrary", "إظهار قسم المكتبة", false],
   ["showNewsletter", "إظهار النشرة البريدية", false],
+  ["showCommunity", "إظهار خريطة مجتمع الدول", false],
   ["navHome", "اسم زر الرئيسية", false],
   ["navCourses", "اسم زر الدورات", false],
   ["navLessons", "اسم زر الدروس", false],
@@ -87,6 +91,9 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["newsletterEyebrow", "العنوان الصغير للنشرة", false],
   ["newsletterInputPlaceholder", "نص خانة البريد", false],
   ["newsletterButton", "زر الاشتراك", false],
+  ["communityEyebrow", "العنوان الصغير للمجتمع", false],
+  ["communityTitle", "عنوان مجتمع الدول", false],
+  ["communityText", "وصف مجتمع الدول", true],
   ["footerCopyright", "نص حقوق النشر", false],
   ["ownerPanelLabel", "اسم زر لوحة المالك", false],
   ["emailLabel", "اسم رابط البريد", false],
@@ -123,7 +130,11 @@ const settingGroups: [keyof Settings, string, boolean][] = [
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showContactLinks"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showBackToTop", "showContactLinks"]);
+const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
+  siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
+  cornerStyle: [{ value: "soft", label: "ناعم" }, { value: "rounded", label: "مستدير" }, { value: "sharp", label: "حاد وأكاديمي" }],
+};
 
 const themePresets = [
   { label: "أكاديمي أخضر", inkColor: "#173a35", goldColor: "#b8893e", goldSoftColor: "#e4c888", paperColor: "#fbfaf5", creamColor: "#f3f0e6", sageColor: "#dce9df" },
@@ -276,7 +287,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
       <div className="owner-panel">
         {tab === "overview" && <div className="owner-overview"><div className="owner-stat"><b>{courses.length}</b><span>دورات</span></div><div className="owner-stat"><b>{lessons.length}</b><span>دروس</span></div><div className="owner-stat"><b>{articles.length}</b><span>مقالات</span></div><div className="owner-stat"><b>{books.length}</b><span>ملفات</span></div><div className="owner-help"><b>طريقة العمل</b><p>أضف العناصر من تبويبها، ارفع الصوت أو PDF من نفس البطاقة، ثم احفظ مرة واحدة. الروابط تُحفظ داخل المحتوى المنشور ولا تحتاج تعديل كود.</p></div></div>}
 
-        {tab === "settings" && <section className="owner-section"><h3>النصوص والإعدادات</h3><p className="admin-note">كل النصوص الظاهرة في الواجهة والألوان وأقسام الصفحة الرئيسية قابلة للتعديل من هنا.</p><div className="owner-fields">{settingGroups.map(([key, label, multiline]) => <label key={key}>{label}{toggleKeys.has(key) ? <input className="owner-toggle" type="checkbox" checked={Boolean(settings[key])} onChange={() => toggleSetting(key)} /> : multiline ? <textarea value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} /> : <input type={colorKeys.has(key) ? "color" : "text"} value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} />}</label>)}</div><div className="theme-presets"><b>ثيمات جاهزة</b><span className="admin-note">اختار شكلًا كبداية، ثم عدّل الألوان يدويًا لو تحب.</span><div>{themePresets.map((theme) => <button type="button" className="theme-preset" key={theme.label} onClick={() => applyTheme(theme)}><i style={{ background: theme.inkColor }} /><i style={{ background: theme.goldColor }} /><span>{theme.label}</span></button>)}</div></div></section>}
+        {tab === "settings" && <section className="owner-section"><h3>النصوص والإعدادات</h3><p className="admin-note">كل النصوص الظاهرة في الواجهة والألوان وأقسام الصفحة الرئيسية قابلة للتعديل من هنا. إعدادات المظهر الجديدة تغيّر الإحساس العام للموقع بدون لمس الكود.</p><div className="owner-fields">{settingGroups.map(([key, label, multiline]) => { const options = selectOptions[key]; return <label key={key}>{label}{toggleKeys.has(key) ? <input className="owner-toggle" type="checkbox" checked={Boolean(settings[key])} onChange={() => toggleSetting(key)} /> : options ? <select value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)}>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : multiline ? <textarea value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} /> : <input type={colorKeys.has(key) ? "color" : "text"} value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} />}</label>; })}</div><div className="theme-presets"><b>ثيمات جاهزة</b><span className="admin-note">اختار شكلًا كبداية، ثم عدّل الألوان والمظهر يدويًا لو تحب.</span><div>{themePresets.map((theme) => <button type="button" className="theme-preset" key={theme.label} onClick={() => applyTheme(theme)}><i style={{ background: theme.inkColor }} /><i style={{ background: theme.goldColor }} /><span>{theme.label}</span></button>)}</div></div></section>}
 
         {tab === "courses" && <section className="owner-section"><div className="owner-section-head"><div><h3>الدورات</h3><p className="admin-note">العنوان | الوصف | عدد الدروس | المستوى | الرقم</p></div><button type="button" className="ghost small-owner-button" onClick={() => setCourses([...courses, ["دورة جديدة", "أضف وصف الدورة هنا.", "0 دروس", "مبتدئ", String(courses.length + 1).padStart(2, "0"), "true"]])}>+ إضافة دورة</button></div>{courses.map((row, index) => <div className="owner-card" key={`course-${index}`}><div className="owner-card-head"><b>{row[0] || "دورة بلا عنوان"}</b><div className="owner-card-controls"><button type="button" disabled={index === 0} onClick={() => moveRow(setCourses, courses, index, -1)} aria-label="تحريك لأعلى">↑</button><button type="button" disabled={index === courses.length - 1} onClick={() => moveRow(setCourses, courses, index, 1)} aria-label="تحريك لأسفل">↓</button><button type="button" onClick={() => duplicateRow(setCourses, courses, index)}>نسخ</button><button type="button" className="danger-link" onClick={() => removeRow(setCourses, courses, index)}>حذف</button></div></div><div className="owner-fields compact"><label>العنوان<input value={row[0] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 0, event.target.value)} /></label><label>الوصف<textarea value={row[1] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 1, event.target.value)} /></label><label>عدد الدروس<input value={row[2] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 2, event.target.value)} /></label><label>المستوى<input value={row[3] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 3, event.target.value)} /></label><label>الرقم<input value={row[4] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 4, event.target.value)} /></label><label className="owner-featured"><input type="checkbox" checked={row[5] !== "false"} onChange={(event) => updateRow(setCourses, courses, index, 5, event.target.checked ? "true" : "false")} /> يظهر في الرئيسية</label></div></div>)}</section>}
 

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { countryOptions } from "@/lib/countries";
 
 type Mode = "login" | "signup";
 
@@ -11,6 +12,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -62,7 +64,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name.trim() } },
+      options: { data: { full_name: name.trim(), country_code: countryCode, country_name: countryOptions.find((country) => country.code === countryCode)?.name ?? "غير محدد" } },
     });
     setBusy(false);
     if (error) {
@@ -82,7 +84,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
 
   return <>
     <button type="button" className={`member-button${compact ? " compact" : ""}`} onClick={() => { setNotice(""); setOpen(true); }}>
-      <span aria-hidden="true">♙</span>{accountEmail ? "حسابي" : "دخول / حساب"}
+      <span className="member-dot" aria-hidden="true" />{accountEmail ? "حسابي" : "دخول / حساب"}
     </button>
     {open && <div className="account-overlay" role="dialog" aria-modal="true" aria-label="حساب العضو">
       <div className="account-card">
@@ -91,7 +93,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
           <p className="kicker">مساحتك</p>
           <h2>أهلًا بك.</h2>
           <p className="account-email">{accountEmail}</p>
-          <p className="admin-note">يمكنك العودة للمحتوى المحفوظ من نفس الجهاز، وتسجيل الخروج من هنا.</p>
+          <p className="admin-note">يمكنك العودة للمحتوى المحفوظ من أي جهاز، وتسجيل الخروج من هنا.</p>
           <button type="button" className="primary account-submit" onClick={() => void logout()}>تسجيل الخروج</button>
         </> : <>
           <p className="kicker">مساحة المتعلم</p>
@@ -99,6 +101,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
           <p className="admin-note">احفظ تقدمك وارجع للمحتوى من أي وقت.</p>
           <form onSubmit={submit} className="account-form">
             {mode === "signup" && <label>الاسم<input required value={name} onChange={(event) => setName(event.target.value)} /></label>}
+            {mode === "signup" && <label>الدولة<select required value={countryCode} onChange={(event) => setCountryCode(event.target.value)}><option value="">اختر دولتك</option>{countryOptions.map((country) => <option value={country.code} key={country.code}>{country.name}</option>)}</select></label>}
             <label>البريد الإلكتروني<input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
             <label>كلمة المرور<input type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} /></label>
             <button className="primary account-submit" disabled={busy}>{busy ? "جارٍ التنفيذ..." : mode === "login" ? "تسجيل الدخول" : "إنشاء حساب"}</button>
