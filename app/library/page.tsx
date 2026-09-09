@@ -4,12 +4,15 @@ import { getSiteContent } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: "المكتبة | أكاديمية إسماعيل أحمد نجيب",
-  description: "ملفات PDF مختارة للقراءة الهادئة والطباعة والمراجعة.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await getSiteContent();
+  return {
+    title: "المكتبة | " + settings.name,
+    description: "ملفات PDF مختارة للقراءة الهادئة والطباعة والمراجعة.",
+  };
+}
 
 export default async function LibraryPage() {
   const { settings, books } = await getSiteContent();
@@ -17,11 +20,11 @@ export default async function LibraryPage() {
     <>
       <SiteHeader settings={settings} />
       <main className="section">
-        <Link href="/" className="text-button back-link">→ الرئيسية</Link>
+        <Link href="/" className="text-button back-link">→ {settings.navHome}</Link>
         <div className="section-head">
           <div>
-            <p className="kicker">مكتبة نافعة</p>
-            <h1 className="page-title">ملفات تعود إليها</h1>
+            <p className="kicker">{settings.libraryEyebrow}</p>
+            <h1 className="page-title">{settings.libraryTitle}</h1>
           </div>
         </div>
         <div className="book-list">

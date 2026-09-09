@@ -4,12 +4,15 @@ import { getSiteContent, slugify } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: "الدروس | أكاديمية إسماعيل أحمد نجيب",
-  description: "كل الدروس الصوتية القصيرة في الأكاديمية.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await getSiteContent();
+  return {
+    title: "الدروس | " + settings.name,
+    description: "كل الدروس الصوتية القصيرة في الأكاديمية.",
+  };
+}
 
 export default async function LessonsPage() {
   const { settings, lessons } = await getSiteContent();
@@ -17,11 +20,11 @@ export default async function LessonsPage() {
     <>
       <SiteHeader settings={settings} />
       <main className="section">
-        <Link href="/" className="text-button back-link">→ الرئيسية</Link>
+        <Link href="/" className="text-button back-link">→ {settings.navHome}</Link>
         <div className="section-head">
           <div>
-            <p className="kicker">تعلّم بخطوات قصيرة</p>
-            <h1 className="page-title">كل الدروس</h1>
+            <p className="kicker">{settings.lessonsEyebrow}</p>
+            <h1 className="page-title">{settings.lessonsTitle}</h1>
           </div>
         </div>
         <div className="lesson-list">

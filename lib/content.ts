@@ -1,6 +1,67 @@
 import { createClient } from "@supabase/supabase-js";
 
 export type Settings = {
+  mark: string;
+  heroKicker: string;
+  heroVerse: string;
+  heroVerseSource: string;
+  inkColor: string;
+  goldColor: string;
+  goldSoftColor: string;
+  paperColor: string;
+  creamColor: string;
+  sageColor: string;
+  showAnnouncement: boolean;
+  showIntro: boolean;
+  showCourses: boolean;
+  showLessons: boolean;
+  showMajlis: boolean;
+  showArticles: boolean;
+  showLibrary: boolean;
+  showNewsletter: boolean;
+  navHome: string;
+  navCourses: string;
+  navLessons: string;
+  navMajlis: string;
+  navArticles: string;
+  navLibrary: string;
+  announcementButton: string;
+  heroPrimaryCta: string;
+  heroSecondaryCta: string;
+  heroMetricLessonsLabel: string;
+  heroMetricCoursesLabel: string;
+  heroMetricFreeValue: string;
+  heroMetricFreeLabel: string;
+  floatingCardTitle: string;
+  floatingCardText: string;
+  floatingCardStatus: string;
+  searchPlaceholder: string;
+  coursesEyebrow: string;
+  coursesTitle: string;
+  coursesLink: string;
+  lessonsEyebrow: string;
+  lessonsTitle: string;
+  lessonsLink: string;
+  majlisEyebrow: string;
+  majlisButton: string;
+  articlesEyebrow: string;
+  articlesTitle: string;
+  articlesLink: string;
+  libraryEyebrow: string;
+  libraryTitle: string;
+  libraryText: string;
+  libraryButton: string;
+  newsletterEyebrow: string;
+  newsletterInputPlaceholder: string;
+  newsletterButton: string;
+  footerCopyright: string;
+  ownerPanelLabel: string;
+  emailLabel: string;
+  telegramLabel: string;
+  searchNoResults: string;
+  listenLabel: string;
+  readArticleLabel: string;
+  downloadSoonLabel: string;
   name: string;
   tagline: string;
   heroTitle: string;
@@ -8,6 +69,11 @@ export type Settings = {
   announcement: string;
   email: string;
   telegram: string;
+  introEyebrow: string;
+  introTitle: string;
+  introText: string;
+  newsletterTitle: string;
+  newsletterText: string;
   majlisTitle: string;
   majlisText: string;
   majlisDate: string;
@@ -17,6 +83,67 @@ export type Settings = {
 };
 
 export const defaultSettings: Settings = {
+  mark: "ا",
+  heroKicker: "بِسْمِ اللهِ نَبْدَأُ",
+  heroVerse: "وَقُلْ رَبِّ زِدْنِي عِلْمًا",
+  heroVerseSource: "طه · 114",
+  inkColor: "#173a35",
+  goldColor: "#b8893e",
+  goldSoftColor: "#e4c888",
+  paperColor: "#fbfaf5",
+  creamColor: "#f3f0e6",
+  sageColor: "#dce9df",
+  showAnnouncement: true,
+  showIntro: true,
+  showCourses: true,
+  showLessons: true,
+  showMajlis: true,
+  showArticles: true,
+  showLibrary: true,
+  showNewsletter: true,
+  navHome: "الرئيسية",
+  navCourses: "الدورات",
+  navLessons: "الدروس",
+  navMajlis: "المجالس",
+  navArticles: "المقالات",
+  navLibrary: "المكتبة",
+  announcementButton: "التفاصيل",
+  heroPrimaryCta: "ابدأ رحلتك",
+  heroSecondaryCta: "استكشف المجالس",
+  heroMetricLessonsLabel: "درسًا مختارًا",
+  heroMetricCoursesLabel: "مسارات تعليمية",
+  heroMetricFreeValue: "مجاني",
+  heroMetricFreeLabel: "ومتاح للجميع",
+  floatingCardTitle: "ورد اليوم",
+  floatingCardText: "اقرأ · تعلّم · طبّق",
+  floatingCardStatus: "✓ مكتمل جزئيًا",
+  searchPlaceholder: "ابحث في الدروس والمقالات والمكتبة...",
+  coursesEyebrow: "المسارات التعليمية",
+  coursesTitle: "الدورات",
+  coursesLink: "عرض كل الدورات ←",
+  lessonsEyebrow: "تعلّم بخطوات قصيرة",
+  lessonsTitle: "أحدث الدروس",
+  lessonsLink: "كل الدروس ←",
+  majlisEyebrow: "المجالس واللقاءات",
+  majlisButton: "سجّل اهتمامك ←",
+  articlesEyebrow: "اقرأ بتأنٍّ",
+  articlesTitle: "من المقالات",
+  articlesLink: "كل المقالات ←",
+  libraryEyebrow: "مكتبة نافعة",
+  libraryTitle: "ملفات تعود إليها.",
+  libraryText: "مختارات مصممة للقراءة الهادئة والطباعة والمراجعة.",
+  libraryButton: "دخول المكتبة ←",
+  newsletterEyebrow: "رسالة نافعة، بلا إزعاج",
+  newsletterInputPlaceholder: "بريدك الإلكتروني",
+  newsletterButton: "اشترك الآن",
+  footerCopyright: "جميع الحقوق محفوظة.",
+  ownerPanelLabel: "لوحة المالك",
+  emailLabel: "البريد",
+  telegramLabel: "تيليجرام",
+  searchNoResults: "لا توجد نتائج مطابقة",
+  listenLabel: "استمع ←",
+  readArticleLabel: "اقرأ المقال ←",
+  downloadSoonLabel: "سيتم إضافة الملف قريبًا",
   name: "أكاديمية إسماعيل أحمد نجيب",
   tagline: "علمٌ يُفهم، وأثرٌ يبقى",
   heroTitle: "رحلة هادئة نحو علمٍ أنفع وحياةٍ أصفى.",
@@ -25,6 +152,11 @@ export const defaultSettings: Settings = {
   announcement: "المجلس القادم: كيف نبدأ طلب العلم بثبات؟ الخميس بعد المغرب",
   email: "hello@example.com",
   telegram: "@your_username",
+  introEyebrow: "منصة متكاملة",
+  introTitle: "كل ما تحتاجه في مكان واحد.",
+  introText: "محتوى مرتب لا يزاحمك، وتجربة تعلّم تراعي وقتك وتعينك على الاستمرار.",
+  newsletterTitle: "وصلك الجديد من الأكاديمية.",
+  newsletterText: "تنبيه بالدروس والملفات والمجالس الجديدة حين تكون جاهزة.",
   majlisTitle: "مجلس يقرّب العلم إلى الحياة.",
   majlisText: "نلتقي في مجالس خفيفة، نقرأ فيها ونتدارس ونخرج بخطوة عملية.",
   majlisDate: "الخميس | 18 | صفر",
@@ -35,10 +167,10 @@ export const defaultSettings: Settings = {
 
 // Row shape per section (kept as string[] to stay compatible with the
 // existing pipe-separated admin textareas):
-// courses:  [title, desc, count, level, num]
-// lessons:  [title, meta, audioUrl?]
-// articles: [title, category, time, body?]   body paragraphs separated by literal "\n"
-// books:    [title, meta, fileUrl?]
+// courses:  [title, desc, count, level, num, featured?]
+// lessons:  [title, meta, audioUrl?, courseTitle?, featured?]
+// articles: [title, category, time, body?, coverUrl?, featured?]   body paragraphs separated by literal "\n"
+// books:    [title, meta, fileUrl?, featured?]
 
 export const initialCourses: string[][] = [
   ["مدخل إلى طلب العلم", "خارطة عملية لبداية متوازنة، من النية حتى تنظيم الوقت.", "6 دروس", "مبتدئ", "01"],
@@ -99,6 +231,11 @@ export function slugify(text: string): string {
 
 export function findBySlug(items: string[][], slug: string): string[] | undefined {
   return items.find((item) => slugify(item[0]) === slug);
+}
+
+/** Optional row flag used by the owner to curate what appears on the homepage. */
+export function isFeatured(row: string[], column: number): boolean {
+  return row[column] !== "false";
 }
 
 // A server-safe client (works in Server Components / route handlers).

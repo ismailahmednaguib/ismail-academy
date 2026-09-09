@@ -4,15 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Settings } from "@/lib/content";
 
-const navItems: [string, string][] = [
-  ["الرئيسية", "/"],
-  ["الدورات", "/courses"],
-  ["الدروس", "/lessons"],
-  ["المجالس", "/#majalis"],
-  ["المقالات", "/articles"],
-  ["المكتبة", "/library"],
-];
-
 function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
   const main = document.querySelector("main");
@@ -25,12 +16,20 @@ function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
 
 export default function SiteHeader({ settings }: { settings: Settings }) {
   const [menu, setMenu] = useState(false);
+  const navItems: [string, string][] = [
+    [settings.navHome, "/"],
+    [settings.navCourses, "/courses"],
+    [settings.navLessons, "/lessons"],
+    [settings.navMajlis, "/#majalis"],
+    [settings.navArticles, "/articles"],
+    [settings.navLibrary, "/library"],
+  ];
   return (
     <>
       <a href="#main" className="skip-link" onClick={focusMain}>تخطى إلى المحتوى</a>
       <header className="nav">
         <Link className="brand" href="/">
-          <i>ا</i>
+          <i>{settings.mark}</i>
           <span>
             {settings.name}
             <small>{settings.tagline}</small>
@@ -42,13 +41,17 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
               {label}
             </Link>
           ))}
+          <Link className="mobile-owner" href="/?admin=1" onClick={() => setMenu(false)}>
+            لوحة المالك
+          </Link>
         </nav>
         <div className="nav-actions">
+          <Link className="header-search" href="/search" aria-label="البحث في الموقع">⌕</Link>
           {/* لوحة إدارة المحتوى متاحة من الصفحة الرئيسية فقط حاليًا */}
           <Link className="owner-button" href="/?admin=1">
             لوحة المالك
           </Link>
-          <button className="menu" onClick={() => setMenu(!menu)}>
+          <button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>
             ☰
           </button>
         </div>

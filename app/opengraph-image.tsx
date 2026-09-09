@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { getSiteContent } from "@/lib/content";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
 export const size = {
@@ -7,7 +8,12 @@ export const size = {
 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage() {
+  const { settings } = await getSiteContent();
+  const safe = (value: string, fallback: string) => /^#[0-9a-fA-F]{6}$/.test(value) ? value : fallback;
+  const ink = safe(settings.inkColor, "#173a35");
+  const paper = safe(settings.paperColor, "#fbfaf5");
+  const gold = safe(settings.goldSoftColor, "#e4c888");
   return new ImageResponse(
     (
       <div
@@ -17,8 +23,8 @@ export default function OpengraphImage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#173a35",
-          color: "#fbfaf5",
+          background: ink,
+          color: paper,
         }}
       >
         <div
@@ -37,7 +43,7 @@ export default function OpengraphImage() {
               height: 110,
               borderRadius: "50%",
               background: "#0f2b27",
-              color: "#e4c888",
+              color: gold,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -45,7 +51,7 @@ export default function OpengraphImage() {
               fontWeight: 700,
             }}
           >
-            A
+            {settings.mark}
           </div>
 
           <div
@@ -55,7 +61,7 @@ export default function OpengraphImage() {
               fontWeight: 700,
             }}
           >
-            Ismail Ahmed Naguib Academy
+            {settings.name}
           </div>
 
           <div
@@ -65,7 +71,7 @@ export default function OpengraphImage() {
               color: "#c9d6cd",
             }}
           >
-            Knowledge that is understood, impact that remains
+            {settings.tagline}
           </div>
         </div>
       </div>

@@ -10,9 +10,12 @@ import {
   initialBooks,
   initialLessons,
   slugify,
+  isFeatured,
   type AcademyContent,
 } from "@/lib/content";
 import MajlisInterestModal from "@/components/MajlisInterestModal";
+import OwnerContentEditor from "@/components/OwnerContentEditor";
+import { LearningShelf } from "@/components/LearningTools";
 
 export default function Home() {
   const [settings, setSettings] = useState(defaults);
@@ -28,9 +31,14 @@ export default function Home() {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [interestOpen, setInterestOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   async function loadPublishedContent() {
     if (!supabase) return;
-    const { data } = await supabase.from("site_content").select("payload").eq("id", "main").single();
+    const { data, error } = await supabase.from("site_content").select("payload").eq("id", "main").single();
+    if (error) {
+      setNotice("تعذر تحميل المحتوى المنشور حاليًا.");
+      return;
+    }
     const payload = data?.payload as Partial<AcademyContent> | undefined;
     if (!payload) return;
     if (payload.settings) setSettings({ ...defaults, ...payload.settings });
@@ -39,23 +47,43 @@ export default function Home() {
     if (payload.books) setBooks(payload.books);
     if (payload.lessons) setLessons(payload.lessons);
   }
-  // This hydrates the screen from an external asynchronous data source; it is not derived local state.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void loadPublishedContent(); }, []);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void loadPublishedContent(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   async function openAdmin() {
     if (!supabase) { setNotice("أضف إعدادات Supabase في ملف .env.local أولًا."); return; }
     const { data: { session } } = await supabase.auth.getSession();
     setOwnerSession(Boolean(session));
     setAdmin(true);
   }
-  // فتح لوحة المالك تلقائيًا لو الزائر جاي من زرار "لوحة المالك" في صفحة تانية (/?admin=1)
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("admin") === "1") {
-      void openAdmin();
+      const timer = window.setTimeout(() => { void openAdmin(); }, 0);
+      return () => window.clearTimeout(timer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    if (!admin) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAdmin(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [admin]);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--ink", settings.inkColor);
+    root.style.setProperty("--gold", settings.goldColor);
+    root.style.setProperty("--gold2", settings.goldSoftColor);
+    root.style.setProperty("--paper", settings.paperColor);
+    root.style.setProperty("--cream", settings.creamColor);
+    root.style.setProperty("--sage", settings.sageColor);
+  }, [settings.inkColor, settings.goldColor, settings.goldSoftColor, settings.paperColor, settings.creamColor, settings.sageColor]);
   async function login(e: FormEvent) {
     e.preventDefault();
     if (!supabase) return;
@@ -71,12 +99,20 @@ export default function Home() {
       ...articles.map(([title]) => ({ title, href: `/articles/${encodeURIComponent(slugify(title))}` })),
       ...books.map(([title]) => ({ title, href: "/library" })),
     ];
-    return items.filter(({ title }) => title.includes(search));
+    const query = search.trim().toLocaleLowerCase("ar");
+    return query ? items.filter(({ title }) => title.toLocaleLowerCase("ar").includes(query)) : [];
   }, [search, courses, lessons, articles, books]);
   async function save(e: FormEvent) {
     e.preventDefault();
     if (!supabase || !ownerSession) { setNotice("سجّل الدخول كمالك قبل الحفظ."); return; }
+    const sections = [courses, lessons, articles, books];
+    if (sections.some((rows) => rows.some((row) => !row[0]?.trim()))) {
+      setNotice("أكمل عنوان كل عنصر قبل النشر.");
+      return;
+    }
+    setSaving(true);
     const { error } = await supabase.from("site_content").update({ payload: { settings, courses, lessons, articles, books } }).eq("id", "main");
+    setSaving(false);
     setNotice(error ? "تعذر الحفظ. تأكد أن بريدك مكتوب في سياسة قاعدة البيانات." : "تم النشر بنجاح وسيظهر التحديث لكل الزوار.");
   }
   const [newsletterSending, setNewsletterSending] = useState(false);
@@ -105,28 +141,29 @@ export default function Home() {
   const scroll = (id: string) => { setMenu(false); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); };
   return <>
     <a href="#top" className="skip-link">تخطى إلى المحتوى</a>
-    <div className="announcement"><span>✦</span> {settings.announcement} <button onClick={() => scroll("majalis")}>التفاصيل</button></div>
-    <header className="nav"><a className="brand" href="#top"><i>ا</i><span>{settings.name}<small>{settings.tagline}</small></span></a>
-      <nav className={menu ? "links open" : "links"}>{[["الرئيسية","top"],["الدورات","courses"],["الدروس","lessons"],["المجالس","majalis"],["المقالات","articles"],["المكتبة","library"]].map(([label,id]) => <button key={id} onClick={() => scroll(id)}>{label}</button>)}</nav>
-      <div className="nav-actions"><button className="search-button" onClick={() => document.getElementById("site-search")?.focus()}>⌕</button><button className="owner-button" onClick={() => void openAdmin()}>لوحة المالك</button><button className="menu" onClick={() => setMenu(!menu)}>☰</button></div>
+    {settings.showAnnouncement && <div className="announcement"><span>✦</span> {settings.announcement} {settings.showMajlis && <button onClick={() => scroll("majalis")}>{settings.announcementButton}</button>}</div>}
+    <header className="nav"><a className="brand" href="#top"><i>{settings.mark}</i><span>{settings.name}<small>{settings.tagline}</small></span></a>
+      <nav className={menu ? "links open" : "links"}>{[[settings.navHome,"top"], ...(settings.showCourses ? [[settings.navCourses,"courses"]] : []), ...(settings.showLessons ? [[settings.navLessons,"lessons"]] : []), ...(settings.showMajlis ? [[settings.navMajlis,"majalis"]] : []), ...(settings.showArticles ? [[settings.navArticles,"articles"]] : []), ...(settings.showLibrary ? [[settings.navLibrary,"library"]] : [])].map(([label,id]) => <button key={id} onClick={() => scroll(id)}>{label}</button>)}<button className="mobile-owner" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button></nav>
+      <div className="nav-actions"><button className="search-button" aria-label="البحث" onClick={() => document.getElementById("site-search")?.focus()}>⌕</button><button className="owner-button" onClick={() => void openAdmin()}>{settings.ownerPanelLabel}</button><button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>☰</button></div>
     </header>
     <main id="top">
-      <section className="hero"><div className="hero-copy"><p className="kicker">بِسْمِ اللهِ نَبْدَأُ</p><h1>{settings.heroTitle}</h1><p>{settings.heroText}</p><div className="hero-actions"><button className="primary" onClick={() => scroll("courses")}>ابدأ رحلتك <b>←</b></button><button className="ghost" onClick={() => scroll("majalis")}>استكشف المجالس</button></div><div className="hero-metrics"><span><b>+12</b> درسًا مختارًا</span><span><b>3</b> مسارات تعليمية</span><span><b>مجاني</b> ومتاح للجميع</span></div></div><div className="hero-art"><div className="arch"><span>وَقُلْ رَبِّ زِدْنِي عِلْمًا</span><small>طه · 114</small></div><div className="floating-card"><b>ورد اليوم</b><span>اقرأ · تعلّم · طبّق</span><em>✓ مكتمل جزئيًا</em></div></div></section>
-      <section className="search-wrap"><label htmlFor="site-search">⌕</label><input id="site-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث في الدروس والمقالات والمكتبة..." />{search && <div className="search-results">{results.length ? results.map(r => <Link key={r.href + r.title} href={r.href} onClick={() => setSearch("")}>{r.title}</Link>) : <span>لا توجد نتائج مطابقة</span>}</div>}</section>
-      <section className="section intro"><div><p className="kicker">منصة متكاملة</p><h2>كل ما تحتاجه في مكان واحد.</h2></div><p>محتوى مرتب لا يزاحمك، وتجربة تعلّم تراعي وقتك وتعينك على الاستمرار.</p></section>
-      <section className="section" id="courses"><div className="section-head"><div><p className="kicker">المسارات التعليمية</p><h2>الدورات</h2></div><Link href="/courses" className="text-button">عرض كل الدورات ←</Link></div><div className="course-grid">{courses.map(([title,desc,count,level,num]) => <article className="course-card" key={title}><div className="course-number">{num}</div><span className="badge">{level}</span><h3><Link href={`/courses/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><p>{desc}</p><footer><span>{count}</span><Link href={`/courses/${encodeURIComponent(slugify(title))}`} aria-label={`فتح ${title}`}>←</Link></footer></article>)}</div></section>
-      <section className="section soft" id="lessons"><div className="section-head"><div><p className="kicker">تعلّم بخطوات قصيرة</p><h2>أحدث الدروس</h2></div><Link href="/lessons" className="text-button">كل الدروس ←</Link></div><div className="lesson-list">{lessons.map(([title,meta],i) => <article key={`${title}-${i}`}><span>0{i+1}</span><div><b>{title}</b><small>{meta}</small></div><Link href={`/lessons/${encodeURIComponent(slugify(title))}`}>استمع ←</Link></article>)}</div></section>
-      <section className="section majlis" id="majalis"><div className="majlis-content"><p className="kicker">المجالس واللقاءات</p><h2>{settings.majlisTitle}</h2><p>{settings.majlisText}</p><div className="event"><span>{settings.majlisDate.split("|").map((item, index) => <span key={index}>{index === 1 ? <b>{item.trim()}</b> : item.trim()}<br/></span>)}</span><div><b>{settings.majlisTopic}</b><small>{settings.majlisMeta}</small></div></div><button className="primary" onClick={() => setInterestOpen(true)}>سجّل اهتمامك ←</button></div><div className="majlis-quote">“{settings.majlisQuote}”<small>متفق عليه</small></div></section>
-      <section className="section" id="articles"><div className="section-head"><div><p className="kicker">اقرأ بتأنٍّ</p><h2>من المقالات</h2></div><Link href="/articles" className="text-button">كل المقالات ←</Link></div><div className="article-grid">{articles.map(([title,cat,time],i) => <article key={title}><div className={`article-art art-${i}`}>✦</div><small>{cat} · {time}</small><h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>اقرأ المقال ←</Link></article>)}</div></section>
-      <section className="section library" id="library"><div><p className="kicker">مكتبة نافعة</p><h2>ملفات تعود إليها.</h2><p>مختارات مصممة للقراءة الهادئة والطباعة والمراجعة.</p><Link href="/library" className="primary">دخول المكتبة ←</Link></div><div className="book-list">{books.map(([title,meta,fileUrl]) => <article key={title}><span>PDF</span><div><b>{title}</b><small>{meta}</small></div>{fileUrl ? <a href={fileUrl} download aria-label={`تحميل ${title}`}>↓</a> : <span className="coming-soon" title="سيتم إضافة الملف قريبًا">↓</span>}</article>)}</div></section>
-      <section className="newsletter"><div><p className="kicker">رسالة نافعة، بلا إزعاج</p><h2>وصلك الجديد من الأكاديمية.</h2><p>تنبيه بالدروس والملفات والمجالس الجديدة حين تكون جاهزة.</p></div><form onSubmit={subscribeNewsletter}><input type="email" name="newsletter-email" placeholder="بريدك الإلكتروني" required /><label className="hp-field" aria-hidden="true">الموقع الإلكتروني<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label><button className="primary" disabled={newsletterSending}>{newsletterSending ? "جارٍ الاشتراك..." : "اشترك الآن"}</button></form></section>
+      <section className="hero"><div className="hero-copy"><p className="kicker">{settings.heroKicker}</p><h1>{settings.heroTitle}</h1><p>{settings.heroText}</p><div className="hero-actions"><button className="primary" onClick={() => scroll("courses")}>{settings.heroPrimaryCta} <b>←</b></button><button className="ghost" onClick={() => scroll("majalis")}>{settings.heroSecondaryCta}</button></div><div className="hero-metrics"><span><b>+{lessons.length}</b> {settings.heroMetricLessonsLabel}</span><span><b>{courses.length}</b> {settings.heroMetricCoursesLabel}</span><span><b>{settings.heroMetricFreeValue}</b> {settings.heroMetricFreeLabel}</span></div></div><div className="hero-art"><div className="arch"><span>{settings.heroVerse}</span><small>{settings.heroVerseSource}</small></div><div className="floating-card"><b>{settings.floatingCardTitle}</b><span>{settings.floatingCardText}</span><em>{settings.floatingCardStatus}</em></div></div></section>
+      <section className="search-wrap"><label htmlFor="site-search">⌕</label><input id="site-search" value={search} onChange={e => setSearch(e.target.value)} placeholder={settings.searchPlaceholder} aria-label="البحث في محتوى الموقع" />{search.trim() && <div className="search-results" role="listbox">{results.length ? results.map(r => <Link key={r.href + r.title} href={r.href} onClick={() => setSearch("")}>{r.title}</Link>) : <span>{settings.searchNoResults}</span>}</div>}</section>
+      <LearningShelf items={[...courses.map(([title]) => ({ id: "course:" + slugify(title), title, href: "/courses/" + encodeURIComponent(slugify(title)), kind: "دورة" })), ...lessons.map(([title]) => ({ id: "lesson:" + slugify(title), title, href: "/lessons/" + encodeURIComponent(slugify(title)), kind: "درس" })), ...articles.map(([title]) => ({ id: "article:" + slugify(title), title, href: "/articles/" + encodeURIComponent(slugify(title)), kind: "مقال" }))]} />
+      {settings.showIntro && <section className="section intro"><div><p className="kicker">{settings.introEyebrow}</p><h2>{settings.introTitle}</h2></div><p>{settings.introText}</p></section>}
+      {settings.showCourses && <section className="section" id="courses"><div className="section-head"><div><p className="kicker">{settings.coursesEyebrow}</p><h2>{settings.coursesTitle}</h2></div><Link href="/courses" className="text-button">{settings.coursesLink}</Link></div><div className="course-grid">{courses.filter((row) => isFeatured(row, 5)).map(([title,desc,count,level,num]) => <article className="course-card" key={title}><div className="course-number">{num}</div><span className="badge">{level}</span><h3><Link href={`/courses/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><p>{desc}</p><footer><span>{count}</span><Link href={`/courses/${encodeURIComponent(slugify(title))}`} aria-label={`فتح ${title}`}>←</Link></footer></article>)}</div></section>}
+      {settings.showLessons && <section className="section soft" id="lessons"><div className="section-head"><div><p className="kicker">{settings.lessonsEyebrow}</p><h2>{settings.lessonsTitle}</h2></div><Link href="/lessons" className="text-button">{settings.lessonsLink}</Link></div><div className="lesson-list">{lessons.filter((row) => isFeatured(row, 4)).map(([title,meta],i) => <article key={`${title}-${i}`}><span>0{i+1}</span><div><b>{title}</b><small>{meta}</small></div><Link href={`/lessons/${encodeURIComponent(slugify(title))}`}>{settings.listenLabel}</Link></article>)}</div></section>}
+      {settings.showMajlis && <section className="section majlis" id="majalis"><div className="majlis-content"><p className="kicker">{settings.majlisEyebrow}</p><h2>{settings.majlisTitle}</h2><p>{settings.majlisText}</p><div className="event"><span>{settings.majlisDate.split("|").map((item, index) => <span key={index}>{index === 1 ? <b>{item.trim()}</b> : item.trim()}<br/></span>)}</span><div><b>{settings.majlisTopic}</b><small>{settings.majlisMeta}</small></div></div><button className="primary" onClick={() => setInterestOpen(true)}>{settings.majlisButton}</button></div><div className="majlis-quote">“{settings.majlisQuote}”<small>متفق عليه</small></div></section>}
+      {settings.showArticles && <section className="section" id="articles"><div className="section-head"><div><p className="kicker">{settings.articlesEyebrow}</p><h2>{settings.articlesTitle}</h2></div><Link href="/articles" className="text-button">{settings.articlesLink}</Link></div><div className="article-grid">{articles.filter((row) => isFeatured(row, 5)).map(([title,cat,time,,cover],i) => <article key={title}><div className={`article-art art-${i % 3}${cover ? " has-cover" : ""}`} style={cover ? { backgroundImage: `url(${cover})` } : undefined} role={cover ? "img" : undefined} aria-label={cover ? title : undefined}>{cover ? null : "✦"}</div><small>{cat} · {time}</small><h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>{settings.readArticleLabel}</Link></article>)}</div></section>}
+      {settings.showLibrary && <section className="section library" id="library"><div><p className="kicker">{settings.libraryEyebrow}</p><h2>{settings.libraryTitle}</h2><p>{settings.libraryText}</p><Link href="/library" className="primary">{settings.libraryButton}</Link></div><div className="book-list">{books.filter((row) => isFeatured(row, 3)).map(([title,meta,fileUrl]) => <article key={title}><span>PDF</span><div><b>{title}</b><small>{meta}</small></div>{fileUrl ? <a href={fileUrl} download aria-label={`تحميل ${title}`}>↓</a> : <span className="coming-soon" title={settings.downloadSoonLabel}>↓</span>}</article>)}</div></section>}
+      {settings.showNewsletter && <section className="newsletter"><div><p className="kicker">{settings.newsletterEyebrow}</p><h2>{settings.newsletterTitle}</h2><p>{settings.newsletterText}</p></div><form onSubmit={subscribeNewsletter}><input type="email" name="newsletter-email" placeholder={settings.newsletterInputPlaceholder} required /><label className="hp-field" aria-hidden="true">الموقع الإلكتروني<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label><button className="primary" disabled={newsletterSending}>{newsletterSending ? "جارٍ الاشتراك..." : settings.newsletterButton}</button></form></section>}
     </main>
-    <footer><div className="brand"><i>ا</i><span>{settings.name}<small>{settings.tagline}</small></span></div><p>© {new Date().getFullYear()} جميع الحقوق محفوظة.</p><div><a href={`mailto:${settings.email}`}>البريد</a><a href="https://t.me/your_username">تيليجرام</a></div></footer>
+    <footer><div className="brand"><i>{settings.mark}</i><span>{settings.name}<small>{settings.tagline}</small></span></div><p>© {new Date().getFullYear()} {settings.footerCopyright}</p><div><a href={`mailto:${settings.email}`}>{settings.emailLabel}</a><a href={settings.telegram.startsWith("http") ? settings.telegram : `https://t.me/${settings.telegram.replace(/^@/, "")}`} target="_blank" rel="noreferrer">{settings.telegramLabel}</a></div></footer>
     {notice && <div className="toast">{notice}<button onClick={() => setNotice("")}>×</button></div>}
     {admin && (
       <div className="modal" role="dialog" aria-modal="true">
         <div className="admin">
-          <header><div><p className="kicker">إدارة المحتوى</p><h2>لوحة المالك</h2></div><button onClick={() => setAdmin(false)}>×</button></header>
+          <header><div><p className="kicker">إدارة المحتوى</p><h2>لوحة المالك</h2></div><button aria-label="إغلاق لوحة المالك" onClick={() => setAdmin(false)}>×</button></header>
           {!ownerSession ? (
             <form onSubmit={login}>
               <p className="admin-note">سجّل الدخول بحساب المالك الذي أنشأته في Supabase. لن يستطيع أي حساب آخر نشر التغييرات.</p>
@@ -135,16 +172,7 @@ export default function Home() {
               <button className="primary">تسجيل الدخول</button>
             </form>
           ) : (
-            <form onSubmit={save}>
-              <p className="admin-note">أنت مسجل كمالك. عند الحفظ ستظهر التغييرات لكل زوار الموقع.</p>
-              {([['name','اسم الموقع'],['tagline','الشعار المختصر'],['heroTitle','عنوان الواجهة'],['heroText','وصف الواجهة'],['announcement','شريط الإعلان'],['email','البريد'],['telegram','تيليجرام'],['majlisTitle','عنوان قسم المجالس'],['majlisText','وصف قسم المجالس'],['majlisDate','تاريخ المجلس — افصل الأجزاء بعلامة |'],['majlisTopic','عنوان المجلس'],['majlisMeta','تفاصيل المجلس'],['majlisQuote','اقتباس المجلس']] as [keyof typeof defaults,string][]).map(([key,label]) => <label key={key}>{label}{key === 'heroText' || key === 'announcement' || key === 'majlisText' ? <textarea value={settings[key]} onChange={e => setSettings({...settings,[key]:e.target.value})} /> : <input value={settings[key]} onChange={e => setSettings({...settings,[key]:e.target.value})} />}</label>)}
-              <label>الدورات (عنوان، وصف، عدد الدروس، المستوى، الرقم — لكل دورة صف)<textarea value={courses.map(x => x.join(' | ')).join('\n')} onChange={e => setCourses(e.target.value.split('\n').filter(Boolean).map(x => x.split('|').map(y => y.trim())))} /></label>
-              <label>الدروس (العنوان، التفاصيل، رابط الملف الصوتي — اختياري — لكل درس صف)<textarea value={lessons.map(x => x.join(' | ')).join('\n')} onChange={e => setLessons(e.target.value.split('\n').filter(Boolean).map(x => x.split('|').map(y => y.trim())))} /></label>
-              <label>المقالات (العنوان، التصنيف، زمن القراءة، نص المقال بفصل الفقرات بـ \n — اختياري — لكل مقال صف)<textarea value={articles.map(x => x.join(' | ')).join('\n')} onChange={e => setArticles(e.target.value.split('\n').filter(Boolean).map(x => x.split('|').map(y => y.trim())))} /></label>
-              <label>ملفات المكتبة (العنوان، وصف الملف، رابط تحميل مباشر — اختياري — لكل ملف صف)<textarea value={books.map(x => x.join(' | ')).join('\n')} onChange={e => setBooks(e.target.value.split('\n').filter(Boolean).map(x => x.split('|').map(y => y.trim())))} /></label>
-              <div className="admin-buttons"><button type="button" className="ghost" onClick={() => {setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks);}}>استعادة الافتراضي</button><button className="primary">حفظ ونشر للجميع</button></div>
-              <button type="button" className="text-button" onClick={() => { void supabase?.auth.signOut(); setOwnerSession(false); }}>تسجيل الخروج</button>
-            </form>
+            <OwnerContentEditor settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} setSettings={setSettings} setCourses={setCourses} setLessons={setLessons} setArticles={setArticles} setBooks={setBooks} onSave={save} onReset={() => { if (!window.confirm("استعادة المحتوى الافتراضي محليًا؟")) return; setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks); setNotice("تمت استعادة المحتوى الافتراضي محليًا. اضغط حفظ ونشر لاعتماده."); }} onLogout={() => { void supabase?.auth.signOut(); setOwnerSession(false); }} busy={saving} setNotice={setNotice} />
           )}
         </div>
       </div>
