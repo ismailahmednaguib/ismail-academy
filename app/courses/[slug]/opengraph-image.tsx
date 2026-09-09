@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSiteContent, findBySlug } from "@/lib/content";
+import { ogText } from "@/lib/og";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
 export const size = { width: 1200, height: 630 };
@@ -9,8 +10,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const { courses } = await getSiteContent();
   const course = findBySlug(courses, decodeURIComponent(slug));
-  const title = course?.[0] ?? "دورة";
-  const level = course?.[3] ?? "";
+  const title = ogText(course?.[0], "COURSE");
+  const level = ogText(course?.[3], "");
 
   return new ImageResponse(
     (
@@ -28,14 +29,14 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       >
         {level && (
           <div style={{ display: "flex", color: "#e4c888", fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
-            {level} · مسار تعليمي
+            {level} · LEARNING PATH
           </div>
         )}
         <div style={{ display: "flex", color: "#fbfaf5", fontSize: 60, fontWeight: 700, lineHeight: 1.3 }}>
           {title}
         </div>
         <div style={{ display: "flex", color: "#9db3aa", fontSize: 26, marginTop: 40 }}>
-          أكاديمية إسماعيل أحمد نجيب
+          ISMAIL ACADEMY
         </div>
       </div>
     ),

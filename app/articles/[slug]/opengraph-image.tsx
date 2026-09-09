@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSiteContent, findBySlug } from "@/lib/content";
+import { ogText } from "@/lib/og";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
 export const size = { width: 1200, height: 630 };
@@ -9,9 +10,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const { articles } = await getSiteContent();
   const article = findBySlug(articles, decodeURIComponent(slug));
-  const title = article?.[0] ?? "مقال";
-  const cat = article?.[1] ?? "";
-  const time = article?.[2] ?? "";
+  const title = ogText(article?.[0], "ARTICLE");
+  const cat = ogText(article?.[1], "READING");
+  const time = ogText(article?.[2], "");
 
   return new ImageResponse(
     (
@@ -34,7 +35,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           {title}
         </div>
         <div style={{ display: "flex", color: "#9db3aa", fontSize: 26, marginTop: 40 }}>
-          أكاديمية إسماعيل أحمد نجيب
+          ISMAIL ACADEMY
         </div>
       </div>
     ),

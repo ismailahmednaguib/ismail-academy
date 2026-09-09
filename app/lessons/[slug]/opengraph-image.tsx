@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSiteContent, findBySlug } from "@/lib/content";
+import { ogText } from "@/lib/og";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
 export const size = { width: 1200, height: 630 };
@@ -9,8 +10,8 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const { lessons } = await getSiteContent();
   const lesson = findBySlug(lessons, decodeURIComponent(slug));
-  const title = lesson?.[0] ?? "درس";
-  const meta = lesson?.[1] ?? "";
+  const title = ogText(lesson?.[0], "LESSON");
+  const meta = ogText(lesson?.[1], "");
 
   return new ImageResponse(
     (
@@ -27,7 +28,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         }}
       >
         <div style={{ display: "flex", color: "#e4c888", fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
-          درس صوتي
+          AUDIO LESSON
         </div>
         <div style={{ display: "flex", color: "#fbfaf5", fontSize: 58, fontWeight: 700, lineHeight: 1.3 }}>
           {title}

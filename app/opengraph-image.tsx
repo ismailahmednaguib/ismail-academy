@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSiteContent } from "@/lib/content";
+import { ogText } from "@/lib/og";
 
 export const alt = "أكاديمية إسماعيل أحمد نجيب";
 export const size = {
@@ -14,6 +15,9 @@ export default async function OpengraphImage() {
   const ink = safe(settings.inkColor, "#173a35");
   const paper = safe(settings.paperColor, "#fbfaf5");
   const gold = safe(settings.goldSoftColor, "#e4c888");
+  const mark = ogText(settings.mark, "IA").slice(0, 2).toUpperCase();
+  const name = ogText(settings.name, "ISMAIL ACADEMY");
+  const tagline = ogText(settings.tagline, "Knowledge for a meaningful journey");
   return new ImageResponse(
     (
       <div
@@ -51,7 +55,7 @@ export default async function OpengraphImage() {
               fontWeight: 700,
             }}
           >
-            {settings.mark}
+            {mark}
           </div>
 
           <div
@@ -61,7 +65,7 @@ export default async function OpengraphImage() {
               fontWeight: 700,
             }}
           >
-            {settings.name}
+            {name}
           </div>
 
           <div
@@ -71,7 +75,7 @@ export default async function OpengraphImage() {
               color: "#c9d6cd",
             }}
           >
-            {settings.tagline}
+            {tagline}
           </div>
         </div>
       </div>
