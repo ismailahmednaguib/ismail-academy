@@ -14,12 +14,18 @@ export default function MajlisInterestModal({
 }) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [website, setWebsite] = useState(""); // حقل فخ للبوتات (honeypot) — البشر ميعبّوهوش
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
 
   if (!open) return null;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (website) {
+      // اتعبى، غالبًا بوت — نعرض نجاح وهمي من غير ما نلمس القاعدة
+      setStatus("done");
+      return;
+    }
     if (!supabase) {
       setStatus("error");
       return;
@@ -33,6 +39,7 @@ export default function MajlisInterestModal({
     setStatus("idle");
     setName("");
     setContact("");
+    setWebsite("");
     onClose();
   }
 
@@ -60,6 +67,15 @@ export default function MajlisInterestModal({
             <label>
               البريد أو رقم التواصل
               <input required value={contact} onChange={(e) => setContact(e.target.value)} />
+            </label>
+            <label className="hp-field" aria-hidden="true">
+              الموقع الإلكتروني
+              <input
+                tabIndex={-1}
+                autoComplete="off"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
             </label>
             {status === "error" && (
               <p className="admin-note interest-error">تعذّر إرسال التسجيل، حاول مرة أخرى.</p>

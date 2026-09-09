@@ -64,15 +64,47 @@ export default function Home() {
     setOwnerSession(true);
     setNotice("تم تسجيل الدخول كمالك للموقع.");
   }
-  const results = useMemo(() => [...courses.map(x => x[0]), ...lessons.map(x => x[0]), ...articles.map(x => x[0]), ...books.map(x => x[0])].filter(x => x.includes(search)), [search, courses, lessons, articles, books]);
+  const results = useMemo(() => {
+    const items = [
+      ...courses.map(([title]) => ({ title, href: `/courses/${encodeURIComponent(slugify(title))}` })),
+      ...lessons.map(([title]) => ({ title, href: `/lessons/${encodeURIComponent(slugify(title))}` })),
+      ...articles.map(([title]) => ({ title, href: `/articles/${encodeURIComponent(slugify(title))}` })),
+      ...books.map(([title]) => ({ title, href: "/library" })),
+    ];
+    return items.filter(({ title }) => title.includes(search));
+  }, [search, courses, lessons, articles, books]);
   async function save(e: FormEvent) {
     e.preventDefault();
     if (!supabase || !ownerSession) { setNotice("سجّل الدخول كمالك قبل الحفظ."); return; }
     const { error } = await supabase.from("site_content").update({ payload: { settings, courses, lessons, articles, books } }).eq("id", "main");
     setNotice(error ? "تعذر الحفظ. تأكد أن بريدك مكتوب في سياسة قاعدة البيانات." : "تم النشر بنجاح وسيظهر التحديث لكل الزوار.");
   }
+  const [newsletterSending, setNewsletterSending] = useState(false);
+  async function subscribeNewsletter(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const honeypot = (form.elements.namedItem("website") as HTMLInputElement)?.value;
+    if (honeypot) {
+      // اتعبى، غالبًا بوت — نعرض نجاح وهمي من غير ما نلمس القاعدة
+      setNotice("تم الاشتراك بنجاح، هنبعتلك كل جديد.");
+      form.reset();
+      return;
+    }
+    const email = (form.elements.namedItem("newsletter-email") as HTMLInputElement)?.value ?? "";
+    if (!supabase) { setNotice("أضف إعدادات Supabase في ملف .env.local أولًا."); return; }
+    setNewsletterSending(true);
+    const { error } = await supabase.from("newsletter_subscribers").insert({ email });
+    setNewsletterSending(false);
+    if (error) {
+      setNotice(error.code === "23505" ? "البريد ده مشترك بالفعل." : "تعذر الاشتراك، حاول تاني.");
+      return;
+    }
+    setNotice("تم الاشتراك بنجاح، هنبعتلك كل جديد.");
+    form.reset();
+  }
   const scroll = (id: string) => { setMenu(false); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); };
   return <>
+    <a href="#top" className="skip-link">تخطى إلى المحتوى</a>
     <div className="announcement"><span>✦</span> {settings.announcement} <button onClick={() => scroll("majalis")}>التفاصيل</button></div>
     <header className="nav"><a className="brand" href="#top"><i>ا</i><span>{settings.name}<small>{settings.tagline}</small></span></a>
       <nav className={menu ? "links open" : "links"}>{[["الرئيسية","top"],["الدورات","courses"],["الدروس","lessons"],["المجالس","majalis"],["المقالات","articles"],["المكتبة","library"]].map(([label,id]) => <button key={id} onClick={() => scroll(id)}>{label}</button>)}</nav>
@@ -80,14 +112,14 @@ export default function Home() {
     </header>
     <main id="top">
       <section className="hero"><div className="hero-copy"><p className="kicker">بِسْمِ اللهِ نَبْدَأُ</p><h1>{settings.heroTitle}</h1><p>{settings.heroText}</p><div className="hero-actions"><button className="primary" onClick={() => scroll("courses")}>ابدأ رحلتك <b>←</b></button><button className="ghost" onClick={() => scroll("majalis")}>استكشف المجالس</button></div><div className="hero-metrics"><span><b>+12</b> درسًا مختارًا</span><span><b>3</b> مسارات تعليمية</span><span><b>مجاني</b> ومتاح للجميع</span></div></div><div className="hero-art"><div className="arch"><span>وَقُلْ رَبِّ زِدْنِي عِلْمًا</span><small>طه · 114</small></div><div className="floating-card"><b>ورد اليوم</b><span>اقرأ · تعلّم · طبّق</span><em>✓ مكتمل جزئيًا</em></div></div></section>
-      <section className="search-wrap"><label htmlFor="site-search">⌕</label><input id="site-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث في الدروس والمقالات والمكتبة..." />{search && <div className="search-results">{results.length ? results.map(x => <button key={x} onClick={() => setSearch("")}>{x}</button>) : <span>لا توجد نتائج مطابقة</span>}</div>}</section>
+      <section className="search-wrap"><label htmlFor="site-search">⌕</label><input id="site-search" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث في الدروس والمقالات والمكتبة..." />{search && <div className="search-results">{results.length ? results.map(r => <Link key={r.href + r.title} href={r.href} onClick={() => setSearch("")}>{r.title}</Link>) : <span>لا توجد نتائج مطابقة</span>}</div>}</section>
       <section className="section intro"><div><p className="kicker">منصة متكاملة</p><h2>كل ما تحتاجه في مكان واحد.</h2></div><p>محتوى مرتب لا يزاحمك، وتجربة تعلّم تراعي وقتك وتعينك على الاستمرار.</p></section>
       <section className="section" id="courses"><div className="section-head"><div><p className="kicker">المسارات التعليمية</p><h2>الدورات</h2></div><Link href="/courses" className="text-button">عرض كل الدورات ←</Link></div><div className="course-grid">{courses.map(([title,desc,count,level,num]) => <article className="course-card" key={title}><div className="course-number">{num}</div><span className="badge">{level}</span><h3><Link href={`/courses/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><p>{desc}</p><footer><span>{count}</span><Link href={`/courses/${encodeURIComponent(slugify(title))}`} aria-label={`فتح ${title}`}>←</Link></footer></article>)}</div></section>
       <section className="section soft" id="lessons"><div className="section-head"><div><p className="kicker">تعلّم بخطوات قصيرة</p><h2>أحدث الدروس</h2></div><Link href="/lessons" className="text-button">كل الدروس ←</Link></div><div className="lesson-list">{lessons.map(([title,meta],i) => <article key={`${title}-${i}`}><span>0{i+1}</span><div><b>{title}</b><small>{meta}</small></div><Link href={`/lessons/${encodeURIComponent(slugify(title))}`}>استمع ←</Link></article>)}</div></section>
       <section className="section majlis" id="majalis"><div className="majlis-content"><p className="kicker">المجالس واللقاءات</p><h2>{settings.majlisTitle}</h2><p>{settings.majlisText}</p><div className="event"><span>{settings.majlisDate.split("|").map((item, index) => <span key={index}>{index === 1 ? <b>{item.trim()}</b> : item.trim()}<br/></span>)}</span><div><b>{settings.majlisTopic}</b><small>{settings.majlisMeta}</small></div></div><button className="primary" onClick={() => setInterestOpen(true)}>سجّل اهتمامك ←</button></div><div className="majlis-quote">“{settings.majlisQuote}”<small>متفق عليه</small></div></section>
       <section className="section" id="articles"><div className="section-head"><div><p className="kicker">اقرأ بتأنٍّ</p><h2>من المقالات</h2></div><Link href="/articles" className="text-button">كل المقالات ←</Link></div><div className="article-grid">{articles.map(([title,cat,time],i) => <article key={title}><div className={`article-art art-${i}`}>✦</div><small>{cat} · {time}</small><h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>{title}</Link></h3><Link href={`/articles/${encodeURIComponent(slugify(title))}`}>اقرأ المقال ←</Link></article>)}</div></section>
       <section className="section library" id="library"><div><p className="kicker">مكتبة نافعة</p><h2>ملفات تعود إليها.</h2><p>مختارات مصممة للقراءة الهادئة والطباعة والمراجعة.</p><Link href="/library" className="primary">دخول المكتبة ←</Link></div><div className="book-list">{books.map(([title,meta,fileUrl]) => <article key={title}><span>PDF</span><div><b>{title}</b><small>{meta}</small></div>{fileUrl ? <a href={fileUrl} download aria-label={`تحميل ${title}`}>↓</a> : <span className="coming-soon" title="سيتم إضافة الملف قريبًا">↓</span>}</article>)}</div></section>
-      <section className="newsletter"><div><p className="kicker">رسالة نافعة، بلا إزعاج</p><h2>وصلك الجديد من الأكاديمية.</h2><p>تنبيه بالدروس والملفات والمجالس الجديدة حين تكون جاهزة.</p></div><form onSubmit={e => {e.preventDefault(); setNotice("سعدنا بانضمامك. اربط النموذج بخدمة بريد قبل النشر.");}}><input type="email" placeholder="بريدك الإلكتروني" required /><button className="primary">اشترك الآن</button></form></section>
+      <section className="newsletter"><div><p className="kicker">رسالة نافعة، بلا إزعاج</p><h2>وصلك الجديد من الأكاديمية.</h2><p>تنبيه بالدروس والملفات والمجالس الجديدة حين تكون جاهزة.</p></div><form onSubmit={subscribeNewsletter}><input type="email" name="newsletter-email" placeholder="بريدك الإلكتروني" required /><label className="hp-field" aria-hidden="true">الموقع الإلكتروني<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label><button className="primary" disabled={newsletterSending}>{newsletterSending ? "جارٍ الاشتراك..." : "اشترك الآن"}</button></form></section>
     </main>
     <footer><div className="brand"><i>ا</i><span>{settings.name}<small>{settings.tagline}</small></span></div><p>© {new Date().getFullYear()} جميع الحقوق محفوظة.</p><div><a href={`mailto:${settings.email}`}>البريد</a><a href="https://t.me/your_username">تيليجرام</a></div></footer>
     {notice && <div className="toast">{notice}<button onClick={() => setNotice("")}>×</button></div>}
