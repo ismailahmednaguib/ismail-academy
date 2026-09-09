@@ -54,7 +54,7 @@ export default async function RootLayout({
   };
   return (
     <html lang="ar" dir="rtl">
-      <body style={themeStyle} data-density={settings.siteDensity} data-corners={settings.cornerStyle}>
+      <body style={themeStyle} data-density={settings.siteDensity} data-corners={settings.cornerStyle} data-buttons={settings.buttonStyle} data-theme={settings.colorMode}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -1,8 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { getSiteContent, slugify } from "@/lib/content";
+import { getSiteContent } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import ContentBrowser from "@/components/ContentBrowser";
+import CatalogHero from "@/components/CatalogHero";
 
 export const revalidate = 0;
 
@@ -19,30 +20,9 @@ export default async function CoursesPage() {
   return (
     <>
       <SiteHeader settings={settings} />
-      <main className="section">
-        <Link href="/" className="text-button back-link">→ {settings.navHome}</Link>
-        <div className="section-head">
-          <div>
-            <p className="kicker">{settings.coursesEyebrow}</p>
-            <h1 className="page-title">{settings.coursesTitle}</h1>
-          </div>
-        </div>
-        <div className="course-grid">
-          {courses.map(([title, desc, count, level, num]) => (
-            <article className="course-card" key={title}>
-              <div className="course-number">{num}</div>
-              <span className="badge">{level}</span>
-              <h3>
-                <Link href={`/courses/${encodeURIComponent(slugify(title))}`}>{title}</Link>
-              </h3>
-              <p>{desc}</p>
-              <footer>
-                <span>{count}</span>
-                <Link href={`/courses/${encodeURIComponent(slugify(title))}`} aria-label={`فتح ${title}`}>←</Link>
-              </footer>
-            </article>
-          ))}
-        </div>
+      <main className="section catalog-page">
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.coursesEyebrow} title={settings.coursesTitle} description="مسارات واضحة تبدأ من الأساسيات وتمتد إلى الفهم والتطبيق، لتختار طريقك بهدوء." count={courses.length} countLabel="مسار تعليمي" index="01" />
+        <ContentBrowser kind="courses" items={courses} actionLabel={settings.coursesLink} emptyLabel={settings.searchNoResults} placeholder="ابحث باسم الدورة أو المستوى..." soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>

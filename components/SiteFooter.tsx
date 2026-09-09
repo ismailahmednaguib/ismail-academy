@@ -20,6 +20,7 @@ function socialHref(value: string, service: "instagram" | "youtube") {
 }
 
 export default function SiteFooter({ settings }: { settings: Settings }) {
+  if (!settings.showFooter) return null;
   return (
     <footer className="site-footer">
       <div className="brand">

@@ -6,6 +6,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
 import { LearningActions } from "@/components/LearningTools";
+import ReadingProgress from "@/components/ReadingProgress";
 
 export const revalidate = 0;
 
@@ -32,6 +33,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   return (
     <>
       <SiteHeader settings={settings} />
+      {settings.showReadingProgress && <ReadingProgress />}
       <main className="section">
         <Link href="/articles" className="text-button back-link">→ {settings.articlesTitle}</Link>
         <p className="kicker">

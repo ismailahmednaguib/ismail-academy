@@ -1,0 +1,24 @@
+import Link from "next/link";
+
+type Props = {
+  homeLabel: string;
+  kicker: string;
+  title: string;
+  description: string;
+  count: number;
+  countLabel: string;
+  index: string;
+};
+
+export default function CatalogHero({ homeLabel, kicker, title, description, count, countLabel, index }: Props) {
+  return <div className="catalog-hero">
+    <div className="catalog-hero-copy">
+      <div className="catalog-hero-topline"><span>{index}</span><i /> <small>مساحة منتقاة للمعرفة</small></div>
+      <p className="kicker">{kicker}</p>
+      <h1 className="page-title">{title}</h1>
+      <p className="catalog-hero-description">{description}</p>
+      <Link href="/" className="catalog-back-link">← {homeLabel}</Link>
+    </div>
+    <div className="catalog-hero-stat"><span className="catalog-orbit" /><b>{count}</b><small>{countLabel}</small><em>يُضاف الجديد باستمرار</em></div>
+  </div>;
+}

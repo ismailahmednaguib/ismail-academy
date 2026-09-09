@@ -1,8 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { getSiteContent, slugify } from "@/lib/content";
+import { getSiteContent } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import ContentBrowser from "@/components/ContentBrowser";
+import CatalogHero from "@/components/CatalogHero";
 
 export const revalidate = 0;
 
@@ -19,26 +20,9 @@ export default async function LessonsPage() {
   return (
     <>
       <SiteHeader settings={settings} />
-      <main className="section">
-        <Link href="/" className="text-button back-link">→ {settings.navHome}</Link>
-        <div className="section-head">
-          <div>
-            <p className="kicker">{settings.lessonsEyebrow}</p>
-            <h1 className="page-title">{settings.lessonsTitle}</h1>
-          </div>
-        </div>
-        <div className="lesson-list">
-          {lessons.map(([title, meta], i) => (
-            <article key={`${title}-${i}`}>
-              <span>0{i + 1}</span>
-              <div>
-                <b>{title}</b>
-                <small>{meta}</small>
-              </div>
-              <Link href={`/lessons/${encodeURIComponent(slugify(title))}`}>استمع ←</Link>
-            </article>
-          ))}
-        </div>
+      <main className="section catalog-page">
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.lessonsEyebrow} title={settings.lessonsTitle} description="دروس قصيرة ومباشرة، صُممت لتسمع فكرة واحدة وتخرج منها بخطوة عملية." count={lessons.length} countLabel="درس متاح" index="02" />
+        <ContentBrowser kind="lessons" items={lessons} actionLabel={settings.listenLabel} emptyLabel={settings.searchNoResults} placeholder="ابحث في عناوين الدروس..." soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>

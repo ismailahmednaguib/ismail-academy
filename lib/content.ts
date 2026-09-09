@@ -11,9 +11,13 @@ export type Settings = {
   paperColor: string;
   creamColor: string;
   sageColor: string;
+  colorMode: "light" | "dark";
   siteDensity: "airy" | "balanced" | "compact";
   cornerStyle: "soft" | "rounded" | "sharp";
   showBackToTop: boolean;
+  showReadingProgress: boolean;
+  buttonStyle: "pill" | "classic" | "outline";
+  showMobileBar: boolean;
   showAnnouncement: boolean;
   showIntro: boolean;
   showCourses: boolean;
@@ -23,6 +27,29 @@ export type Settings = {
   showLibrary: boolean;
   showNewsletter: boolean;
   showCommunity: boolean;
+  showHomeSignals: boolean;
+  showHomeDirectory: boolean;
+  showHero: boolean;
+  showSearch: boolean;
+  showWorldGlobe: boolean;
+  showLearningShelf: boolean;
+  showFooter: boolean;
+  homeLeadKicker: string;
+  homeLeadTitle: string;
+  homeLeadText: string;
+  homeLeadPrimaryCta: string;
+  homeLeadSecondaryCta: string;
+  homeMapEyebrow: string;
+  homeMapTitle: string;
+  homeMapText: string;
+  homeExploreEyebrow: string;
+  homeExploreTitle: string;
+  homeExploreText: string;
+  homeExploreCoursesText: string;
+  homeExploreLessonsText: string;
+  homeExploreArticlesText: string;
+  homeExploreLibraryText: string;
+  homeSectionOrder: string[];
   navHome: string;
   navCourses: string;
   navLessons: string;
@@ -36,6 +63,19 @@ export type Settings = {
   heroMetricCoursesLabel: string;
   heroMetricFreeValue: string;
   heroMetricFreeLabel: string;
+  homeSignalsCoursesLabel: string;
+  homeSignalsCoursesText: string;
+  homeSignalsContentLabel: string;
+  homeSignalsContentText: string;
+  homeSignalsCommunityLabel: string;
+  homeSignalsCommunityText: string;
+  homeDirectoryEyebrow: string;
+  homeDirectoryTitle: string;
+  homeDirectoryText: string;
+  homeDirectoryCoursesText: string;
+  homeDirectoryLessonsText: string;
+  homeDirectoryArticlesText: string;
+  homeDirectoryLibraryText: string;
   floatingCardTitle: string;
   floatingCardText: string;
   floatingCardStatus: string;
@@ -107,9 +147,13 @@ export const defaultSettings: Settings = {
   paperColor: "#fbfaf5",
   creamColor: "#f3f0e6",
   sageColor: "#dce9df",
+  colorMode: "light",
   siteDensity: "balanced",
   cornerStyle: "rounded",
   showBackToTop: true,
+  showReadingProgress: true,
+  buttonStyle: "classic",
+  showMobileBar: true,
   showAnnouncement: true,
   showIntro: true,
   showCourses: true,
@@ -119,6 +163,29 @@ export const defaultSettings: Settings = {
   showLibrary: true,
   showNewsletter: true,
   showCommunity: true,
+  showHomeSignals: false,
+  showHomeDirectory: true,
+  showHero: true,
+  showSearch: true,
+  showWorldGlobe: true,
+  showLearningShelf: true,
+  showFooter: true,
+  homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
+  homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
+  homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
+  homeLeadPrimaryCta: "سجل الآن",
+  homeLeadSecondaryCta: "",
+  homeMapEyebrow: "خريطة المشاركين",
+  homeMapTitle: "نتعلم من أماكن مختلفة",
+  homeMapText: "النقاط التي تظهر على الكرة هي أعضاء اختاروا بلدهم عند التسجيل.",
+  homeExploreEyebrow: "اختَر بوابتك",
+  homeExploreTitle: "من أين تحب أن تبدأ؟",
+  homeExploreText: "كل قسم له صفحته ومساره الخاص؛ اختر ما يناسب وقتك الآن وابدأ مباشرة.",
+  homeExploreCoursesText: "خطوات من البداية",
+  homeExploreLessonsText: "فكرة واحدة كل مرة",
+  homeExploreArticlesText: "قراءات قصيرة",
+  homeExploreLibraryText: "ملفات تحتفظ بها",
+  homeSectionOrder: ["intro", "community", "courses", "lessons", "majlis", "articles", "library", "newsletter"],
   navHome: "الرئيسية",
   navCourses: "الدورات",
   navLessons: "الدروس",
@@ -132,6 +199,19 @@ export const defaultSettings: Settings = {
   heroMetricCoursesLabel: "مسارات تعليمية",
   heroMetricFreeValue: "مجاني",
   heroMetricFreeLabel: "ومتاح للجميع",
+  homeSignalsCoursesLabel: "مسارات",
+  homeSignalsCoursesText: "طريق للتعلّم",
+  homeSignalsContentLabel: "استماع وقراءة",
+  homeSignalsContentText: "محتوى قصير ومفيد",
+  homeSignalsCommunityLabel: "مجتمع",
+  homeSignalsCommunityText: "رحلة تتصل بالعالم",
+  homeDirectoryEyebrow: "اختَر بوابتك",
+  homeDirectoryTitle: "من أين تحب أن تبدأ؟",
+  homeDirectoryText: "كل قسم له صفحته ومساره الخاص؛ اختر ما يناسب وقتك الآن وابدأ مباشرة.",
+  homeDirectoryCoursesText: "خطوات من البداية",
+  homeDirectoryLessonsText: "فكرة واحدة كل مرة",
+  homeDirectoryArticlesText: "قراءات قصيرة",
+  homeDirectoryLibraryText: "ملفات تحتفظ بها",
   floatingCardTitle: "ورد اليوم",
   floatingCardText: "اقرأ · تعلّم · طبّق",
   floatingCardStatus: "✓ مكتمل جزئيًا",
@@ -196,7 +276,7 @@ export const defaultSettings: Settings = {
 // Row shape per section (kept as string[] to stay compatible with the
 // existing pipe-separated admin textareas):
 // courses:  [title, desc, count, level, num, featured?]
-// lessons:  [title, meta, audioUrl?, courseTitle?, featured?]
+// lessons:  [title, meta, audioUrl?, courseTitle?, featured?, videoUrl?]
 // articles: [title, category, time, body?, coverUrl?, featured?]   body paragraphs separated by literal "\n"
 // books:    [title, meta, fileUrl?, featured?]
 

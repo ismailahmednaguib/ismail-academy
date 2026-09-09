@@ -1,8 +1,9 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { getSiteContent } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import ContentBrowser from "@/components/ContentBrowser";
+import CatalogHero from "@/components/CatalogHero";
 
 export const revalidate = 0;
 
@@ -19,30 +20,9 @@ export default async function LibraryPage() {
   return (
     <>
       <SiteHeader settings={settings} />
-      <main className="section">
-        <Link href="/" className="text-button back-link">→ {settings.navHome}</Link>
-        <div className="section-head">
-          <div>
-            <p className="kicker">{settings.libraryEyebrow}</p>
-            <h1 className="page-title">{settings.libraryTitle}</h1>
-          </div>
-        </div>
-        <div className="book-list">
-          {books.map(([title, meta, fileUrl]) => (
-            <article key={title}>
-              <span>PDF</span>
-              <div>
-                <b>{title}</b>
-                <small>{meta}</small>
-              </div>
-              {fileUrl ? (
-                <a href={fileUrl} download aria-label={`تحميل ${title}`}>↓</a>
-              ) : (
-                <span className="coming-soon" title="سيتم إضافة الملف قريبًا">↓</span>
-              )}
-            </article>
-          ))}
-        </div>
+      <main className="section catalog-page">
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.libraryEyebrow} title={settings.libraryTitle} description="رف هادئ للكتب والملفات التي تستحق أن تحفظها، تقرأها، وتعود إليها وقت الحاجة." count={books.length} countLabel="كتاب وملف" index="04" />
+        <ContentBrowser kind="books" items={books} actionLabel={settings.libraryButton} emptyLabel={settings.searchNoResults} placeholder="ابحث باسم الكتاب أو الوصف..." soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>

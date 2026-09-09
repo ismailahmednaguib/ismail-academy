@@ -90,7 +90,7 @@ export function LearningShelf({ items }: { items: LearningItem[] }) {
 
   const savedItems = useMemo(() => items.filter((item) => store.saved.includes(item.id)), [items, store.saved]);
   if (!ready || savedItems.length === 0) return null;
-  return <section className="learning-shelf" aria-label="متابعة رحلتك">
+  return <section className="learning-shelf" id="learning-shelf" aria-label="متابعة رحلتك">
     <div><p className="kicker">مساحتك الخاصة</p><h2>تابع من حيث توقفت.</h2><p>تتم مزامنة العناصر المحفوظة مع حسابك، وتظل متاحة محليًا عند الحاجة.</p></div>
     <div className="learning-shelf-list">{savedItems.slice(0, 4).map((item) => { const completed = store.completed.includes(item.id); return <Link href={item.href} className={completed ? "learning-shelf-item completed" : "learning-shelf-item"} key={item.id}><span>{completed ? "✓" : "↗"}</span><div><b>{item.title}</b><small>{item.kind}{completed ? " · مكتمل" : " · محفوظ للمراجعة"}</small></div></Link>; })}</div>
   </section>;
