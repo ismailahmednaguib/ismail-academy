@@ -20,6 +20,7 @@ export default function MemberAccount({ compact = false }: { compact?: boolean }
     void supabase.auth.getSession().then(({ data }) => setAccountEmail(data.session?.user.email ?? ""));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setAccountEmail(session?.user.email ?? "");
+      window.dispatchEvent(new CustomEvent("academy-auth-change"));
     });
     return () => listener.subscription.unsubscribe();
   }, []);

@@ -17,8 +17,16 @@ create table if not exists public.site_notifications (
   read_at timestamptz
 );
 
+create table if not exists public.member_learning (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  saved text[] not null default '{}',
+  completed text[] not null default '{}',
+  updated_at timestamptz not null default now()
+);
+
 alter table public.site_members enable row level security;
 alter table public.site_notifications enable row level security;
+alter table public.member_learning enable row level security;
 
 drop policy if exists "owner can read site members" on public.site_members;
 create policy "owner can read site members"
@@ -50,6 +58,25 @@ create policy "owner can delete notifications"
 on public.site_notifications for delete
 to authenticated
 using (lower(auth.jwt() ->> 'email') = lower('owner@example.com'));
+
+drop policy if exists "member can read own learning" on public.member_learning;
+create policy "member can read own learning"
+on public.member_learning for select
+to authenticated
+using (user_id = auth.uid());
+
+drop policy if exists "member can insert own learning" on public.member_learning;
+create policy "member can insert own learning"
+on public.member_learning for insert
+to authenticated
+with check (user_id = auth.uid());
+
+drop policy if exists "member can update own learning" on public.member_learning;
+create policy "member can update own learning"
+on public.member_learning for update
+to authenticated
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
 
 create or replace function public.is_site_owner()
 returns boolean
