@@ -114,3 +114,5 @@ create policy "members manage own notes" on public.member_notes for all to authe
 drop policy if exists "members manage own media progress" on public.member_media_progress;
 create policy "members manage own media progress" on public.member_media_progress for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 
+drop policy if exists "member can update own profile" on public.site_members;
+create policy "member can update own profile" on public.site_members for update to authenticated using (id = auth.uid()) with check (id = auth.uid());

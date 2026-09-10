@@ -7,6 +7,7 @@ import "./pages-premium.css";
 import "./world.css";
 import "./platform.css";
 import "./final.css";
+import "./redesign.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
@@ -15,15 +16,23 @@ export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
   const description = settings.heroText || "منصة عربية للعلم النافع والدروس والمجالس والمكتبة.";
   return {
-    metadataBase: new URL("https://ismail-site-two.vercel.app"),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ismailahmednaguib.vercel.app"),
     title: settings.name,
     description,
     openGraph: {
       title: settings.name,
       description,
       locale: "ar_EG",
+      alternateLocale: ["en_US"],
       type: "website",
     },
+    alternates: {
+      canonical: "/",
+      languages: { ar: "/", en: "/?lang=en" },
+    },
+    keywords: ["Islamic learning", "Arabic education", "online academy", "أكاديمية", "علم نافع"],
+    authors: [{ name: settings.name }],
+    creator: settings.name,
     twitter: {
       card: "summary_large_image",
       title: settings.name,
@@ -54,10 +63,12 @@ export default async function RootLayout({
     "@type": "EducationalOrganization",
     name: settings.name,
     description: settings.tagline,
-    url: "https://ismail-site-two.vercel.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://ismailahmednaguib.vercel.app",
+    inLanguage: ["ar", "en"],
+    areaServed: "Worldwide",
   };
   return (
-    <html lang="ar" dir="rtl">
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body style={themeStyle} data-density={settings.siteDensity} data-corners={settings.cornerStyle} data-buttons={settings.buttonStyle} data-theme={settings.colorMode}>
         <script
           type="application/ld+json"

@@ -9,6 +9,7 @@ import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
 import MediaPlayer from "@/components/MediaPlayer";
 import MemberNotes from "@/components/MemberNotes";
+import LessonQuiz from "@/components/LessonQuiz";
 
 export const revalidate = 0;
 
@@ -29,7 +30,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   const { settings, lessons } = await getSiteContent();
   const lesson = findBySlug(lessons, decodeURIComponent(slug));
   if (!lesson) notFound();
-  const [title, meta, audioUrl, , , videoUrl] = lesson;
+  const [title, meta, audioUrl, , , videoUrl, quiz] = lesson;
 
   return (
     <>
@@ -48,6 +49,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
           <p className="detail-body">الملف الصوتي لهذا الدرس سيُضاف قريبًا بإذن الله.</p>
         ) : null}
         <MemberNotes contentId={"lesson:" + decodeURIComponent(slug)} />
+        <LessonQuiz definition={quiz} />
       </main>
       <SiteFooter settings={settings} />
     </>

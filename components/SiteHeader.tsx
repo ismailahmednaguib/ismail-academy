@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Settings } from "@/lib/content";
 import MemberAccount from "@/components/MemberAccount";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageToggle from "@/components/LanguageToggle";
+import { localeCopy, type Locale } from "@/lib/i18n";
 
 function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
   e.preventDefault();
@@ -18,17 +20,27 @@ function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
 
 export default function SiteHeader({ settings }: { settings: Settings }) {
   const [menu, setMenu] = useState(false);
+  const [locale, setLocale] = useState<Locale>("ar");
+  const copy = localeCopy[locale];
+  useEffect(() => {
+    const update = (event: Event) => {
+      const next = (event as CustomEvent<Locale>).detail;
+      if (next === "ar" || next === "en") setLocale(next);
+    };
+    window.addEventListener("academy-locale-change", update);
+    return () => window.removeEventListener("academy-locale-change", update);
+  }, []);
   const navItems: [string, string][] = [
-    [settings.navHome, "/"],
-    ...(settings.showCourses ? [[settings.navCourses, "/courses"] as [string, string]] : []),
-    ...(settings.showLessons ? [[settings.navLessons, "/lessons"] as [string, string]] : []),
-    ...(settings.showMajlis ? [[settings.navMajlis, "/majalis"] as [string, string]] : []),
-    ...(settings.showArticles ? [[settings.navArticles, "/articles"] as [string, string]] : []),
-    ...(settings.showLibrary ? [[settings.navLibrary, "/library"] as [string, string]] : []),
+    [locale === "en" ? copy.home : settings.navHome, "/"],
+    ...(settings.showCourses ? [[locale === "en" ? copy.courses : settings.navCourses, "/courses"] as [string, string]] : []),
+    ...(settings.showLessons ? [[locale === "en" ? copy.lessons : settings.navLessons, "/lessons"] as [string, string]] : []),
+    ...(settings.showMajlis ? [[locale === "en" ? copy.majalis : settings.navMajlis, "/majalis"] as [string, string]] : []),
+    ...(settings.showArticles ? [[locale === "en" ? copy.articles : settings.navArticles, "/articles"] as [string, string]] : []),
+    ...(settings.showLibrary ? [[locale === "en" ? copy.library : settings.navLibrary, "/library"] as [string, string]] : []),
   ];
   return (
     <>
-      <a href="#main" className="skip-link" onClick={focusMain}>تخطى إلى المحتوى</a>
+      <a href="#main" className="skip-link" onClick={focusMain}>{copy.skipToContent}</a>
       <header className="nav">
         <div className="nav-identity"><Link className="brand" href="/">
           <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
@@ -37,29 +49,30 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
             <small>{settings.tagline}</small>
           </span>
         </Link></div>
-        <div className="nav-center"><small className="nav-context">مكتبة معرفة · مجتمع · مجلس</small><nav className={menu ? "links open" : "links"}>
+        <div className="nav-center"><small className="nav-context">{copy.context}</small><nav className={menu ? "links open" : "links"}>
           {navItems.map(([label, href]) => (
             <Link key={href} href={href} onClick={() => setMenu(false)}>
               {label}
             </Link>
           ))}
           <Link className="mobile-owner" href="/?admin=1" onClick={() => setMenu(false)}>
-            {settings.ownerPanelLabel}
+            {locale === "en" ? copy.owner : settings.ownerPanelLabel}
           </Link>
         </nav></div>
         <div className="nav-actions">
+          <LanguageToggle />
           <ThemeToggle defaultMode={settings.colorMode} />
-          {settings.showSearch && <Link className="header-search" href="/search" aria-label="البحث في الموقع">⌕</Link>}
-          <MemberAccount compact />
+          {settings.showSearch && <Link className="header-search" href="/search" aria-label={copy.search}>⌕</Link>}
+          <MemberAccount compact label={copy.account} />
           <Link className="owner-button" href="/?admin=1">
-            {settings.ownerPanelLabel}
+            {locale === "en" ? copy.owner : settings.ownerPanelLabel}
           </Link>
-          <button className="menu" aria-label="فتح القائمة" onClick={() => setMenu(!menu)}>
+          <button className="menu" aria-label={copy.menu} onClick={() => setMenu(!menu)}>
             ☰
           </button>
         </div>
       </header>
-      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label="تنقل سريع"><Link href="/" onClick={() => setMenu(false)}><span>الرئيسية</span></Link><Link href="/courses" onClick={() => setMenu(false)}><span>{settings.navCourses}</span></Link><Link href="/lessons" onClick={() => setMenu(false)}><span>{settings.navLessons}</span></Link>{settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>البحث</span></Link>}<MemberAccount compact /></nav>}
+      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label={copy.quickNavigation}><Link href="/" onClick={() => setMenu(false)}><span>{copy.home}</span></Link><Link href="/courses" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.courses : settings.navCourses}</span></Link><Link href="/lessons" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.lessons : settings.navLessons}</span></Link>{settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>{copy.search}</span></Link>}<MemberAccount compact label={copy.account} /></nav>}
     </>
   );
 }

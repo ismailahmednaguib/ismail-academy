@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { localeCopy, type Locale } from "@/lib/i18n";
 
 export default function ThemeToggle({ defaultMode }: { defaultMode: "light" | "dark" }) {
   const [isDark, setIsDark] = useState(defaultMode === "dark");
+  const [locale, setLocale] = useState<Locale>("ar");
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -15,6 +17,15 @@ export default function ThemeToggle({ defaultMode }: { defaultMode: "light" | "d
     return () => window.clearTimeout(timer);
   }, [defaultMode]);
 
+  useEffect(() => {
+    const update = (event: Event) => {
+      const next = (event as CustomEvent<Locale>).detail;
+      if (next === "ar" || next === "en") setLocale(next);
+    };
+    window.addEventListener("academy-locale-change", update);
+    return () => window.removeEventListener("academy-locale-change", update);
+  }, []);
+
   function toggle() {
     const mode = isDark ? "light" : "dark";
     document.body.dataset.theme = mode;
@@ -22,5 +33,6 @@ export default function ThemeToggle({ defaultMode }: { defaultMode: "light" | "d
     setIsDark(mode === "dark");
   }
 
-  return <button type="button" className="theme-toggle" onClick={toggle} aria-label={isDark ? "تفعيل الوضع النهاري" : "تفعيل الوضع الليلي"} title={isDark ? "الوضع النهاري" : "الوضع الليلي"}><span className="theme-toggle-dot" aria-hidden="true" /><small>{isDark ? "نهاري" : "ليلي"}</small></button>;
+  const copy = localeCopy[locale];
+  return <button type="button" className="theme-toggle" onClick={toggle} aria-label={isDark ? copy.enableLight : copy.enableDark} title={isDark ? copy.lightMode : copy.darkMode}><span className="theme-toggle-dot" aria-hidden="true" /><small>{isDark ? copy.lightMode : copy.darkMode}</small></button>;
 }

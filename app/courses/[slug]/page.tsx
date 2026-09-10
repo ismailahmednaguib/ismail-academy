@@ -8,6 +8,7 @@ import ShareButtons from "@/components/ShareButtons";
 import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
 import CourseProgress from "@/components/CourseProgress";
+import CourseCertificate from "@/components/CourseCertificate";
 
 export const revalidate = 0;
 
@@ -46,6 +47,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
         <ShareButtons title={title} />
         <LearningActions id={"course:" + decodeURIComponent(slug)} title={title} />
         <CourseProgress lessonIds={relatedLessons.map(([lessonTitle]) => "lesson:" + slugify(lessonTitle))} />
+        <CourseCertificate courseTitle={title} lessonIds={relatedLessons.map(([lessonTitle]) => "lesson:" + slugify(lessonTitle))} />
         <p className="detail-body">{desc}</p>
 
         {relatedLessons.length > 0 && (

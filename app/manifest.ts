@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "أكاديمية إسماعيل أحمد نجيب",
-    short_name: "أكاديمية إسماعيل",
-    description: "منصة عربية للعلم النافع والدروس والمجالس والمكتبة.",
+    name: "أكاديمية إسماعيل أحمد نجيب · Ismail Academy",
+    short_name: "Ismail Academy",
+    description: "A global learning space for beneficial knowledge, lessons, gatherings and reading.",
     start_url: "/",
     display: "standalone",
     background_color: "#fbfaf5",
