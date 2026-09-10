@@ -9,11 +9,14 @@ export type Settings = {
   inkColor: string;
   goldColor: string;
   goldSoftColor: string;
+  accentColor: string;
+  accentSoftColor: string;
   paperColor: string;
   creamColor: string;
   sageColor: string;
   colorMode: "light" | "dark";
   siteDensity: "airy" | "balanced" | "compact";
+  layoutStyle: "bento" | "editorial" | "minimal";
   cornerStyle: "soft" | "rounded" | "sharp";
   showBackToTop: boolean;
   showReadingProgress: boolean;
@@ -34,6 +37,8 @@ export type Settings = {
   showSearch: boolean;
   showWorldGlobe: boolean;
   showLearningShelf: boolean;
+  showSpotlight: boolean;
+  showStudyMomentum: boolean;
   showFooter: boolean;
   showBrandImage: boolean;
   homeLeadKicker: string;
@@ -41,6 +46,23 @@ export type Settings = {
   homeLeadText: string;
   homeLeadPrimaryCta: string;
   homeLeadSecondaryCta: string;
+  heroTrustOne: string;
+  heroTrustTwo: string;
+  heroTrustThree: string;
+  heroLiveLabel: string;
+  heroPathsLabel: string;
+  heroPathsMeta: string;
+  heroMaterialsLabel: string;
+  heroMaterialsMeta: string;
+  heroWorldLabel: string;
+  heroWorldMeta: string;
+  spotlightEyebrow: string;
+  spotlightTitle: string;
+  spotlightText: string;
+  spotlightCourseLabel: string;
+  spotlightLessonLabel: string;
+  spotlightArticleLabel: string;
+  spotlightLinkLabel: string;
   homeMapEyebrow: string;
   homeMapTitle: string;
   homeMapText: string;
@@ -147,11 +169,14 @@ export const defaultSettings: Settings = {
   inkColor: "#173a35",
   goldColor: "#b8893e",
   goldSoftColor: "#e4c888",
+  accentColor: "#ef9a78",
+  accentSoftColor: "#f6c7aa",
   paperColor: "#fbfaf5",
   creamColor: "#f3f0e6",
   sageColor: "#dce9df",
   colorMode: "light",
   siteDensity: "balanced",
+  layoutStyle: "bento",
   cornerStyle: "rounded",
   showBackToTop: true,
   showReadingProgress: true,
@@ -172,6 +197,8 @@ export const defaultSettings: Settings = {
   showSearch: true,
   showWorldGlobe: true,
   showLearningShelf: true,
+  showSpotlight: true,
+  showStudyMomentum: true,
   showFooter: true,
   showBrandImage: true,
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
@@ -179,6 +206,23 @@ export const defaultSettings: Settings = {
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
   homeLeadPrimaryCta: "سجل الآن",
   homeLeadSecondaryCta: "",
+  heroTrustOne: "دروس مركزة",
+  heroTrustTwo: "مجتمع عالمي",
+  heroTrustThree: "تعلم مستمر",
+  heroLiveLabel: "متاح الآن",
+  heroPathsLabel: "مسارات",
+  heroPathsMeta: "تعلم مرتب",
+  heroMaterialsLabel: "مواد",
+  heroMaterialsMeta: "قراءة واستماع",
+  heroWorldLabel: "العالم",
+  heroWorldMeta: "أثر يتصل",
+  spotlightEyebrow: "اختيار الأكاديمية",
+  spotlightTitle: "ابدأ من نقطة واضحة.",
+  spotlightText: "ثلاثة أبواب صغيرة تكفي لتبدأ اليوم: مسار مرتب، درس قصير، وقراءة تفتح لك زاوية جديدة.",
+  spotlightCourseLabel: "المسار المقترح",
+  spotlightLessonLabel: "درس قصير",
+  spotlightArticleLabel: "قراءة اليوم",
+  spotlightLinkLabel: "افتح المسار",
   homeMapEyebrow: "خريطة المشاركين",
   homeMapTitle: "نتعلم من أماكن مختلفة",
   homeMapText: "النقاط التي تظهر على الكرة هي أعضاء اختاروا بلدهم عند التسجيل.",

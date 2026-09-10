@@ -14,5 +14,5 @@ export default async function AccountPage() {
     ...lessons.map(([title]) => ({ id: `lesson:${slugify(title)}`, title, href: `/lessons/${encodeURIComponent(slugify(title))}`, kind: "درس" })),
     ...articles.map(([title]) => ({ id: `article:${slugify(title)}`, title, href: `/articles/${encodeURIComponent(slugify(title))}`, kind: "مقال" })),
   ];
-  return <><SiteHeader settings={settings} /><main id="main" className="page-shell account-page"><MemberDashboard items={items} /><MemberProfileForm /></main><SiteFooter settings={settings} /></>;
+  return <><SiteHeader settings={settings} /><main id="main" className="page-shell account-page"><MemberDashboard items={items} showMomentum={settings.showStudyMomentum} /><MemberProfileForm /></main><SiteFooter settings={settings} /></>;
 }

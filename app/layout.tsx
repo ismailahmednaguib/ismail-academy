@@ -54,6 +54,8 @@ export default async function RootLayout({
     "--ink": isHex(settings.inkColor) ? settings.inkColor : "#173a35",
     "--gold": isHex(settings.goldColor) ? settings.goldColor : "#b8893e",
     "--gold2": isHex(settings.goldSoftColor) ? settings.goldSoftColor : "#e4c888",
+    "--accent": isHex(settings.accentColor) ? settings.accentColor : "#ef9a78",
+    "--accent2": isHex(settings.accentSoftColor) ? settings.accentSoftColor : "#f6c7aa",
     "--paper": isHex(settings.paperColor) ? settings.paperColor : "#fbfaf5",
     "--cream": isHex(settings.creamColor) ? settings.creamColor : "#f3f0e6",
     "--sage": isHex(settings.sageColor) ? settings.sageColor : "#dce9df",
@@ -69,7 +71,7 @@ export default async function RootLayout({
   };
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body style={themeStyle} data-density={settings.siteDensity} data-corners={settings.cornerStyle} data-buttons={settings.buttonStyle} data-theme={settings.colorMode}>
+      <body style={themeStyle} data-density={settings.siteDensity} data-layout={settings.layoutStyle} data-corners={settings.cornerStyle} data-buttons={settings.buttonStyle} data-theme={settings.colorMode}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

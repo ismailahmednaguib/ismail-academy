@@ -50,11 +50,14 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["inkColor", "اللون الأساسي", false],
   ["goldColor", "لون التمييز", false],
   ["goldSoftColor", "لون التمييز الفاتح", false],
+  ["accentColor", "لون البطاقات المميزة", false],
+  ["accentSoftColor", "لون الخلفية المميزة", false],
   ["paperColor", "لون خلفية الموقع", false],
   ["creamColor", "لون الأقسام الهادئة", false],
   ["sageColor", "لون النشرة والبطاقات", false],
   ["colorMode", "الوضع الافتراضي للموقع", false],
   ["siteDensity", "كثافة وترفّق المساحات", false],
+  ["layoutStyle", "هيكل الموقع العام", false],
   ["cornerStyle", "شكل حواف البطاقات", false],
   ["showBackToTop", "إظهار زر الرجوع لأعلى", false],
   ["showReadingProgress", "إظهار تقدم القراءة داخل المحتوى", false],
@@ -71,10 +74,29 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["showCommunity", "إظهار خريطة مجتمع الدول", false],
   ["showHomeSignals", "إظهار شريط المؤشرات أسفل البحث", false],
   ["showHomeDirectory", "إظهار بوابة الأقسام الرئيسية", false],
+  ["showSpotlight", "إظهار قسم الاختيارات المميزة", false],
+  ["showStudyMomentum", "إظهار زخم التعلم في حساب الطالب", false],
   ["homeLeadKicker", "الشارة الصغيرة الجديدة في الهيرو", false],
   ["homeLeadTitle", "العنوان الرئيسي الجديد", false],
   ["homeLeadText", "وصف الهيرو الجديد", true],
   ["homeLeadPrimaryCta", "زر إنشاء الحساب في الهيرو", false],
+  ["heroTrustOne", "عبارة الثقة الأولى في الهيرو", false],
+  ["heroTrustTwo", "عبارة الثقة الثانية في الهيرو", false],
+  ["heroTrustThree", "عبارة الثقة الثالثة في الهيرو", false],
+  ["heroLiveLabel", "شارة حالة الهيرو", false],
+  ["heroPathsLabel", "اسم عداد المسارات", false],
+  ["heroPathsMeta", "وصف عداد المسارات", false],
+  ["heroMaterialsLabel", "اسم عداد المواد", false],
+  ["heroMaterialsMeta", "وصف عداد المواد", false],
+  ["heroWorldLabel", "اسم عداد العالم", false],
+  ["heroWorldMeta", "وصف عداد العالم", false],
+  ["spotlightEyebrow", "العنوان الصغير للاختيارات المميزة", false],
+  ["spotlightTitle", "عنوان الاختيارات المميزة", false],
+  ["spotlightText", "وصف الاختيارات المميزة", true],
+  ["spotlightCourseLabel", "اسم بطاقة المسار المميز", false],
+  ["spotlightLessonLabel", "اسم بطاقة الدرس المميز", false],
+  ["spotlightArticleLabel", "اسم بطاقة المقال المميز", false],
+  ["spotlightLinkLabel", "زر بطاقة المسار المميز", false],
   ["homeMapEyebrow", "العنوان الصغير بجانب الخريطة", false],
   ["homeMapTitle", "عنوان الخريطة في الهيرو", false],
   ["homeMapText", "وصف الخريطة في الهيرو", true],
@@ -171,19 +193,20 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["majlisQuote", "اقتباس المجلس", true],
 ];
 
-const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showHomeSignals", "showHomeDirectory", "showHero", "showSearch", "showWorldGlobe", "showLearningShelf", "showFooter", "showBrandImage", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
+const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "accentColor", "accentSoftColor", "paperColor", "creamColor", "sageColor"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showHomeSignals", "showHomeDirectory", "showSpotlight", "showHero", "showSearch", "showWorldGlobe", "showLearningShelf", "showFooter", "showBrandImage", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
 const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
   siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
+  layoutStyle: [{ value: "bento", label: "Bento — بطاقات جريئة" }, { value: "editorial", label: "Editorial — تحريري" }, { value: "minimal", label: "Minimal — هادئ" }],
   cornerStyle: [{ value: "soft", label: "ناعم" }, { value: "rounded", label: "مستدير" }, { value: "sharp", label: "حاد وأكاديمي" }],
   buttonStyle: [{ value: "classic", label: "كلاسيكي" }, { value: "pill", label: "بيضاوي" }, { value: "outline", label: "إطار خفيف" }],
   colorMode: [{ value: "light", label: "نهاري" }, { value: "dark", label: "ليلي" }],
 };
 
 const themePresets = [
-  { label: "أكاديمي أخضر", inkColor: "#173a35", goldColor: "#b8893e", goldSoftColor: "#e4c888", paperColor: "#fbfaf5", creamColor: "#f3f0e6", sageColor: "#dce9df" },
-  { label: "ليلي هادئ", inkColor: "#20283d", goldColor: "#a889d8", goldSoftColor: "#d9c7f2", paperColor: "#f8f7fb", creamColor: "#ecebf3", sageColor: "#e1e5f0" },
-  { label: "ترابي دافئ", inkColor: "#4b3028", goldColor: "#b56e3c", goldSoftColor: "#edc28f", paperColor: "#fffaf3", creamColor: "#f5e9d8", sageColor: "#e9dfd0" },
+  { label: "أكاديمي أخضر", inkColor: "#173a35", goldColor: "#b8893e", goldSoftColor: "#e4c888", accentColor: "#ef9a78", accentSoftColor: "#f6c7aa", paperColor: "#fbfaf5", creamColor: "#f3f0e6", sageColor: "#dce9df" },
+  { label: "ليلي هادئ", inkColor: "#20283d", goldColor: "#a889d8", goldSoftColor: "#d9c7f2", accentColor: "#8ed1cb", accentSoftColor: "#c3eee9", paperColor: "#f8f7fb", creamColor: "#ecebf3", sageColor: "#e1e5f0" },
+  { label: "ترابي دافئ", inkColor: "#4b3028", goldColor: "#b56e3c", goldSoftColor: "#edc28f", accentColor: "#de8065", accentSoftColor: "#f1c0a5", paperColor: "#fffaf3", creamColor: "#f5e9d8", sageColor: "#e9dfd0" },
 ] as const;
 
 const homeSectionLabels: Record<string, string> = { intro: "التعريف", community: "مجتمع الدول", courses: "الدورات", lessons: "الدروس", majlis: "المجلس", articles: "المقالات", library: "المكتبة", newsletter: "النشرة البريدية" };
@@ -231,6 +254,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
   const autosaveReady = useRef(false);
   const [subscribers, setSubscribers] = useState<{ id: number; email: string; created_at: string }[]>([]);
   const [interests, setInterests] = useState<{ id: number; name: string; contact: string; created_at: string }[]>([]);
+  const [settingsQuery, setSettingsQuery] = useState("");
   const localDraftKey = "ismail-academy-owner-draft-v1";
 
   useEffect(() => {
@@ -323,6 +347,11 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     ...articles.filter((row) => !row[3]?.trim()).map((row) => `نص ناقص: ${row[0] || "مقال بلا عنوان"}`),
   ];
 
+  const visibleSettingGroups = settingGroups.filter(([key, label]) => {
+    const query = settingsQuery.trim().toLocaleLowerCase("ar");
+    return !query || label.toLocaleLowerCase("ar").includes(query) || String(key).toLocaleLowerCase("ar").includes(query);
+  });
+
   async function uploadFile(kind: "lesson" | "video" | "book" | "article", index: number, file: File) {
     if (!supabase) {
       setNotice("إعدادات Supabase غير موجودة.");
@@ -401,7 +430,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
 
         {tab === "identity" && <OwnerBrandControl settings={settings} setSettings={setSettings} setNotice={setNotice} />}
 
-        {tab === "settings" && <section className="owner-section"><h3>كل الكلمات والألوان</h3><p className="admin-note">كل كلمة محفوظة في إعدادات الموقع والألوان وترتيب الصفحة الرئيسية قابلة للتعديل من هنا. عدّل أي نص ثم اضغط «حفظ ونشر للجميع» ليظهر التغيير للزوار بدون لمس الكود.</p><div className="owner-fields">{settingGroups.map(([key, label, multiline]) => { const options = selectOptions[key]; return <label key={key}>{label}{toggleKeys.has(key) ? <input className="owner-toggle" type="checkbox" checked={Boolean(settings[key])} onChange={() => toggleSetting(key)} /> : options ? <select value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)}>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : multiline ? <textarea value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} /> : <input type={colorKeys.has(key) ? "color" : "text"} value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} />}</label>; })}</div><div className="homepage-order"><b>ترتيب أقسام الصفحة الرئيسية</b><span className="admin-note">حرّك الأقسام لأعلى أو لأسفل، ثم اضغط «حفظ ونشر للجميع». القسم المخفي يظل محفوظًا ويعود عند تفعيله.</span><div>{normaliseHomeOrder(settings.homeSectionOrder).map((section, index) => <div className="homepage-order-row" key={section}><span>{String(index + 1).padStart(2, "0")}</span><b>{homeSectionLabels[section]}</b><button type="button" disabled={index === 0} onClick={() => moveHomeSection(index, -1)} aria-label={`تحريك ${homeSectionLabels[section]} لأعلى`}>↑</button><button type="button" disabled={index === normaliseHomeOrder(settings.homeSectionOrder).length - 1} onClick={() => moveHomeSection(index, 1)} aria-label={`تحريك ${homeSectionLabels[section]} لأسفل`}>↓</button></div>)}</div></div><div className="theme-presets"><b>ثيمات جاهزة</b><span className="admin-note">اختار شكلًا كبداية، ثم عدّل الألوان والمظهر يدويًا لو تحب.</span><div>{themePresets.map((theme) => <button type="button" className="theme-preset" key={theme.label} onClick={() => applyTheme(theme)}><i style={{ background: theme.inkColor }} /><i style={{ background: theme.goldColor }} /><span>{theme.label}</span></button>)}</div></div></section>}
+        {tab === "settings" && <section className="owner-section"><h3>كل الكلمات والألوان</h3><p className="admin-note">كل كلمة محفوظة في إعدادات الموقع والألوان وترتيب الصفحة الرئيسية قابلة للتعديل من هنا. ابحث باسم الحقل أو وظيفته، واستخدم `العربي || English` للنصوص الثنائية اللغة.</p><label className="owner-settings-search">ابحث داخل إعدادات الموقع<input value={settingsQuery} onChange={(event) => setSettingsQuery(event.target.value)} placeholder="مثال: لون، هيرو، زر، Spotlight..." /></label><div className="owner-settings-count">يعرض الآن {visibleSettingGroups.length} من {settingGroups.length} إعدادًا</div><div className="owner-fields">{visibleSettingGroups.map(([key, label, multiline]) => { const options = selectOptions[key]; return <label key={key}>{label}{toggleKeys.has(key) ? <input className="owner-toggle" type="checkbox" checked={Boolean(settings[key])} onChange={() => toggleSetting(key)} /> : options ? <select value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)}>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : multiline ? <textarea value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} /> : <input type={colorKeys.has(key) ? "color" : "text"} value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} />}</label>; })}</div><div className="homepage-order"><b>ترتيب أقسام الصفحة الرئيسية</b><span className="admin-note">حرّك الأقسام لأعلى أو لأسفل، ثم اضغط «حفظ ونشر للجميع». القسم المخفي يظل محفوظًا ويعود عند تفعيله.</span><div>{normaliseHomeOrder(settings.homeSectionOrder).map((section, index) => <div className="homepage-order-row" key={section}><span>{String(index + 1).padStart(2, "0")}</span><b>{homeSectionLabels[section]}</b><button type="button" disabled={index === 0} onClick={() => moveHomeSection(index, -1)} aria-label={`تحريك ${homeSectionLabels[section]} لأعلى`}>↑</button><button type="button" disabled={index === normaliseHomeOrder(settings.homeSectionOrder).length - 1} onClick={() => moveHomeSection(index, 1)} aria-label={`تحريك ${homeSectionLabels[section]} لأسفل`}>↓</button></div>)}</div></div><div className="theme-presets"><b>ثيمات جاهزة</b><span className="admin-note">اختار شكلًا كبداية، ثم عدّل الألوان والمظهر يدويًا لو تحب.</span><div>{themePresets.map((theme) => <button type="button" className="theme-preset" key={theme.label} onClick={() => applyTheme(theme)}><i style={{ background: theme.inkColor }} /><i style={{ background: theme.goldColor }} /><span>{theme.label}</span></button>)}</div></div></section>}
 
         {tab === "courses" && <section className="owner-section"><div className="owner-section-head"><div><h3>الدورات</h3><p className="admin-note">العنوان | الوصف | عدد الدروس | المستوى | الرقم</p></div><button type="button" className="ghost small-owner-button" onClick={() => setCourses([...courses, ["دورة جديدة", "أضف وصف الدورة هنا.", "0 دروس", "مبتدئ", String(courses.length + 1).padStart(2, "0"), "true"]])}>+ إضافة دورة</button></div>{courses.map((row, index) => <div className="owner-card" key={`course-${index}`}><div className="owner-card-head"><b>{row[0] || "دورة بلا عنوان"}</b><div className="owner-card-controls"><button type="button" disabled={index === 0} onClick={() => moveRow(setCourses, courses, index, -1)} aria-label="تحريك لأعلى">↑</button><button type="button" disabled={index === courses.length - 1} onClick={() => moveRow(setCourses, courses, index, 1)} aria-label="تحريك لأسفل">↓</button><button type="button" onClick={() => duplicateRow(setCourses, courses, index)}>نسخ</button><button type="button" className="danger-link" onClick={() => removeRow(setCourses, courses, index)}>حذف</button></div></div><div className="owner-fields compact"><label>العنوان<input value={row[0] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 0, event.target.value)} /></label><label>الوصف<textarea value={row[1] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 1, event.target.value)} /></label><label>عدد الدروس<input value={row[2] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 2, event.target.value)} /></label><label>المستوى<input value={row[3] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 3, event.target.value)} /></label><label>الرقم<input value={row[4] ?? ""} onChange={(event) => updateRow(setCourses, courses, index, 4, event.target.value)} /></label><label className="owner-featured"><input type="checkbox" checked={row[5] !== "false"} onChange={(event) => updateRow(setCourses, courses, index, 5, event.target.checked ? "true" : "false")} /> يظهر في الرئيسية</label></div></div>)}</section>}
 
