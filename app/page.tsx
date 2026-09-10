@@ -79,8 +79,9 @@ export default function Home() {
   }, []);
   useEffect(() => {
     if (!supabase) return;
+    const client = supabase;
     const syncOwnerAccess = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await client.auth.getSession();
       const access = await getAdminAccess(session);
       setOwnerSession(access.allowed);
     };

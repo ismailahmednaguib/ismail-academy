@@ -76,6 +76,21 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["showHomeDirectory", "إظهار بوابة الأقسام الرئيسية", false],
   ["showSpotlight", "إظهار قسم الاختيارات المميزة", false],
   ["showStudyMomentum", "إظهار زخم التعلم في حساب الطالب", false],
+  ["showPulseHeader", "إظهار رأس النسخة الجديدة", false],
+  ["showPulseSearch", "إظهار بحث النسخة الجديدة", false],
+  ["showPulseLanguage", "إظهار مبدّل اللغة", false],
+  ["showPulseTheme", "إظهار مبدّل الوضع الليلي", false],
+  ["showPulseAccount", "إظهار دخول وحساب الزائر", false],
+  ["showPulseHeroRoute", "إظهار بطاقة المسار المقترح", false],
+  ["showPulseHeroTrust", "إظهار عبارات الثقة", false],
+  ["showPulseHeroSecondaryCta", "إظهار زر استكشف المواد", false],
+  ["showPulseStrip", "إظهار الشريط التعريفي", false],
+  ["showPulseIntro", "إظهار مقدمة النسخة الجديدة", false],
+  ["showPulseDirectory", "إظهار بوابات البداية", false],
+  ["showPulsePrograms", "إظهار قائمة المسارات", false],
+  ["showPulseJournal", "إظهار القراءة والاستماع", false],
+  ["showPulseDesk", "إظهار مكتب الطالب", false],
+  ["showPulseEvent", "إظهار بطاقة المجلس الجديدة", false],
   ["homeLeadKicker", "الشارة الصغيرة الجديدة في الهيرو", false],
   ["homeLeadTitle", "العنوان الرئيسي الجديد", false],
   ["homeLeadText", "وصف الهيرو الجديد", true],
@@ -194,7 +209,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "accentColor", "accentSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showHomeSignals", "showHomeDirectory", "showSpotlight", "showHero", "showSearch", "showWorldGlobe", "showLearningShelf", "showFooter", "showBrandImage", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showHomeSignals", "showHomeDirectory", "showSpotlight", "showHero", "showSearch", "showWorldGlobe", "showLearningShelf", "showFooter", "showBrandImage", "showPulseHeader", "showPulseSearch", "showPulseLanguage", "showPulseTheme", "showPulseAccount", "showPulseHeroRoute", "showPulseHeroTrust", "showPulseHeroSecondaryCta", "showPulseStrip", "showPulseIntro", "showPulseDirectory", "showPulsePrograms", "showPulseJournal", "showPulseDesk", "showPulseEvent", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
 const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
   siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
   layoutStyle: [{ value: "bento", label: "Bento — بطاقات جريئة" }, { value: "editorial", label: "Editorial — تحريري" }, { value: "minimal", label: "Minimal — هادئ" }],

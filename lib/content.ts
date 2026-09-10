@@ -41,6 +41,21 @@ export type Settings = {
   showStudyMomentum: boolean;
   showFooter: boolean;
   showBrandImage: boolean;
+  showPulseHeader: boolean;
+  showPulseSearch: boolean;
+  showPulseLanguage: boolean;
+  showPulseTheme: boolean;
+  showPulseAccount: boolean;
+  showPulseHeroRoute: boolean;
+  showPulseHeroTrust: boolean;
+  showPulseHeroSecondaryCta: boolean;
+  showPulseStrip: boolean;
+  showPulseIntro: boolean;
+  showPulseDirectory: boolean;
+  showPulsePrograms: boolean;
+  showPulseJournal: boolean;
+  showPulseDesk: boolean;
+  showPulseEvent: boolean;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -201,6 +216,21 @@ export const defaultSettings: Settings = {
   showStudyMomentum: true,
   showFooter: true,
   showBrandImage: true,
+  showPulseHeader: true,
+  showPulseSearch: true,
+  showPulseLanguage: true,
+  showPulseTheme: true,
+  showPulseAccount: true,
+  showPulseHeroRoute: true,
+  showPulseHeroTrust: true,
+  showPulseHeroSecondaryCta: true,
+  showPulseStrip: true,
+  showPulseIntro: true,
+  showPulseDirectory: true,
+  showPulsePrograms: true,
+  showPulseJournal: true,
+  showPulseDesk: true,
+  showPulseEvent: true,
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
