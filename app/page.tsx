@@ -22,7 +22,7 @@ import WorldCommunity, { WorldGlobe } from "@/components/WorldCommunity";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import HomeSpotlight from "@/components/HomeSpotlight";
-import ModernHomepage from "@/components/ModernHomepage";
+import PulseHomepage from "@/components/PulseHomepage";
 
 type AuthSessionLike = { user: { id: string } } | null;
 
@@ -230,7 +230,7 @@ export default function Home() {
   };
   const ownerAccessLabel = ownerSession ? settings.ownerPanelLabel : "دخول المالك";
   return <div className="redesign-site">
-    <ModernHomepage settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} search={search} setSearch={setSearch} results={results} ownerSession={ownerSession} onOpenAdmin={openAdmin} onOpenInterest={() => setInterestOpen(true)} onSubscribeNewsletter={subscribeNewsletter} newsletterSending={newsletterSending} />
+    <PulseHomepage settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} search={search} setSearch={setSearch} results={results} ownerSession={ownerSession} onOpenAdmin={openAdmin} onOpenInterest={() => setInterestOpen(true)} onSubscribeNewsletter={subscribeNewsletter} newsletterSending={newsletterSending} />
     <div className="legacy-public" aria-hidden="true">
     <a href="#top" className="skip-link">تخطى إلى المحتوى</a>
     {settings.showAnnouncement && <div className="announcement"><span className="announcement-dot" aria-hidden="true" /> {settings.announcement} {settings.showMajlis && <Link className="announcement-link" href="/majalis">{settings.announcementButton}</Link>}</div>}
