@@ -64,33 +64,29 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["buttonStyle", "شكل الأزرار العامة", false],
   ["showMobileBar", "إظهار شريط التنقل في الهاتف", false],
   ["showAnnouncement", "إظهار شريط الإعلان", false],
-  ["showIntro", "إظهار قسم التعريف", false],
   ["showCourses", "إظهار قسم الدورات", false],
   ["showLessons", "إظهار قسم الدروس", false],
   ["showMajlis", "إظهار قسم المجلس", false],
   ["showArticles", "إظهار قسم المقالات", false],
   ["showLibrary", "إظهار قسم المكتبة", false],
   ["showNewsletter", "إظهار النشرة البريدية", false],
-  ["showCommunity", "إظهار خريطة مجتمع الدول", false],
-  ["showHomeSignals", "إظهار شريط المؤشرات أسفل البحث", false],
-  ["showHomeDirectory", "إظهار بوابة الأقسام الرئيسية", false],
-  ["showSpotlight", "إظهار قسم الاختيارات المميزة", false],
   ["showStudyMomentum", "إظهار زخم التعلم في حساب الطالب", false],
-  ["showPulseHeader", "إظهار رأس النسخة الجديدة", false],
-  ["showPulseSearch", "إظهار بحث النسخة الجديدة", false],
-  ["showPulseLanguage", "إظهار مبدّل اللغة", false],
-  ["showPulseTheme", "إظهار مبدّل الوضع الليلي", false],
-  ["showPulseAccount", "إظهار دخول وحساب الزائر", false],
-  ["showPulseHeroRoute", "إظهار بطاقة المسار المقترح", false],
-  ["showPulseHeroTrust", "إظهار عبارات الثقة", false],
-  ["showPulseHeroSecondaryCta", "إظهار زر استكشف المواد", false],
-  ["showPulseStrip", "إظهار الشريط التعريفي", false],
-  ["showPulseIntro", "إظهار مقدمة النسخة الجديدة", false],
-  ["showPulseDirectory", "إظهار بوابات البداية", false],
-  ["showPulsePrograms", "إظهار قائمة المسارات", false],
-  ["showPulseJournal", "إظهار القراءة والاستماع", false],
-  ["showPulseDesk", "إظهار مكتب الطالب", false],
-  ["showPulseEvent", "إظهار بطاقة المجلس الجديدة", false],
+  ["showNexusHeader", "إظهار رأس الموقع الجديد", false],
+  ["showNexusSearch", "إظهار البحث السريع", false],
+  ["showNexusLanguage", "إظهار مبدّل اللغة", false],
+  ["showNexusTheme", "إظهار مبدّل الوضع الليلي", false],
+  ["showNexusHero", "إظهار الواجهة الرئيسية", false],
+  ["showNexusHeroPanel", "إظهار لوحة جلسة اليوم", false],
+  ["showNexusRail", "إظهار شريط المؤشرات", false],
+  ["showNexusAccount", "إظهار دخول وحساب الزائر", false],
+  ["showNexusHeroSecondary", "إظهار الزر الثانوي", false],
+  ["showNexusStart", "إظهار بوابات البداية", false],
+  ["showNexusFeatured", "إظهار المحتوى المميز", false],
+  ["showNexusFlow", "إظهار طريقة استخدام الأكاديمية", false],
+  ["showNexusDesk", "إظهار مكتب الطالب", false],
+  ["showNexusEvent", "إظهار بطاقة المجلس الجديدة", false],
+  ["showNexusNewsletter", "إظهار النشرة الجديدة", false],
+  ["showNexusFooter", "إظهار فوتر النسخة الجديدة", false],
   ["homeLeadKicker", "الشارة الصغيرة الجديدة في الهيرو", false],
   ["homeLeadTitle", "العنوان الرئيسي الجديد", false],
   ["homeLeadText", "وصف الهيرو الجديد", true],
@@ -209,7 +205,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "accentColor", "accentSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showIntro", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showCommunity", "showHomeSignals", "showHomeDirectory", "showSpotlight", "showHero", "showSearch", "showWorldGlobe", "showLearningShelf", "showFooter", "showBrandImage", "showPulseHeader", "showPulseSearch", "showPulseLanguage", "showPulseTheme", "showPulseAccount", "showPulseHeroRoute", "showPulseHeroTrust", "showPulseHeroSecondaryCta", "showPulseStrip", "showPulseIntro", "showPulseDirectory", "showPulsePrograms", "showPulseJournal", "showPulseDesk", "showPulseEvent", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showStudyMomentum", "showSearch", "showLearningShelf", "showFooter", "showBrandImage", "showNexusHeader", "showNexusSearch", "showNexusLanguage", "showNexusTheme", "showNexusHero", "showNexusHeroPanel", "showNexusRail", "showNexusAccount", "showNexusHeroSecondary", "showNexusStart", "showNexusFeatured", "showNexusFlow", "showNexusDesk", "showNexusEvent", "showNexusNewsletter", "showNexusFooter", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
 const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
   siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
   layoutStyle: [{ value: "bento", label: "Bento — بطاقات جريئة" }, { value: "editorial", label: "Editorial — تحريري" }, { value: "minimal", label: "Minimal — هادئ" }],
@@ -224,8 +220,8 @@ const themePresets = [
   { label: "ترابي دافئ", inkColor: "#4b3028", goldColor: "#b56e3c", goldSoftColor: "#edc28f", accentColor: "#de8065", accentSoftColor: "#f1c0a5", paperColor: "#fffaf3", creamColor: "#f5e9d8", sageColor: "#e9dfd0" },
 ] as const;
 
-const homeSectionLabels: Record<string, string> = { intro: "التعريف", community: "مجتمع الدول", courses: "الدورات", lessons: "الدروس", majlis: "المجلس", articles: "المقالات", library: "المكتبة", newsletter: "النشرة البريدية" };
-const fallbackHomeOrder = ["intro", "community", "newsletter"];
+const homeSectionLabels: Record<string, string> = { start: "بوابات البداية", featured: "المحتوى المميز", flow: "طريقة الاستخدام", desk: "مكتب الطالب", event: "المجلس", newsletter: "النشرة البريدية" };
+const fallbackHomeOrder = ["start", "featured", "flow", "desk", "event", "newsletter"];
 
 function normaliseHomeOrder(value: unknown): string[] {
   const source = Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];

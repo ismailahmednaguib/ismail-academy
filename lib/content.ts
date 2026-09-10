@@ -41,21 +41,22 @@ export type Settings = {
   showStudyMomentum: boolean;
   showFooter: boolean;
   showBrandImage: boolean;
-  showPulseHeader: boolean;
-  showPulseSearch: boolean;
-  showPulseLanguage: boolean;
-  showPulseTheme: boolean;
-  showPulseAccount: boolean;
-  showPulseHeroRoute: boolean;
-  showPulseHeroTrust: boolean;
-  showPulseHeroSecondaryCta: boolean;
-  showPulseStrip: boolean;
-  showPulseIntro: boolean;
-  showPulseDirectory: boolean;
-  showPulsePrograms: boolean;
-  showPulseJournal: boolean;
-  showPulseDesk: boolean;
-  showPulseEvent: boolean;
+  showNexusHeader: boolean;
+  showNexusSearch: boolean;
+  showNexusLanguage: boolean;
+  showNexusTheme: boolean;
+  showNexusHero: boolean;
+  showNexusHeroPanel: boolean;
+  showNexusRail: boolean;
+  showNexusAccount: boolean;
+  showNexusHeroSecondary: boolean;
+  showNexusStart: boolean;
+  showNexusFeatured: boolean;
+  showNexusFlow: boolean;
+  showNexusDesk: boolean;
+  showNexusEvent: boolean;
+  showNexusNewsletter: boolean;
+  showNexusFooter: boolean;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -216,21 +217,22 @@ export const defaultSettings: Settings = {
   showStudyMomentum: true,
   showFooter: true,
   showBrandImage: true,
-  showPulseHeader: true,
-  showPulseSearch: true,
-  showPulseLanguage: true,
-  showPulseTheme: true,
-  showPulseAccount: true,
-  showPulseHeroRoute: true,
-  showPulseHeroTrust: true,
-  showPulseHeroSecondaryCta: true,
-  showPulseStrip: true,
-  showPulseIntro: true,
-  showPulseDirectory: true,
-  showPulsePrograms: true,
-  showPulseJournal: true,
-  showPulseDesk: true,
-  showPulseEvent: true,
+  showNexusHeader: true,
+  showNexusSearch: true,
+  showNexusLanguage: true,
+  showNexusTheme: true,
+  showNexusHero: true,
+  showNexusHeroPanel: true,
+  showNexusRail: true,
+  showNexusAccount: true,
+  showNexusHeroSecondary: true,
+  showNexusStart: true,
+  showNexusFeatured: true,
+  showNexusFlow: true,
+  showNexusDesk: true,
+  showNexusEvent: true,
+  showNexusNewsletter: true,
+  showNexusFooter: true,
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
@@ -263,7 +265,7 @@ export const defaultSettings: Settings = {
   homeExploreLessonsText: "فكرة واحدة كل مرة",
   homeExploreArticlesText: "قراءات قصيرة",
   homeExploreLibraryText: "ملفات تحتفظ بها",
-  homeSectionOrder: ["intro", "community", "courses", "lessons", "majlis", "articles", "library", "newsletter"],
+  homeSectionOrder: ["start", "featured", "flow", "desk", "event", "newsletter"],
   navHome: "الرئيسية",
   navCourses: "الدورات",
   navLessons: "الدروس",
