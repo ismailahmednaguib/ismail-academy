@@ -6,6 +6,7 @@ import "./premium.css";
 import "./pages-premium.css";
 import "./world.css";
 import { getSiteContent } from "@/lib/content";
+import PwaRegister from "@/components/PwaRegister";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
@@ -59,6 +60,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <PwaRegister />
         {children}
       </body>
     </html>

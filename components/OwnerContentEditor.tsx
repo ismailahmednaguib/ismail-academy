@@ -6,6 +6,7 @@ import type { Settings } from "@/lib/content";
 import OwnerNotifications from "@/components/OwnerNotifications";
 import OwnerVisibilityPanel from "@/components/OwnerVisibilityPanel";
 import OwnerBrandControl from "@/components/OwnerBrandControl";
+import OwnerRolesPanel from "@/components/OwnerRolesPanel";
 
 type SubmissionTab = "overview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
 
@@ -29,6 +30,7 @@ type Props = {
   setArticles: (value: string[][]) => void;
   setBooks: (value: string[][]) => void;
   onSave: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
+  onSaveDraft: () => void | Promise<void>;
   onReset: () => void;
   onLogout: () => void;
   busy: boolean;
@@ -217,12 +219,53 @@ function UploadButton({ label, accept, uploading, currentUrl, onChange }: { labe
   return <div className="upload-control"><label className="upload-button"><input type="file" accept={accept} onChange={onChange} />{uploading ? "جارٍ الرفع..." : label}</label>{currentUrl ? <a className="upload-link" href={currentUrl} target="_blank" rel="noreferrer">فتح الملف الحالي ↗</a> : <span className="upload-empty">لم يتم رفع ملف بعد</span>}</div>;
 }
 
-export default function OwnerContentEditor({ settings, courses, lessons, articles, books, setSettings, setCourses, setLessons, setArticles, setBooks, onSave, onReset, onLogout, busy, setNotice }: Props) {
+export default function OwnerContentEditor({ settings, courses, lessons, articles, books, setSettings, setCourses, setLessons, setArticles, setBooks, onSave, onSaveDraft, onReset, onLogout, busy, setNotice }: Props) {
   const [tab, setTab] = useState<SubmissionTab>("overview");
   const [uploading, setUploading] = useState<string | null>(null);
+  const [localDraftAvailable, setLocalDraftAvailable] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
+  const autosaveReady = useRef(false);
   const [subscribers, setSubscribers] = useState<{ id: number; email: string; created_at: string }[]>([]);
   const [interests, setInterests] = useState<{ id: number; name: string; contact: string; created_at: string }[]>([]);
+  const localDraftKey = "ismail-academy-owner-draft-v1";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const timer = window.setTimeout(() => setLocalDraftAvailable(Boolean(window.localStorage.getItem(localDraftKey))), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!autosaveReady.current) {
+      autosaveReady.current = true;
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(localDraftKey, JSON.stringify({ version: 1, savedAt: new Date().toISOString(), settings, courses, lessons, articles, books }));
+        setLocalDraftAvailable(true);
+      } catch {
+        // التخزين المحلي اختياري؛ لا نعطل لوحة المالك إذا امتلأت المساحة.
+      }
+    }, 700);
+    return () => window.clearTimeout(timer);
+  }, [settings, courses, lessons, articles, books]);
+
+  function restoreLocalDraft() {
+    try {
+      const raw = window.localStorage.getItem(localDraftKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as BackupPayload;
+      if (parsed.settings && typeof parsed.settings === "object") setSettings({ ...settings, ...parsed.settings });
+      if (parsed.courses !== undefined) setCourses(normaliseRows(parsed.courses));
+      if (parsed.lessons !== undefined) setLessons(normaliseRows(parsed.lessons));
+      if (parsed.articles !== undefined) setArticles(normaliseRows(parsed.articles));
+      if (parsed.books !== undefined) setBooks(normaliseRows(parsed.books));
+      setNotice("تم استرجاع آخر مسودة محلية. راجع التغييرات ثم احفظها أو انشرها.");
+    } catch {
+      setNotice("تعذر قراءة المسودة المحلية.");
+    }
+  }
 
   async function loadSubmissions() {
     if (!supabase) return;
@@ -342,7 +385,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
   const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الإشعارات والأعضاء"], ["backup", "النسخ الاحتياطي"]];
 
   return <form onSubmit={onSave} className="owner-editor">
-    <div className="owner-toolbar"><p className="admin-note">أنت داخل وضع المالك. عدّل المحتوى، ارفع الملفات، ثم اضغط «حفظ ونشر للجميع».</p><div className="owner-toolbar-actions"><a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
+    <div className="owner-toolbar"><p className="admin-note">أنت داخل لوحة الإدارة. يتم حفظ نسخة محلية تلقائيًا أثناء التعديل؛ استخدم المسودة للمراجعة ثم انشر للزوار عند الجاهزية.</p><div className="owner-toolbar-actions">{localDraftAvailable && <button type="button" className="ghost small-owner-button" onClick={restoreLocalDraft}>استعادة المسودة المحلية</button>}<a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
     <div className="owner-layout">
       <nav className="owner-tabs">{tabs.map(([value, label]) => <button type="button" key={value} className={tab === value ? "active" : ""} onClick={() => setTab(value)}>{label}</button>)}</nav>
       <div className="owner-panel">
@@ -363,10 +406,11 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
         {tab === "books" && <section className="owner-section"><div className="owner-section-head"><div><h3>الكتب والملفات</h3><p className="admin-note">اسم الملف | الوصف والحجم | رابط PDF</p></div><button type="button" className="ghost small-owner-button" onClick={() => setBooks([...books, ["ملف جديد", "PDF", "", "true"]])}>+ إضافة ملف</button></div>{books.map((row, index) => <div className="owner-card" key={`book-${index}`}><div className="owner-card-head"><b>{row[0] || "ملف بلا عنوان"}</b><div className="owner-card-controls"><button type="button" disabled={index === 0} onClick={() => moveRow(setBooks, books, index, -1)} aria-label="تحريك لأعلى">↑</button><button type="button" disabled={index === books.length - 1} onClick={() => moveRow(setBooks, books, index, 1)} aria-label="تحريك لأسفل">↓</button><button type="button" onClick={() => duplicateRow(setBooks, books, index)}>نسخ</button><button type="button" className="danger-link" onClick={() => removeRow(setBooks, books, index)}>حذف</button></div></div><div className="owner-fields compact"><label>اسم الملف<input value={row[0] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 0, event.target.value)} /></label><label>الوصف والحجم<input value={row[1] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 1, event.target.value)} /></label><label className="wide-field">رابط PDF<input value={row[2] ?? ""} placeholder="https://... أو ارفع ملفًا من الزر" onChange={(event) => updateRow(setBooks, books, index, 2, event.target.value)} /></label><label className="owner-featured"><input type="checkbox" checked={row[3] !== "false"} onChange={(event) => updateRow(setBooks, books, index, 3, event.target.checked ? "true" : "false")} /> يظهر في الرئيسية</label></div><UploadButton label="رفع ملف PDF" accept="application/pdf" uploading={uploading === `book-${index}`} currentUrl={row[2]} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile("book", index, file); event.currentTarget.value = ""; }} /></div>)}</section>}
 
         {tab === "submissions" && <OwnerNotifications />}
+        {tab === "submissions" && <OwnerRolesPanel setNotice={setNotice} />}
         {tab === "submissions" && <section className="owner-section"><div className="owner-section-head"><div><h3>المشتركون وطلبات الاهتمام</h3><p className="admin-note">بيانات خاصة بالمالك فقط، ويتم تحميل آخر 100 سجل.</p></div><button type="button" className="ghost small-owner-button" onClick={() => void loadSubmissions()}>تحديث</button></div><div className="submission-grid"><div className="submission-box"><h4>النشرة البريدية ({subscribers.length})</h4>{subscribers.length ? subscribers.map((row) => <div className="submission-row" key={row.id}><span>{row.email}<small>{new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("newsletter_subscribers", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد اشتراكات ظاهرة أو لم يتم تشغيل جدول النشرة بعد.</p>}</div><div className="submission-box"><h4>اهتمام بالمجلس ({interests.length})</h4>{interests.length ? interests.map((row) => <div className="submission-row" key={row.id}><span>{row.name}<small>{row.contact} · {new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("majlis_interest", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد طلبات ظاهرة أو لم يتم تشغيل جدول المجلس بعد.</p>}</div></div></section>}
         {tab === "backup" && <section className="owner-section"><div className="owner-section-head"><div><h3>النسخ الاحتياطي</h3><p className="admin-note">احتفظ بنسخة من كل محتوى الموقع قبل أي تعديل كبير، واستوردها عند الحاجة.</p></div></div><div className="backup-actions"><button type="button" className="primary" onClick={exportBackup}>تنزيل نسخة احتياطية</button><button type="button" className="ghost" onClick={() => importInputRef.current?.click()}>استيراد نسخة JSON</button><input ref={importInputRef} type="file" accept="application/json,.json" hidden onChange={(event) => void importBackup(event)} /></div><p className="admin-note">الاستيراد يحمّل البيانات محليًا فقط. راجع المحتوى أولًا ثم اضغط «حفظ ونشر للجميع».</p></section>}
       </div>
     </div>
-    <div className="owner-actions"><button type="button" className="ghost" onClick={onReset}>استعادة الافتراضي</button><button className="primary" disabled={busy}>{busy ? "جارٍ النشر..." : "حفظ ونشر للجميع"}</button></div>
+    <div className="owner-actions"><button type="button" className="ghost" onClick={onReset}>استعادة الافتراضي</button><button type="button" className="ghost" onClick={() => void onSaveDraft()}>حفظ مسودة على الحساب</button><button className="primary" disabled={busy}>{busy ? "جارٍ النشر..." : "حفظ ونشر للجميع"}</button></div>
   </form>;
 }

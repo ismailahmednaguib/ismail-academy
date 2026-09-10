@@ -21,6 +21,18 @@ import MemberAccount from "@/components/MemberAccount";
 import WorldCommunity, { WorldGlobe } from "@/components/WorldCommunity";
 import ThemeToggle from "@/components/ThemeToggle";
 
+type AuthSessionLike = { user: { id: string } } | null;
+
+async function getAdminAccess(session: AuthSessionLike) {
+  if (!supabase || !session) return { allowed: false, role: "" };
+  const { data: owner } = await supabase.rpc("is_site_owner");
+  if (owner === true) return { allowed: true, role: "owner" };
+  const { data: admin } = await supabase.rpc("is_site_admin");
+  if (admin !== true) return { allowed: false, role: "" };
+  const { data: role } = await supabase.rpc("site_admin_role");
+  return { allowed: true, role: typeof role === "string" ? role : "editor" };
+}
+
 export default function Home() {
   const [settings, setSettings] = useState(defaults);
   const [courses, setCourses] = useState<string[][]>(initialCourses);
@@ -65,9 +77,9 @@ export default function Home() {
   async function openAdmin() {
     if (!supabase) { setNotice("أضف إعدادات Supabase في ملف .env.local أولًا."); return; }
     const { data: { session } } = await supabase.auth.getSession();
-    const { data: isOwner } = session ? await supabase.rpc("is_site_owner") : { data: false };
-    setOwnerSession(isOwner === true);
-    if (session && isOwner !== true) setNotice("هذا الحساب عضو عادي. سجّل دخولك بحساب المالك لفتح لوحة الإدارة.");
+    const access = await getAdminAccess(session);
+    setOwnerSession(access.allowed);
+    if (session && !access.allowed) setNotice("هذا الحساب عضو عادي. استخدم حساب المالك أو حساب مشرف مفعّل لفتح لوحة الإدارة.");
     setAdmin(true);
   }
   useEffect(() => {
@@ -113,15 +125,16 @@ export default function Home() {
     if (!supabase) return;
     const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
     if (error) { setNotice("تعذر تسجيل الدخول. تأكد من البريد وكلمة المرور."); return; }
-    const { data: isOwner } = await supabase.rpc("is_site_owner");
-    if (isOwner !== true) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const access = await getAdminAccess(session);
+    if (!access.allowed) {
       await supabase.auth.signOut();
       setOwnerSession(false);
-      setNotice("تم الدخول، لكن الحساب ليس حساب المالك.");
+      setNotice("تم الدخول، لكن الحساب ليس مالكًا أو مشرفًا مفعّلًا.");
       return;
     }
     setOwnerSession(true);
-    setNotice("تم تسجيل الدخول كمالك للموقع.");
+    setNotice(access.role === "owner" ? "تم تسجيل الدخول كمالك للموقع." : "تم تسجيل الدخول كمشرف للموقع.");
   }
   const results = useMemo(() => {
     const items = [
@@ -143,8 +156,21 @@ export default function Home() {
     }
     setSaving(true);
     const { error } = await supabase.from("site_content").update({ payload: { settings, courses, lessons, articles, books } }).eq("id", "main");
+    if (!error) await supabase.from("site_content_drafts").delete().eq("id", "main");
     setSaving(false);
-    setNotice(error ? "تعذر الحفظ. تأكد أن بريدك مكتوب في سياسة قاعدة البيانات." : "تم النشر بنجاح وسيظهر التحديث لكل الزوار.");
+    setNotice(error ? "تعذر النشر. شغّل ملفات SQL الجديدة وتأكد من صلاحية حسابك." : "تم النشر بنجاح وسيظهر التحديث لكل الزوار.");
+  }
+  async function saveDraft() {
+    if (!supabase || !ownerSession) { setNotice("سجّل الدخول كمالك أو مشرف قبل حفظ المسودة."); return; }
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setNotice("انتهت جلسة الدخول. سجّل الدخول مرة أخرى."); return; }
+    const { error } = await supabase.from("site_content_drafts").upsert({
+      id: "main",
+      payload: { settings, courses, lessons, articles, books },
+      updated_by: session.user.id,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "id" });
+    setNotice(error ? "تعذر حفظ المسودة. شغّل owner_roles_drafts.sql أولًا." : "تم حفظ المسودة على الحساب ويمكن نشرها لاحقًا.");
   }
   const [newsletterSending, setNewsletterSending] = useState(false);
   async function subscribeNewsletter(e: FormEvent<HTMLFormElement>) {
@@ -211,7 +237,7 @@ export default function Home() {
               <button className="primary">تسجيل الدخول</button>
             </form>
           ) : (
-            <OwnerContentEditor settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} setSettings={setSettings} setCourses={setCourses} setLessons={setLessons} setArticles={setArticles} setBooks={setBooks} onSave={save} onReset={() => { if (!window.confirm("استعادة المحتوى الافتراضي محليًا؟")) return; setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks); setNotice("تمت استعادة المحتوى الافتراضي محليًا. اضغط حفظ ونشر لاعتماده."); }} onLogout={() => { void supabase?.auth.signOut(); setOwnerSession(false); }} busy={saving} setNotice={setNotice} />
+            <OwnerContentEditor settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} setSettings={setSettings} setCourses={setCourses} setLessons={setLessons} setArticles={setArticles} setBooks={setBooks} onSave={save} onSaveDraft={saveDraft} onReset={() => { if (!window.confirm("استعادة المحتوى الافتراضي محليًا؟")) return; setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks); setNotice("تمت استعادة المحتوى الافتراضي محليًا. اضغط حفظ ونشر لاعتماده."); }} onLogout={() => { void supabase?.auth.signOut(); setOwnerSession(false); }} busy={saving} setNotice={setNotice} />
           )}
         </div>
       </div>
