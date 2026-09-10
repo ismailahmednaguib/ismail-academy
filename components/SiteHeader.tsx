@@ -6,6 +6,7 @@ import type { Settings } from "@/lib/content";
 import MemberAccount from "@/components/MemberAccount";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
+import OwnerGateButton from "@/components/OwnerGateButton";
 import { localeCopy, type Locale } from "@/lib/i18n";
 
 function focusMain(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -41,7 +42,7 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
   return (
     <>
       <a href="#main" className="skip-link" onClick={focusMain}>{copy.skipToContent}</a>
-      <header className="nav">
+      {settings.showNexusHeader && <header className="nav">
         <div className="nav-identity"><Link className="brand" href="/">
           <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
           <span>
@@ -55,24 +56,20 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
               {label}
             </Link>
           ))}
-          <Link className="mobile-owner" href="/?admin=1" onClick={() => setMenu(false)}>
-            {locale === "en" ? copy.owner : settings.ownerPanelLabel}
-          </Link>
+          <OwnerGateButton settings={settings} className="mobile-owner" />
         </nav></div>
         <div className="nav-actions">
-          <LanguageToggle />
-          <ThemeToggle defaultMode={settings.colorMode} />
-          {settings.showSearch && <Link className="header-search" href="/search" aria-label={copy.search}>⌕</Link>}
-          <MemberAccount compact label={copy.account} />
-          <Link className="owner-button" href="/?admin=1">
-            {locale === "en" ? copy.owner : settings.ownerPanelLabel}
-          </Link>
+          {settings.showNexusLanguage && <LanguageToggle />}
+          {settings.showNexusTheme && <ThemeToggle defaultMode={settings.colorMode} />}
+          {settings.showNexusSearch && settings.showSearch && <Link className="header-search" href="/search" aria-label={copy.search}>⌕</Link>}
+          {settings.showNexusAccount && <MemberAccount compact label={copy.account} />}
+          <OwnerGateButton settings={settings} />
           <button className="menu" aria-label={copy.menu} onClick={() => setMenu(!menu)}>
             ☰
           </button>
         </div>
-      </header>
-      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label={copy.quickNavigation}><Link href="/" onClick={() => setMenu(false)}><span>{copy.home}</span></Link><Link href="/courses" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.courses : settings.navCourses}</span></Link><Link href="/lessons" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.lessons : settings.navLessons}</span></Link>{settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>{copy.search}</span></Link>}<MemberAccount compact label={copy.account} /></nav>}
+      </header>}
+      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label={copy.quickNavigation}><Link href="/" onClick={() => setMenu(false)}><span>{copy.home}</span></Link><Link href="/courses" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.courses : settings.navCourses}</span></Link><Link href="/lessons" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.lessons : settings.navLessons}</span></Link>{settings.showNexusSearch && settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>{copy.search}</span></Link>}{settings.showNexusAccount && <MemberAccount compact label={copy.account} />}</nav>}
     </>
   );
 }

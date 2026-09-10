@@ -78,6 +78,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["showNexusHero", "إظهار الواجهة الرئيسية", false],
   ["showNexusHeroPanel", "إظهار لوحة جلسة اليوم", false],
   ["showNexusRail", "إظهار شريط المؤشرات", false],
+  ["showNexusIntent", "إظهار اختيار هدف التعلم", false],
   ["showNexusAccount", "إظهار دخول وحساب الزائر", false],
   ["showNexusHeroSecondary", "إظهار الزر الثانوي", false],
   ["showNexusStart", "إظهار بوابات البداية", false],
@@ -205,7 +206,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "accentColor", "accentSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showStudyMomentum", "showSearch", "showLearningShelf", "showFooter", "showBrandImage", "showNexusHeader", "showNexusSearch", "showNexusLanguage", "showNexusTheme", "showNexusHero", "showNexusHeroPanel", "showNexusRail", "showNexusAccount", "showNexusHeroSecondary", "showNexusStart", "showNexusFeatured", "showNexusFlow", "showNexusDesk", "showNexusEvent", "showNexusNewsletter", "showNexusFooter", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showStudyMomentum", "showSearch", "showLearningShelf", "showFooter", "showBrandImage", "showNexusHeader", "showNexusSearch", "showNexusLanguage", "showNexusTheme", "showNexusHero", "showNexusHeroPanel", "showNexusRail", "showNexusIntent", "showNexusAccount", "showNexusHeroSecondary", "showNexusStart", "showNexusFeatured", "showNexusFlow", "showNexusDesk", "showNexusEvent", "showNexusNewsletter", "showNexusFooter", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
 const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
   siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
   layoutStyle: [{ value: "bento", label: "Bento — بطاقات جريئة" }, { value: "editorial", label: "Editorial — تحريري" }, { value: "minimal", label: "Minimal — هادئ" }],

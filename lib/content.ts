@@ -48,6 +48,7 @@ export type Settings = {
   showNexusHero: boolean;
   showNexusHeroPanel: boolean;
   showNexusRail: boolean;
+  showNexusIntent: boolean;
   showNexusAccount: boolean;
   showNexusHeroSecondary: boolean;
   showNexusStart: boolean;
@@ -224,6 +225,7 @@ export const defaultSettings: Settings = {
   showNexusHero: true,
   showNexusHeroPanel: true,
   showNexusRail: true,
+  showNexusIntent: true,
   showNexusAccount: true,
   showNexusHeroSecondary: true,
   showNexusStart: true,
