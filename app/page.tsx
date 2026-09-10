@@ -172,6 +172,18 @@ export default function Home() {
     }, { onConflict: "id" });
     setNotice(error ? "تعذر حفظ المسودة. شغّل owner_roles_drafts.sql أولًا." : "تم حفظ المسودة على الحساب ويمكن نشرها لاحقًا.");
   }
+  async function loadDraft() {
+    if (!supabase || !ownerSession) { setNotice("سجّل الدخول كمالك أو مشرف لتحميل المسودة."); return; }
+    const { data, error } = await supabase.from("site_content_drafts").select("payload,updated_at").eq("id", "main").maybeSingle();
+    if (error || !data?.payload) { setNotice(error ? "تعذر تحميل المسودة. شغّل owner_roles_drafts.sql أولًا." : "لا توجد مسودة محفوظة على الحساب."); return; }
+    const payload = data.payload as Partial<AcademyContent>;
+    if (payload.settings) setSettings({ ...defaults, ...payload.settings });
+    if (payload.courses) setCourses(payload.courses);
+    if (payload.lessons) setLessons(payload.lessons);
+    if (payload.articles) setArticles(payload.articles);
+    if (payload.books) setBooks(payload.books);
+    setNotice(`تم تحميل المسودة المحفوظة بتاريخ ${new Date(data.updated_at).toLocaleString("ar-EG")}.`);
+  }
   const [newsletterSending, setNewsletterSending] = useState(false);
   async function subscribeNewsletter(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -237,7 +249,7 @@ export default function Home() {
               <button className="primary">تسجيل الدخول</button>
             </form>
           ) : (
-            <OwnerContentEditor settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} setSettings={setSettings} setCourses={setCourses} setLessons={setLessons} setArticles={setArticles} setBooks={setBooks} onSave={save} onSaveDraft={saveDraft} onReset={() => { if (!window.confirm("استعادة المحتوى الافتراضي محليًا؟")) return; setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks); setNotice("تمت استعادة المحتوى الافتراضي محليًا. اضغط حفظ ونشر لاعتماده."); }} onLogout={() => { void supabase?.auth.signOut(); setOwnerSession(false); }} busy={saving} setNotice={setNotice} />
+            <OwnerContentEditor settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} setSettings={setSettings} setCourses={setCourses} setLessons={setLessons} setArticles={setArticles} setBooks={setBooks} onSave={save} onSaveDraft={saveDraft} onLoadDraft={loadDraft} onReset={() => { if (!window.confirm("استعادة المحتوى الافتراضي محليًا؟")) return; setSettings(defaults); setCourses(initialCourses); setLessons(initialLessons); setArticles(initialArticles); setBooks(initialBooks); setNotice("تمت استعادة المحتوى الافتراضي محليًا. اضغط حفظ ونشر لاعتماده."); }} onLogout={() => { void supabase?.auth.signOut(); setOwnerSession(false); }} busy={saving} setNotice={setNotice} />
           )}
         </div>
       </div>

@@ -6,7 +6,7 @@ import SiteFooter from "@/components/SiteFooter";
 
 export const revalidate = 0;
 
-type SearchParams = { q?: string };
+type SearchParams = { q?: string; type?: string };
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const { settings, courses, lessons, articles, books } = await getSiteContent();
-  const { q = "" } = await searchParams;
+  const { q = "", type = "all" } = await searchParams;
   const query = q.trim();
   const needle = query.toLocaleLowerCase("ar");
   const results = [
@@ -27,26 +27,30 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       meta: "دورة · " + level + " · " + count,
       text: title + " " + description,
       href: "/courses/" + encodeURIComponent(slugify(title)),
+      kind: "course",
     })),
     ...lessons.map(([title, meta]) => ({
       title,
       meta: "درس صوتي · " + meta,
       text: title + " " + meta,
       href: "/lessons/" + encodeURIComponent(slugify(title)),
+      kind: "lesson",
     })),
     ...articles.map(([title, category, time, body]) => ({
       title,
       meta: "مقال · " + category + " · " + time,
       text: title + " " + category + " " + (body ?? ""),
       href: "/articles/" + encodeURIComponent(slugify(title)),
+      kind: "article",
     })),
     ...books.map(([title, meta]) => ({
       title,
       meta: "كتاب وملف · " + meta,
       text: title + " " + meta,
       href: "/library",
+      kind: "book",
     })),
-  ].filter((item) => needle && item.text.toLocaleLowerCase("ar").includes(needle));
+  ].filter((item) => needle && (type === "all" || item.kind === type) && item.text.toLocaleLowerCase("ar").includes(needle));
 
   return (
     <>
@@ -58,6 +62,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         <p className="detail-body">اكتب كلمة أو عنوانًا للوصول السريع إلى الدورات والدروس والمقالات والملفات.</p>
         <form className="search-page-form" method="get">
           <input name="q" defaultValue={query} placeholder={settings.searchPlaceholder} aria-label={settings.searchPlaceholder} autoFocus />
+          <select name="type" defaultValue={type} aria-label="نوع المحتوى"><option value="all">كل المحتوى</option><option value="course">الدورات</option><option value="lesson">الدروس</option><option value="article">المقالات</option><option value="book">الكتب والملفات</option></select>
           <button className="primary">بحث</button>
         </form>
         {query ? (

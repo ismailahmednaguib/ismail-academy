@@ -7,6 +7,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
 import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
+import CourseProgress from "@/components/CourseProgress";
 
 export const revalidate = 0;
 
@@ -29,6 +30,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
   if (!course) notFound();
   const [title, desc, count, level] = course;
   const relatedLessons = lessons.filter(([, meta, , courseTitle]) => courseTitle ? slugify(courseTitle) === slugify(title) : meta.includes(title));
+  const recommendations = courses.filter(([candidateTitle, , , candidateLevel]) => candidateTitle !== title && candidateLevel === level).slice(0, 3);
 
   return (
     <>
@@ -43,6 +45,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
         <h1 className="page-title">{title}</h1>
         <ShareButtons title={title} />
         <LearningActions id={"course:" + decodeURIComponent(slug)} title={title} />
+        <CourseProgress lessonIds={relatedLessons.map(([lessonTitle]) => "lesson:" + slugify(lessonTitle))} />
         <p className="detail-body">{desc}</p>
 
         {relatedLessons.length > 0 && (
@@ -67,6 +70,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
             </div>
           </div>
         )}
+        {recommendations.length > 0 && <section className="recommendations"><div className="section-head"><div><p className="kicker">قد يناسبك أيضًا</p><h2>مسارات قريبة من رحلتك</h2></div></div><div className="recommendation-grid">{recommendations.map(([candidateTitle, candidateDesc, candidateCount, candidateLevel]) => <Link href={`/courses/${encodeURIComponent(slugify(candidateTitle))}`} className="recommendation-card" key={candidateTitle}><span>{candidateLevel}</span><b>{candidateTitle}</b><small>{candidateDesc}</small><i>{candidateCount} ←</i></Link>)}</div></section>}
       </main>
       <SiteFooter settings={settings} />
     </>

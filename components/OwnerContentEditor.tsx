@@ -8,8 +8,9 @@ import OwnerVisibilityPanel from "@/components/OwnerVisibilityPanel";
 import OwnerBrandControl from "@/components/OwnerBrandControl";
 import OwnerRolesPanel from "@/components/OwnerRolesPanel";
 import OwnerAnalyticsPanel from "@/components/OwnerAnalyticsPanel";
+import OwnerLivePreview from "@/components/OwnerLivePreview";
 
-type SubmissionTab = "overview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
+type SubmissionTab = "overview" | "preview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
 
 type BackupPayload = {
   settings?: Partial<Settings>;
@@ -32,6 +33,7 @@ type Props = {
   setBooks: (value: string[][]) => void;
   onSave: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
   onSaveDraft: () => void | Promise<void>;
+  onLoadDraft: () => void | Promise<void>;
   onReset: () => void;
   onLogout: () => void;
   busy: boolean;
@@ -220,7 +222,7 @@ function UploadButton({ label, accept, uploading, currentUrl, onChange }: { labe
   return <div className="upload-control"><label className="upload-button"><input type="file" accept={accept} onChange={onChange} />{uploading ? "جارٍ الرفع..." : label}</label>{currentUrl ? <a className="upload-link" href={currentUrl} target="_blank" rel="noreferrer">فتح الملف الحالي ↗</a> : <span className="upload-empty">لم يتم رفع ملف بعد</span>}</div>;
 }
 
-export default function OwnerContentEditor({ settings, courses, lessons, articles, books, setSettings, setCourses, setLessons, setArticles, setBooks, onSave, onSaveDraft, onReset, onLogout, busy, setNotice }: Props) {
+export default function OwnerContentEditor({ settings, courses, lessons, articles, books, setSettings, setCourses, setLessons, setArticles, setBooks, onSave, onSaveDraft, onLoadDraft, onReset, onLogout, busy, setNotice }: Props) {
   const [tab, setTab] = useState<SubmissionTab>("overview");
   const [uploading, setUploading] = useState<string | null>(null);
   const [localDraftAvailable, setLocalDraftAvailable] = useState(false);
@@ -383,14 +385,16 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     }
   }
 
-  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الإشعارات والأعضاء"], ["backup", "النسخ الاحتياطي"]];
+  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["preview", "معاينة مباشرة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الإشعارات والأعضاء"], ["backup", "النسخ الاحتياطي"]];
 
   return <form onSubmit={onSave} className="owner-editor">
-    <div className="owner-toolbar"><p className="admin-note">أنت داخل لوحة الإدارة. يتم حفظ نسخة محلية تلقائيًا أثناء التعديل؛ استخدم المسودة للمراجعة ثم انشر للزوار عند الجاهزية.</p><div className="owner-toolbar-actions">{localDraftAvailable && <button type="button" className="ghost small-owner-button" onClick={restoreLocalDraft}>استعادة المسودة المحلية</button>}<a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
+    <div className="owner-toolbar"><p className="admin-note">أنت داخل لوحة الإدارة. يتم حفظ نسخة محلية تلقائيًا أثناء التعديل؛ استخدم المسودة للمراجعة ثم انشر للزوار عند الجاهزية.</p><div className="owner-toolbar-actions">{localDraftAvailable && <button type="button" className="ghost small-owner-button" onClick={restoreLocalDraft}>استعادة المسودة المحلية</button>}<button type="button" className="ghost small-owner-button" onClick={() => void onLoadDraft()}>تحميل آخر مسودة</button><a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
     <div className="owner-layout">
       <nav className="owner-tabs">{tabs.map(([value, label]) => <button type="button" key={value} className={tab === value ? "active" : ""} onClick={() => setTab(value)}>{label}</button>)}</nav>
       <div className="owner-panel">
         {tab === "overview" && <><div className="owner-overview"><div className="owner-stat"><b>{courses.length}</b><span>دورات</span></div><div className="owner-stat"><b>{lessons.length}</b><span>دروس</span></div><div className="owner-stat"><b>{articles.length}</b><span>مقالات</span></div><div className="owner-stat"><b>{books.length}</b><span>ملفات</span></div><div className={`owner-health ${contentWarnings.length ? "has-warnings" : "is-ready"}`}><div><b>{contentWarnings.length ? `${contentWarnings.length} عناصر تحتاج مراجعة` : "المحتوى جاهز للنشر"}</b><p>{contentWarnings.length ? "راجع الملفات التالية قبل النشر النهائي:" : "لا توجد ملفات أساسية ناقصة في الدروس والكتب والمقالات."}</p></div>{contentWarnings.length > 0 && <ul>{contentWarnings.slice(0, 6).map((warning) => <li key={warning}>{warning}</li>)}</ul>}</div><div className="owner-help"><b>طريقة العمل</b><p>أضف العناصر من تبويبها، ارفع الصوت أو PDF من نفس البطاقة، ثم احفظ مرة واحدة. الروابط تُحفظ داخل المحتوى المنشور ولا تحتاج تعديل كود.</p></div></div><OwnerAnalyticsPanel /></>}
+
+        {tab === "preview" && <section className="owner-section"><h3>معاينة قبل النشر</h3><p className="admin-note">استعرض شكل الهوية والهيرو والعدادات بالإعدادات الحالية. هذه المعاينة لا تغيّر النسخة المنشورة.</p><OwnerLivePreview settings={settings} counts={{ courses: courses.length, lessons: lessons.length, articles: articles.length, books: books.length }} /></section>}
 
         {tab === "visibility" && <OwnerVisibilityPanel settings={settings} setSettings={setSettings} />}
 
