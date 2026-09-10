@@ -46,18 +46,73 @@ export type Settings = {
   showNexusLanguage: boolean;
   showNexusTheme: boolean;
   showNexusHero: boolean;
+  showNexusHeroTag: boolean;
+  showNexusHeroProof: boolean;
   showNexusHeroPanel: boolean;
+  showNexusPanelStats: boolean;
+  showNexusAnnouncementAction: boolean;
   showNexusRail: boolean;
   showNexusIntent: boolean;
   showNexusAccount: boolean;
   showNexusHeroSecondary: boolean;
   showNexusStart: boolean;
   showNexusFeatured: boolean;
+  showNexusFeatureMeta: boolean;
   showNexusFlow: boolean;
+  showNexusFlowSteps: boolean;
   showNexusDesk: boolean;
+  showNexusDeskList: boolean;
   showNexusEvent: boolean;
+  showNexusEventQuote: boolean;
   showNexusNewsletter: boolean;
+  showNexusNewsletterForm: boolean;
   showNexusFooter: boolean;
+  nexusSkipLink: string;
+  nexusAcademyLabel: string;
+  nexusTodayLabel: string;
+  nexusAvailableLabel: string;
+  nexusNextStepLabel: string;
+  nexusStartLessonLabel: string;
+  nexusSearchLabel: string;
+  nexusMenuLabel: string;
+  nexusSearchAriaLabel: string;
+  nexusWebsiteFieldLabel: string;
+  nexusReadFallbackLabel: string;
+  nexusCoursesCountLabel: string;
+  nexusMaterialsCountLabel: string;
+  nexusAlwaysLabel: string;
+  nexusIntentQuestion: string;
+  nexusIntentStartLabel: string;
+  nexusIntentQuickLabel: string;
+  nexusIntentReadLabel: string;
+  nexusRailIntro: string;
+  nexusRailCourses: string;
+  nexusRailMaterials: string;
+  nexusRailAudience: string;
+  nexusStartEyebrow: string;
+  nexusStartTitle: string;
+  nexusStartText: string;
+  nexusMaterialCountLabel: string;
+  nexusFeaturedEyebrow: string;
+  nexusFeaturedTitle: string;
+  nexusExploreAllLabel: string;
+  nexusPathLabel: string;
+  nexusOpenLabel: string;
+  nexusReadTodayLabel: string;
+  nexusLibraryLabel: string;
+  nexusFlowEyebrow: string;
+  nexusFlowTitle: string;
+  nexusFlowText: string;
+  nexusFlowChooseTitle: string;
+  nexusFlowChooseText: string;
+  nexusFlowDeepenTitle: string;
+  nexusFlowDeepenText: string;
+  nexusFlowContinueTitle: string;
+  nexusFlowContinueText: string;
+  nexusDeskEyebrow: string;
+  nexusDeskTitle: string;
+  nexusDeskText: string;
+  nexusSendingLabel: string;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -175,6 +230,10 @@ export type Settings = {
   majlisTopic: string;
   majlisMeta: string;
   majlisQuote: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+  canonicalUrl: string;
 };
 
 export const defaultSettings: Settings = {
@@ -223,18 +282,73 @@ export const defaultSettings: Settings = {
   showNexusLanguage: true,
   showNexusTheme: true,
   showNexusHero: true,
+  showNexusHeroTag: true,
+  showNexusHeroProof: true,
   showNexusHeroPanel: true,
+  showNexusPanelStats: true,
+  showNexusAnnouncementAction: true,
   showNexusRail: true,
   showNexusIntent: true,
   showNexusAccount: true,
   showNexusHeroSecondary: true,
   showNexusStart: true,
   showNexusFeatured: true,
+  showNexusFeatureMeta: true,
   showNexusFlow: true,
+  showNexusFlowSteps: true,
   showNexusDesk: true,
+  showNexusDeskList: true,
   showNexusEvent: true,
+  showNexusEventQuote: true,
   showNexusNewsletter: true,
+  showNexusNewsletterForm: true,
   showNexusFooter: true,
+  nexusSkipLink: "تخطى إلى المحتوى",
+  nexusAcademyLabel: "ACADEMY 01",
+  nexusTodayLabel: "جلسة اليوم",
+  nexusAvailableLabel: "متاح",
+  nexusNextStepLabel: "الخطوة التالية",
+  nexusStartLessonLabel: "ابدأ الدرس",
+  nexusSearchLabel: "بحث",
+  nexusMenuLabel: "القائمة",
+  nexusSearchAriaLabel: "البحث",
+  nexusWebsiteFieldLabel: "الموقع الإلكتروني",
+  nexusReadFallbackLabel: "قراءة قصيرة",
+  nexusCoursesCountLabel: "مسارات",
+  nexusMaterialsCountLabel: "مواد",
+  nexusAlwaysLabel: "متاح دائمًا",
+  nexusIntentQuestion: "ماذا تحتاج الآن؟",
+  nexusIntentStartLabel: "أبدأ من الصفر",
+  nexusIntentQuickLabel: "درس سريع",
+  nexusIntentReadLabel: "قراءة",
+  nexusRailIntro: "تعلم منظم",
+  nexusRailCourses: "مسارات تعليمية",
+  nexusRailMaterials: "درسًا وقراءة",
+  nexusRailAudience: "مصمم للعالم العربي",
+  nexusStartEyebrow: "اختَر مدخلك",
+  nexusStartTitle: "ابدأ من المكان المناسب لك.",
+  nexusStartText: "لا تحتاج إلى مسار طويل في البداية. اختر مادة واحدة، ثم دع الاستمرار يبني الطريق.",
+  nexusMaterialCountLabel: "{count} مواد جاهزة",
+  nexusFeaturedEyebrow: "مختارات اليوم",
+  nexusFeaturedTitle: "محتوى يستحق وقتك.",
+  nexusExploreAllLabel: "استكشف الكل ↗",
+  nexusPathLabel: "مسار مقترح",
+  nexusOpenLabel: "مفتوح للجميع",
+  nexusReadTodayLabel: "قراءة اليوم",
+  nexusLibraryLabel: "من المكتبة",
+  nexusFlowEyebrow: "طريقة بسيطة",
+  nexusFlowTitle: "تعلّم بطريقة يمكن أن تستمر.",
+  nexusFlowText: "التجربة مصممة لتقلل التشتت: اختر، استمع أو اقرأ، ثم احفظ أثر الخطوة.",
+  nexusFlowChooseTitle: "اختر",
+  nexusFlowChooseText: "مسار واضح أو درس قصير يناسب وقتك الآن.",
+  nexusFlowDeepenTitle: "تعمّق",
+  nexusFlowDeepenText: "استمع، اقرأ، واستخدم المراجعة لتثبيت الفكرة.",
+  nexusFlowContinueTitle: "استمر",
+  nexusFlowContinueText: "احفظ ما ينفعك وارجع إليه من مكتبك الشخصي.",
+  nexusDeskEyebrow: "مكتبك الشخصي",
+  nexusDeskTitle: "أكمل من حيث توقفت.",
+  nexusDeskText: "احفظ المواد المهمة، وستجدها هنا عندما تعود من أي جهاز.",
+  nexusSendingLabel: "جارٍ...",
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
@@ -353,6 +467,10 @@ export const defaultSettings: Settings = {
   majlisTopic: "كيف نبدأ طلب العلم بثبات؟",
   majlisMeta: "بعد صلاة المغرب · لقاء مباشر",
   majlisQuote: "أحب الأعمال إلى الله أدومها وإن قل.",
+  seoTitle: "أكاديمية إسماعيل أحمد نجيب | علمٌ يُفهم، وأثرٌ يبقى",
+  seoDescription: "أكاديمية عربية للدروس والمقالات والمجالس والمكتبة، بتجربة تعلم هادئة ومنظمة.",
+  seoKeywords: "أكاديمية عربية, طلب العلم, دروس, مقالات, مكتبة, مجالس, تعلم ذاتي",
+  canonicalUrl: "",
 };
 
 // Row shape per section (kept as string[] to stay compatible with the

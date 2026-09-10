@@ -18,28 +18,32 @@ import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
-  const description = settings.heroText || "منصة عربية للعلم النافع والدروس والمجالس والمكتبة.";
+  const description = settings.seoDescription || settings.heroText || "منصة عربية للعلم النافع والدروس والمجالس والمكتبة.";
+  const title = settings.seoTitle || settings.name;
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl;
+  const siteUrl = /^https?:\/\//.test(configuredUrl) ? configuredUrl : "https://ismailahmednaguib.vercel.app";
+  const keywords = settings.seoKeywords.split(",").map((item) => item.trim()).filter(Boolean);
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ismailahmednaguib.vercel.app"),
-    title: settings.name,
+    metadataBase: new URL(siteUrl),
+    title,
     description,
     openGraph: {
-      title: settings.name,
+      title,
       description,
       locale: "ar_EG",
       alternateLocale: ["en_US"],
       type: "website",
     },
     alternates: {
-      canonical: "/",
+      canonical: settings.canonicalUrl || "/",
       languages: { ar: "/", en: "/?lang=en" },
     },
-    keywords: ["Islamic learning", "Arabic education", "online academy", "أكاديمية", "علم نافع"],
+    keywords: keywords.length ? keywords : ["أكاديمية", "علم نافع"],
     authors: [{ name: settings.name }],
     creator: settings.name,
     twitter: {
       card: "summary_large_image",
-      title: settings.name,
+      title,
       description,
     },
   };
@@ -64,12 +68,14 @@ export default async function RootLayout({
     "--cream": isHex(settings.creamColor) ? settings.creamColor : "#f3f0e6",
     "--sage": isHex(settings.sageColor) ? settings.sageColor : "#dce9df",
   } as CSSProperties;
+  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl;
+  const siteUrl = /^https?:\/\//.test(configuredUrl) ? configuredUrl : "https://ismailahmednaguib.vercel.app";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: settings.name,
     description: settings.tagline,
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://ismailahmednaguib.vercel.app",
+    url: siteUrl,
     inLanguage: ["ar", "en"],
     areaServed: "Worldwide",
   };

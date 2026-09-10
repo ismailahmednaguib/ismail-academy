@@ -11,7 +11,7 @@ import OwnerAnalyticsPanel from "@/components/OwnerAnalyticsPanel";
 import OwnerLivePreview from "@/components/OwnerLivePreview";
 import OwnerHistoryPanel from "@/components/OwnerHistoryPanel";
 
-type SubmissionTab = "overview" | "preview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
+type SubmissionTab = "overview" | "preview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "roles" | "backup";
 
 type BackupPayload = {
   settings?: Partial<Settings>;
@@ -76,18 +76,73 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["showNexusLanguage", "إظهار مبدّل اللغة", false],
   ["showNexusTheme", "إظهار مبدّل الوضع الليلي", false],
   ["showNexusHero", "إظهار الواجهة الرئيسية", false],
+  ["showNexusHeroTag", "إظهار وسم الواجهة", false],
+  ["showNexusHeroProof", "إظهار شواهد الواجهة", false],
   ["showNexusHeroPanel", "إظهار لوحة جلسة اليوم", false],
+  ["showNexusPanelStats", "إظهار إحصائيات جلسة اليوم", false],
+  ["showNexusAnnouncementAction", "إظهار زر الإعلان", false],
   ["showNexusRail", "إظهار شريط المؤشرات", false],
   ["showNexusIntent", "إظهار اختيار هدف التعلم", false],
   ["showNexusAccount", "إظهار دخول وحساب الزائر", false],
   ["showNexusHeroSecondary", "إظهار الزر الثانوي", false],
   ["showNexusStart", "إظهار بوابات البداية", false],
   ["showNexusFeatured", "إظهار المحتوى المميز", false],
+  ["showNexusFeatureMeta", "إظهار تفاصيل المحتوى المميز", false],
   ["showNexusFlow", "إظهار طريقة استخدام الأكاديمية", false],
+  ["showNexusFlowSteps", "إظهار خطوات طريقة الاستخدام", false],
   ["showNexusDesk", "إظهار مكتب الطالب", false],
+  ["showNexusDeskList", "إظهار قائمة مكتب الطالب", false],
   ["showNexusEvent", "إظهار بطاقة المجلس الجديدة", false],
+  ["showNexusEventQuote", "إظهار اقتباس المجلس", false],
   ["showNexusNewsletter", "إظهار النشرة الجديدة", false],
+  ["showNexusNewsletterForm", "إظهار نموذج النشرة", false],
   ["showNexusFooter", "إظهار فوتر النسخة الجديدة", false],
+  ["nexusSkipLink", "نص تخطي إلى المحتوى", false],
+  ["nexusAcademyLabel", "وسم الأكاديمية في الواجهة", false],
+  ["nexusTodayLabel", "عنوان جلسة اليوم", false],
+  ["nexusAvailableLabel", "حالة التوفر", false],
+  ["nexusNextStepLabel", "عنوان الخطوة التالية", false],
+  ["nexusStartLessonLabel", "زر بدء الدرس", false],
+  ["nexusSearchLabel", "اسم زر البحث", false],
+  ["nexusMenuLabel", "اسم قائمة الهاتف", false],
+  ["nexusSearchAriaLabel", "الوصف الصوتي لخانة البحث", false],
+  ["nexusWebsiteFieldLabel", "اسم حقل مكافحة الرسائل المزعجة", false],
+  ["nexusReadFallbackLabel", "النص البديل لمدة القراءة", false],
+  ["nexusCoursesCountLabel", "نص عدد المسارات", false],
+  ["nexusMaterialsCountLabel", "نص عدد المواد", false],
+  ["nexusAlwaysLabel", "نص التوفر الدائم", false],
+  ["nexusIntentQuestion", "سؤال هدف التعلم", false],
+  ["nexusIntentStartLabel", "زر أبدأ من الصفر", false],
+  ["nexusIntentQuickLabel", "زر درس سريع", false],
+  ["nexusIntentReadLabel", "زر القراءة", false],
+  ["nexusRailIntro", "مقدمة شريط المؤشرات", false],
+  ["nexusRailCourses", "نص المسارات في الشريط", false],
+  ["nexusRailMaterials", "نص المواد في الشريط", false],
+  ["nexusRailAudience", "نص الجمهور في الشريط", false],
+  ["nexusStartEyebrow", "العنوان الصغير لبوابات البداية", false],
+  ["nexusStartTitle", "عنوان بوابات البداية", false],
+  ["nexusStartText", "وصف بوابات البداية", true],
+  ["nexusMaterialCountLabel", "قالب عدد المواد — استخدم {count}", false],
+  ["nexusFeaturedEyebrow", "العنوان الصغير للمميز", false],
+  ["nexusFeaturedTitle", "عنوان المحتوى المميز", false],
+  ["nexusExploreAllLabel", "زر استكشاف كل المحتوى", false],
+  ["nexusPathLabel", "وسم المسار المقترح", false],
+  ["nexusOpenLabel", "نص المحتوى المفتوح", false],
+  ["nexusReadTodayLabel", "وسم قراءة اليوم", false],
+  ["nexusLibraryLabel", "وسم المكتبة", false],
+  ["nexusFlowEyebrow", "العنوان الصغير لطريقة الاستخدام", false],
+  ["nexusFlowTitle", "عنوان طريقة الاستخدام", false],
+  ["nexusFlowText", "وصف طريقة الاستخدام", true],
+  ["nexusFlowChooseTitle", "عنوان خطوة اختر", false],
+  ["nexusFlowChooseText", "وصف خطوة اختر", false],
+  ["nexusFlowDeepenTitle", "عنوان خطوة تعمق", false],
+  ["nexusFlowDeepenText", "وصف خطوة تعمق", false],
+  ["nexusFlowContinueTitle", "عنوان خطوة استمر", false],
+  ["nexusFlowContinueText", "وصف خطوة استمر", false],
+  ["nexusDeskEyebrow", "العنوان الصغير لمكتب الطالب", false],
+  ["nexusDeskTitle", "عنوان مكتب الطالب", false],
+  ["nexusDeskText", "وصف مكتب الطالب", true],
+  ["nexusSendingLabel", "حالة إرسال النشرة", false],
   ["homeLeadKicker", "الشارة الصغيرة الجديدة في الهيرو", false],
   ["homeLeadTitle", "العنوان الرئيسي الجديد", false],
   ["homeLeadText", "وصف الهيرو الجديد", true],
@@ -203,10 +258,14 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["majlisTopic", "عنوان المجلس", false],
   ["majlisMeta", "تفاصيل المجلس", false],
   ["majlisQuote", "اقتباس المجلس", true],
+  ["seoTitle", "عنوان SEO والمشاركة", false],
+  ["seoDescription", "وصف SEO والمشاركة", true],
+  ["seoKeywords", "كلمات SEO — افصلها بفواصل", false],
+  ["canonicalUrl", "الرابط الأساسي للموقع اختياري", false],
 ];
 
 const colorKeys = new Set<keyof Settings>(["inkColor", "goldColor", "goldSoftColor", "accentColor", "accentSoftColor", "paperColor", "creamColor", "sageColor"]);
-const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showStudyMomentum", "showSearch", "showLearningShelf", "showFooter", "showBrandImage", "showNexusHeader", "showNexusSearch", "showNexusLanguage", "showNexusTheme", "showNexusHero", "showNexusHeroPanel", "showNexusRail", "showNexusIntent", "showNexusAccount", "showNexusHeroSecondary", "showNexusStart", "showNexusFeatured", "showNexusFlow", "showNexusDesk", "showNexusEvent", "showNexusNewsletter", "showNexusFooter", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
+const toggleKeys = new Set<keyof Settings>(["showAnnouncement", "showCourses", "showLessons", "showMajlis", "showArticles", "showLibrary", "showNewsletter", "showStudyMomentum", "showSearch", "showLearningShelf", "showFooter", "showBrandImage", "showNexusHeader", "showNexusSearch", "showNexusLanguage", "showNexusTheme", "showNexusHero", "showNexusHeroTag", "showNexusHeroProof", "showNexusHeroPanel", "showNexusPanelStats", "showNexusAnnouncementAction", "showNexusRail", "showNexusIntent", "showNexusAccount", "showNexusHeroSecondary", "showNexusStart", "showNexusFeatured", "showNexusFeatureMeta", "showNexusFlow", "showNexusFlowSteps", "showNexusDesk", "showNexusDeskList", "showNexusEvent", "showNexusEventQuote", "showNexusNewsletter", "showNexusNewsletterForm", "showNexusFooter", "showBackToTop", "showReadingProgress", "showMobileBar", "showContactLinks"]);
 const selectOptions: Partial<Record<keyof Settings, { value: string; label: string }[]>> = {
   siteDensity: [{ value: "airy", label: "واسع وهادئ" }, { value: "balanced", label: "متوازن" }, { value: "compact", label: "مضغوط وعملي" }],
   layoutStyle: [{ value: "bento", label: "Bento — بطاقات جريئة" }, { value: "editorial", label: "Editorial — تحريري" }, { value: "minimal", label: "Minimal — هادئ" }],
@@ -427,7 +486,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     }
   }
 
-  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["preview", "معاينة مباشرة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الإشعارات والأعضاء"], ["backup", "النسخ الاحتياطي"]];
+  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["preview", "معاينة مباشرة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الأعضاء والنشرة"], ["roles", "الصلاحيات"], ["backup", "النسخ الاحتياطي"]];
 
   return <form onSubmit={onSave} className="owner-editor">
     <div className="owner-toolbar"><p className="admin-note">أنت داخل لوحة الإدارة. يتم حفظ نسخة محلية تلقائيًا أثناء التعديل؛ استخدم المسودة للمراجعة ثم انشر للزوار عند الجاهزية.</p><div className="owner-toolbar-actions">{localDraftAvailable && <button type="button" className="ghost small-owner-button" onClick={restoreLocalDraft}>استعادة المسودة المحلية</button>}<button type="button" className="ghost small-owner-button" onClick={() => void onLoadDraft()}>تحميل آخر مسودة</button><a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
@@ -453,7 +512,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
         {tab === "books" && <section className="owner-section"><div className="owner-section-head"><div><h3>الكتب والملفات</h3><p className="admin-note">اسم الملف | الوصف والحجم | رابط PDF</p></div><button type="button" className="ghost small-owner-button" onClick={() => setBooks([...books, ["ملف جديد", "PDF", "", "true"]])}>+ إضافة ملف</button></div>{books.map((row, index) => <div className="owner-card" key={`book-${index}`}><div className="owner-card-head"><b>{row[0] || "ملف بلا عنوان"}</b><div className="owner-card-controls"><button type="button" disabled={index === 0} onClick={() => moveRow(setBooks, books, index, -1)} aria-label="تحريك لأعلى">↑</button><button type="button" disabled={index === books.length - 1} onClick={() => moveRow(setBooks, books, index, 1)} aria-label="تحريك لأسفل">↓</button><button type="button" onClick={() => duplicateRow(setBooks, books, index)}>نسخ</button><button type="button" className="danger-link" onClick={() => removeRow(setBooks, books, index)}>حذف</button></div></div><div className="owner-fields compact"><label>اسم الملف<input value={row[0] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 0, event.target.value)} /></label><label>الوصف والحجم<input value={row[1] ?? ""} onChange={(event) => updateRow(setBooks, books, index, 1, event.target.value)} /></label><label className="wide-field">رابط PDF<input value={row[2] ?? ""} placeholder="https://... أو ارفع ملفًا من الزر" onChange={(event) => updateRow(setBooks, books, index, 2, event.target.value)} /></label><label className="owner-featured"><input type="checkbox" checked={row[3] !== "false"} onChange={(event) => updateRow(setBooks, books, index, 3, event.target.checked ? "true" : "false")} /> يظهر في الرئيسية</label></div><UploadButton label="رفع ملف PDF" accept="application/pdf" uploading={uploading === `book-${index}`} currentUrl={row[2]} onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile("book", index, file); event.currentTarget.value = ""; }} /></div>)}</section>}
 
         {tab === "submissions" && <OwnerNotifications />}
-        {tab === "submissions" && <OwnerRolesPanel setNotice={setNotice} />}
+        {tab === "roles" && <OwnerRolesPanel setNotice={setNotice} />}
         {tab === "submissions" && <section className="owner-section"><div className="owner-section-head"><div><h3>المشتركون وطلبات الاهتمام</h3><p className="admin-note">بيانات خاصة بالمالك فقط، ويتم تحميل آخر 100 سجل.</p></div><button type="button" className="ghost small-owner-button" onClick={() => void loadSubmissions()}>تحديث</button></div><div className="submission-grid"><div className="submission-box"><h4>النشرة البريدية ({subscribers.length})</h4>{subscribers.length ? subscribers.map((row) => <div className="submission-row" key={row.id}><span>{row.email}<small>{new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("newsletter_subscribers", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد اشتراكات ظاهرة أو لم يتم تشغيل جدول النشرة بعد.</p>}</div><div className="submission-box"><h4>اهتمام بالمجلس ({interests.length})</h4>{interests.length ? interests.map((row) => <div className="submission-row" key={row.id}><span>{row.name}<small>{row.contact} · {new Date(row.created_at).toLocaleDateString("ar-EG")}</small></span><button type="button" className="danger-link" onClick={() => void deleteSubmission("majlis_interest", row.id)}>حذف</button></div>) : <p className="admin-note">لا توجد طلبات ظاهرة أو لم يتم تشغيل جدول المجلس بعد.</p>}</div></div></section>}
         {tab === "backup" && <><section className="owner-section"><div className="owner-section-head"><div><h3>النسخ الاحتياطي</h3><p className="admin-note">احتفظ بنسخة من كل محتوى الموقع قبل أي تعديل كبير، واستوردها عند الحاجة.</p></div></div><div className="backup-actions"><button type="button" className="primary" onClick={exportBackup}>تنزيل نسخة احتياطية</button><button type="button" className="ghost" onClick={() => importInputRef.current?.click()}>استيراد نسخة JSON</button><input ref={importInputRef} type="file" accept="application/json,.json" hidden onChange={(event) => void importBackup(event)} /></div><p className="admin-note">الاستيراد يحمّل البيانات محليًا فقط. راجع المحتوى أولًا ثم اضغط «حفظ ونشر للجميع».</p></section><OwnerHistoryPanel setNotice={setNotice} /></>}
       </div>
