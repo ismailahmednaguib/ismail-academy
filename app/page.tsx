@@ -22,6 +22,7 @@ import WorldCommunity, { WorldGlobe } from "@/components/WorldCommunity";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
 import HomeSpotlight from "@/components/HomeSpotlight";
+import ModernHomepage from "@/components/ModernHomepage";
 
 type AuthSessionLike = { user: { id: string } } | null;
 
@@ -229,6 +230,8 @@ export default function Home() {
   };
   const ownerAccessLabel = ownerSession ? settings.ownerPanelLabel : "دخول المالك";
   return <div className="redesign-site">
+    <ModernHomepage settings={settings} courses={courses} lessons={lessons} articles={articles} books={books} search={search} setSearch={setSearch} results={results} ownerSession={ownerSession} onOpenAdmin={openAdmin} onOpenInterest={() => setInterestOpen(true)} onSubscribeNewsletter={subscribeNewsletter} newsletterSending={newsletterSending} />
+    <div className="legacy-public" aria-hidden="true">
     <a href="#top" className="skip-link">تخطى إلى المحتوى</a>
     {settings.showAnnouncement && <div className="announcement"><span className="announcement-dot" aria-hidden="true" /> {settings.announcement} {settings.showMajlis && <Link className="announcement-link" href="/majalis">{settings.announcementButton}</Link>}</div>}
     <header className="nav"><div className="nav-identity"><a className="brand" href="#top"><i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i><span>{settings.name}<small>{settings.tagline}</small></span></a></div><div className="nav-center"><small className="nav-context">مكتبة معرفة · مجتمع · مجلس</small><nav className={menu ? "links open" : "links"}>{[[settings.navHome,"/"], ...(settings.showCourses ? [[settings.navCourses,"/courses"]] : []), ...(settings.showLessons ? [[settings.navLessons,"/lessons"]] : []), ...(settings.showMajlis ? [[settings.navMajlis,"/majalis"]] : []), ...(settings.showArticles ? [[settings.navArticles,"/articles"]] : []), ...(settings.showLibrary ? [[settings.navLibrary,"/library"]] : [])].map(([label,href]) => <Link key={href} href={href} onClick={() => setMenu(false)}>{label}</Link>)}<button className="mobile-owner" onClick={() => void openAdmin()}>{ownerAccessLabel}</button><span className="mobile-owner"><MemberAccount /></span></nav></div>
@@ -245,6 +248,7 @@ export default function Home() {
     </main>
     {settings.showFooter && <SiteFooter settings={settings} />}
     {settings.showBackToTop && showTopButton && <button className="back-to-top" type="button" aria-label="العودة إلى أعلى الصفحة" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}><span>↑</span><small>أعلى</small></button>}
+    </div>
     {notice && <div className="toast">{notice}<button onClick={() => setNotice("")}>×</button></div>}
     {admin && (
       <div className="modal" role="dialog" aria-modal="true">

@@ -8,6 +8,8 @@ import "./world.css";
 import "./platform.css";
 import "./final.css";
 import "./redesign.css";
+import "./modern.css";
+import "./ultimate.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
