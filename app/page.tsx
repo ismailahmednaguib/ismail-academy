@@ -77,6 +77,18 @@ export default function Home() {
     const timer = window.setTimeout(() => { void loadPublishedContent(); }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+  useEffect(() => {
+    if (!supabase) return;
+    const syncOwnerAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const access = await getAdminAccess(session);
+      setOwnerSession(access.allowed);
+    };
+    const listener = () => { void syncOwnerAccess(); };
+    window.addEventListener("academy-auth-change", listener);
+    void syncOwnerAccess();
+    return () => window.removeEventListener("academy-auth-change", listener);
+  }, []);
   async function openAdmin() {
     if (!supabase) { setNotice("أضف إعدادات Supabase في ملف .env.local أولًا."); return; }
     const { data: { session } } = await supabase.auth.getSession();

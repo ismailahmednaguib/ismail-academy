@@ -10,6 +10,7 @@ import "./final.css";
 import "./redesign.css";
 import "./ultimate.css";
 import "./pulse.css";
+import "./owner-console.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
