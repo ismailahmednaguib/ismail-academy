@@ -156,7 +156,10 @@ export default function Home() {
     }
     setSaving(true);
     const { error } = await supabase.from("site_content").update({ payload: { settings, courses, lessons, articles, books } }).eq("id", "main");
-    if (!error) await supabase.from("site_content_drafts").delete().eq("id", "main");
+    if (!error) {
+      await supabase.from("site_content_drafts").delete().eq("id", "main");
+      await supabase.rpc("write_site_audit", { action_name: "نشر المحتوى", target_name: "site_content", detail_text: "تم نشر نسخة جديدة من لوحة الإدارة" });
+    }
     setSaving(false);
     setNotice(error ? "تعذر النشر. شغّل ملفات SQL الجديدة وتأكد من صلاحية حسابك." : "تم النشر بنجاح وسيظهر التحديث لكل الزوار.");
   }

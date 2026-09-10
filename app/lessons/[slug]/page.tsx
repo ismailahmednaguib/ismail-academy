@@ -7,6 +7,8 @@ import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
 import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
+import MediaPlayer from "@/components/MediaPlayer";
+import MemberNotes from "@/components/MemberNotes";
 
 export const revalidate = 0;
 
@@ -39,12 +41,13 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
         <h1 className="page-title">{title}</h1>
         <ShareButtons title={title} />
         <LearningActions id={"lesson:" + decodeURIComponent(slug)} title={title} />
-        {videoUrl ? <video controls preload="metadata" className="lesson-video"><source src={videoUrl} />متصفحك لا يدعم تشغيل الفيديو.</video> : null}
+        {videoUrl ? <MediaPlayer src={videoUrl} contentId={"lesson:" + decodeURIComponent(slug) + ":video"} kind="video" /> : null}
         {audioUrl ? (
-          <audio controls src={audioUrl} className="lesson-audio" />
+          <MediaPlayer src={audioUrl} contentId={"lesson:" + decodeURIComponent(slug) + ":audio"} kind="audio" />
         ) : !videoUrl ? (
           <p className="detail-body">الملف الصوتي لهذا الدرس سيُضاف قريبًا بإذن الله.</p>
         ) : null}
+        <MemberNotes contentId={"lesson:" + decodeURIComponent(slug)} />
       </main>
       <SiteFooter settings={settings} />
     </>

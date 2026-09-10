@@ -6,6 +6,7 @@ import "./premium.css";
 import "./pages-premium.css";
 import "./world.css";
 import "./platform.css";
+import "./final.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";

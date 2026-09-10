@@ -7,6 +7,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
 import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
+import MemberNotes from "@/components/MemberNotes";
 
 export const revalidate = 0;
 
@@ -52,6 +53,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         ) : (
           <p className="detail-body">نص المقال الكامل سيُضاف قريبًا بإذن الله.</p>
         )}
+        <MemberNotes contentId={"article:" + decodeURIComponent(slug)} />
       </main>
       <SiteFooter settings={settings} />
     </>
