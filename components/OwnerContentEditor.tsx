@@ -7,6 +7,7 @@ import OwnerNotifications from "@/components/OwnerNotifications";
 import OwnerVisibilityPanel from "@/components/OwnerVisibilityPanel";
 import OwnerBrandControl from "@/components/OwnerBrandControl";
 import OwnerRolesPanel from "@/components/OwnerRolesPanel";
+import OwnerAnalyticsPanel from "@/components/OwnerAnalyticsPanel";
 
 type SubmissionTab = "overview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "backup";
 
@@ -389,7 +390,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     <div className="owner-layout">
       <nav className="owner-tabs">{tabs.map(([value, label]) => <button type="button" key={value} className={tab === value ? "active" : ""} onClick={() => setTab(value)}>{label}</button>)}</nav>
       <div className="owner-panel">
-        {tab === "overview" && <div className="owner-overview"><div className="owner-stat"><b>{courses.length}</b><span>دورات</span></div><div className="owner-stat"><b>{lessons.length}</b><span>دروس</span></div><div className="owner-stat"><b>{articles.length}</b><span>مقالات</span></div><div className="owner-stat"><b>{books.length}</b><span>ملفات</span></div><div className={`owner-health ${contentWarnings.length ? "has-warnings" : "is-ready"}`}><div><b>{contentWarnings.length ? `${contentWarnings.length} عناصر تحتاج مراجعة` : "المحتوى جاهز للنشر"}</b><p>{contentWarnings.length ? "راجع الملفات التالية قبل النشر النهائي:" : "لا توجد ملفات أساسية ناقصة في الدروس والكتب والمقالات."}</p></div>{contentWarnings.length > 0 && <ul>{contentWarnings.slice(0, 6).map((warning) => <li key={warning}>{warning}</li>)}</ul>}</div><div className="owner-help"><b>طريقة العمل</b><p>أضف العناصر من تبويبها، ارفع الصوت أو PDF من نفس البطاقة، ثم احفظ مرة واحدة. الروابط تُحفظ داخل المحتوى المنشور ولا تحتاج تعديل كود.</p></div></div>}
+        {tab === "overview" && <><div className="owner-overview"><div className="owner-stat"><b>{courses.length}</b><span>دورات</span></div><div className="owner-stat"><b>{lessons.length}</b><span>دروس</span></div><div className="owner-stat"><b>{articles.length}</b><span>مقالات</span></div><div className="owner-stat"><b>{books.length}</b><span>ملفات</span></div><div className={`owner-health ${contentWarnings.length ? "has-warnings" : "is-ready"}`}><div><b>{contentWarnings.length ? `${contentWarnings.length} عناصر تحتاج مراجعة` : "المحتوى جاهز للنشر"}</b><p>{contentWarnings.length ? "راجع الملفات التالية قبل النشر النهائي:" : "لا توجد ملفات أساسية ناقصة في الدروس والكتب والمقالات."}</p></div>{contentWarnings.length > 0 && <ul>{contentWarnings.slice(0, 6).map((warning) => <li key={warning}>{warning}</li>)}</ul>}</div><div className="owner-help"><b>طريقة العمل</b><p>أضف العناصر من تبويبها، ارفع الصوت أو PDF من نفس البطاقة، ثم احفظ مرة واحدة. الروابط تُحفظ داخل المحتوى المنشور ولا تحتاج تعديل كود.</p></div></div><OwnerAnalyticsPanel /></>}
 
         {tab === "visibility" && <OwnerVisibilityPanel settings={settings} setSettings={setSettings} />}
 

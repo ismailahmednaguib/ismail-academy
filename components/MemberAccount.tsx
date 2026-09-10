@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { countryOptions } from "@/lib/countries";
+import Link from "next/link";
 
 type Mode = "login" | "signup" | "reset";
 type LearningStats = { saved: number; completed: number };
@@ -127,6 +128,7 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
           <p className="admin-note">يمكنك العودة للمحتوى المحفوظ من أي جهاز، وتسجيل الخروج من هنا.</p>
           <div className="account-stats"><div><b>{learningStats.saved}</b><small>محفوظ للمراجعة</small></div><div><b>{learningStats.completed}</b><small>مكتمل</small></div></div>
           {learningStats.saved > 0 && <button type="button" className="ghost account-submit" onClick={openSavedContent}>افتح المحتوى المحفوظ</button>}
+          <Link href="/account" className="ghost account-submit" onClick={() => setOpen(false)}>فتح لوحة التعلم</Link>
           <button type="button" className="primary account-submit" onClick={() => void logout()}>تسجيل الخروج</button>
         </> : <>
           <p className="kicker">مساحة المتعلم</p>

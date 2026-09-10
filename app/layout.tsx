@@ -5,8 +5,10 @@ import "./owner.css";
 import "./premium.css";
 import "./pages-premium.css";
 import "./world.css";
+import "./platform.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
@@ -61,6 +63,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <PwaRegister />
+        <AnalyticsTracker />
         {children}
       </body>
     </html>
