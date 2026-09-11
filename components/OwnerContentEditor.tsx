@@ -10,9 +10,8 @@ import OwnerRolesPanel from "@/components/OwnerRolesPanel";
 import OwnerAnalyticsPanel from "@/components/OwnerAnalyticsPanel";
 import OwnerLivePreview from "@/components/OwnerLivePreview";
 import OwnerHistoryPanel from "@/components/OwnerHistoryPanel";
-import OwnerRenewalPanel from "@/components/OwnerRenewalPanel";
 
-type SubmissionTab = "overview" | "preview" | "visibility" | "identity" | "renewal" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "roles" | "backup";
+type SubmissionTab = "overview" | "preview" | "visibility" | "identity" | "settings" | "courses" | "lessons" | "articles" | "books" | "submissions" | "roles" | "backup";
 
 type BackupPayload = {
   settings?: Partial<Settings>;
@@ -364,7 +363,7 @@ const selectOptions: Partial<Record<keyof Settings, { value: string; label: stri
 };
 
 const themePresets = [
-  { label: "أكاديمي أخضر", inkColor: "#173a35", goldColor: "#b8893e", goldSoftColor: "#e4c888", accentColor: "#ef9a78", accentSoftColor: "#f6c7aa", paperColor: "#fbfaf5", creamColor: "#f3f0e6", sageColor: "#dce9df" },
+  { label: "نور — أخضر وذهبي", inkColor: "#0E2A2B", goldColor: "#C9982E", goldSoftColor: "#EAD9A8", accentColor: "#0E7C5B", accentSoftColor: "#BFE3CF", paperColor: "#FAF7F0", creamColor: "#F3EEE1", sageColor: "#DFF3C8" },
   { label: "ليلي هادئ", inkColor: "#20283d", goldColor: "#a889d8", goldSoftColor: "#d9c7f2", accentColor: "#8ed1cb", accentSoftColor: "#c3eee9", paperColor: "#f8f7fb", creamColor: "#ecebf3", sageColor: "#e1e5f0" },
   { label: "ترابي دافئ", inkColor: "#4b3028", goldColor: "#b56e3c", goldSoftColor: "#edc28f", accentColor: "#de8065", accentSoftColor: "#f1c0a5", paperColor: "#fffaf3", creamColor: "#f5e9d8", sageColor: "#e9dfd0" },
 ] as const;
@@ -575,7 +574,7 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
     }
   }
 
-  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["preview", "معاينة مباشرة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["renewal", "✨ التجديد الشامل"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الأعضاء والنشرة"], ["roles", "الصلاحيات"], ["backup", "النسخ الاحتياطي"]];
+  const tabs: [SubmissionTab, string][] = [["overview", "نظرة عامة"], ["preview", "معاينة مباشرة"], ["visibility", "التحكم والظهور"], ["identity", "هوية الموقع"], ["settings", "كل الكلمات والألوان"], ["courses", "الدورات"], ["lessons", "الدروس والصوتيات"], ["articles", "المقالات"], ["books", "الكتب والملفات"], ["submissions", "الأعضاء والنشرة"], ["roles", "الصلاحيات"], ["backup", "النسخ الاحتياطي"]];
 
   return <form onSubmit={onSave} className="owner-editor">
     <div className="owner-toolbar"><p className="admin-note">أنت داخل لوحة الإدارة. يتم حفظ نسخة محلية تلقائيًا أثناء التعديل؛ استخدم المسودة للمراجعة ثم انشر للزوار عند الجاهزية.</p><div className="owner-toolbar-actions">{localDraftAvailable && <button type="button" className="ghost small-owner-button" onClick={restoreLocalDraft}>استعادة المسودة المحلية</button>}<button type="button" className="ghost small-owner-button" onClick={() => void onLoadDraft()}>تحميل آخر مسودة</button><a className="ghost small-owner-button" href="/" target="_blank" rel="noreferrer">معاينة الموقع ↗</a><button type="button" className="text-button" onClick={onLogout}>تسجيل الخروج</button></div></div>
@@ -589,8 +588,6 @@ export default function OwnerContentEditor({ settings, courses, lessons, article
         {tab === "visibility" && <OwnerVisibilityPanel settings={settings} setSettings={setSettings} />}
 
         {tab === "identity" && <OwnerBrandControl settings={settings} setSettings={setSettings} setNotice={setNotice} />}
-
-        {tab === "renewal" && <OwnerRenewalPanel settings={settings} setSettings={setSettings} setNotice={setNotice} />}
 
         {tab === "settings" && <section className="owner-section"><h3>كل الكلمات والألوان</h3><p className="admin-note">كل كلمة محفوظة في إعدادات الموقع والألوان وترتيب الصفحة الرئيسية قابلة للتعديل من هنا. ابحث باسم الحقل أو وظيفته، واستخدم `العربي || English` للنصوص الثنائية اللغة.</p><label className="owner-settings-search">ابحث داخل إعدادات الموقع<input value={settingsQuery} onChange={(event) => setSettingsQuery(event.target.value)} placeholder="مثال: لون، هيرو، زر، Spotlight..." /></label><div className="owner-settings-count">يعرض الآن {visibleSettingGroups.length} من {settingGroups.length} إعدادًا</div><div className="owner-fields">{visibleSettingGroups.map(([key, label, multiline]) => { const options = selectOptions[key]; return <label key={key}>{label}{toggleKeys.has(key) ? <input className="owner-toggle" type="checkbox" checked={Boolean(settings[key])} onChange={() => toggleSetting(key)} /> : options ? <select value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)}>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : multiline ? <textarea value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} /> : <input type={colorKeys.has(key) ? "color" : "text"} value={String(settings[key])} onChange={(event) => updateSetting(key, event.target.value)} />}</label>; })}</div><div className="homepage-order"><b>ترتيب أقسام الصفحة الرئيسية</b><span className="admin-note">حرّك الأقسام لأعلى أو لأسفل، ثم اضغط «حفظ ونشر للجميع». القسم المخفي يظل محفوظًا ويعود عند تفعيله.</span><div>{normaliseHomeOrder(settings.homeSectionOrder).map((section, index) => <div className="homepage-order-row" key={section}><span>{String(index + 1).padStart(2, "0")}</span><b>{homeSectionLabels[section]}</b><button type="button" disabled={index === 0} onClick={() => moveHomeSection(index, -1)} aria-label={`تحريك ${homeSectionLabels[section]} لأعلى`}>↑</button><button type="button" disabled={index === normaliseHomeOrder(settings.homeSectionOrder).length - 1} onClick={() => moveHomeSection(index, 1)} aria-label={`تحريك ${homeSectionLabels[section]} لأسفل`}>↓</button></div>)}</div></div><div className="theme-presets"><b>ثيمات جاهزة</b><span className="admin-note">اختار شكلًا كبداية، ثم عدّل الألوان والمظهر يدويًا لو تحب.</span><div>{themePresets.map((theme) => <button type="button" className="theme-preset" key={theme.label} onClick={() => applyTheme(theme)}><i style={{ background: theme.inkColor }} /><i style={{ background: theme.goldColor }} /><span>{theme.label}</span></button>)}</div></div></section>}
 

@@ -11,7 +11,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 import SiteFooter from "@/components/SiteFooter";
 import LearningLaunchpad from "@/components/LearningLaunchpad";
 import HomeExtras from "@/components/HomeExtras";
-import RenewalHomeBlocks, { RenewalPopup, RenewalMaintenance, RenewalGlobalStyle } from "@/components/RenewalSections";
+import { SitePopup, SiteMaintenance, SiteGlobalStyle } from "@/components/SiteOverlays";
 
 type Result = { title: string; href: string };
 type Props = {
@@ -109,9 +109,9 @@ export default function NexusHomepage({ settings, courses, lessons, articles, bo
   };
 
   return <div className="nexus-site" id="nexus-top" data-sticky={settings.stickyHeader ? "1" : "0"} data-glass={settings.headerGlass ? "1" : "0"} data-hero={settings.heroStyle || "grand"} data-hero-bg={settings.heroBackground || "pattern"} data-announce={settings.announcementStyle || "gold"} data-glow={settings.heroGlow ? "1" : "0"} data-cards={settings.cardHover ? "lift" : "flat"}>
-    <RenewalGlobalStyle settings={settings} />
-    <RenewalMaintenance settings={settings} />
-    <RenewalPopup settings={settings} onInterest={onOpenInterest} />
+    <SiteGlobalStyle settings={settings} />
+    <SiteMaintenance settings={settings} />
+    <SitePopup settings={settings} onInterest={onOpenInterest} />
     <a href="#nexus-main" className="skip-link">{settings.nexusSkipLink}</a>
     {settings.showNexusHeader && <header className="nexus-header"><Link href="#nexus-main" className="nexus-brand"><span>{settings.showBrandImage && brandImage ? <i style={{ backgroundImage: `url(\"${brandImage}\")` }} /> : settings.mark}</span><div><b>{settings.name}</b><small>{settings.tagline}</small></div></Link><nav id="nexus-nav" className={menuOpen ? "nexus-nav open" : "nexus-nav"}>{navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav><div className="nexus-actions">{settings.showNexusSearch && settings.showSearch && <button type="button" className="nexus-search-button" onClick={openSearch} aria-expanded={searchOpen} aria-controls="nexus-search-panel">{settings.nexusSearchLabel} <kbd>⌘K</kbd></button>}{settings.showNexusLanguage && <LanguageToggle />}{settings.showNexusTheme && <ThemeToggle defaultMode={settings.colorMode} />}{settings.showNexusAccount && <MemberAccount compact />}{ownerSession && <button type="button" className="nexus-owner-button" onClick={() => void onOpenAdmin()}>{settings.ownerPanelLabel}</button>}<button type="button" className="nexus-menu" onClick={() => setMenuOpen((value) => !value)} aria-label={settings.nexusMenuLabel} aria-expanded={menuOpen} aria-controls="nexus-nav">☰</button></div></header>}
     {ownerSession && !settings.showNexusHeader && <button type="button" className="nexus-owner-float" onClick={() => void onOpenAdmin()}>{settings.ownerPanelLabel}</button>}
@@ -124,7 +124,6 @@ export default function NexusHomepage({ settings, courses, lessons, articles, bo
       {settings.showNexusRail && <section className="nexus-rail"><span>{settings.nexusRailIntro}</span><b>·</b><span>{courses.length} {settings.nexusRailCourses}</span><b>·</b><span>{lessons.length + articles.length} {settings.nexusRailMaterials}</span><b>·</b><span>{settings.nexusRailAudience}</span></section>}
       {orderedSections(settings.homeSectionOrder).map((section) => sectionMap[section] ? <div key={section}>{sectionMap[section]}</div> : null)}
       <HomeExtras counts={{ courses: courses.length, lessons: lessons.length, articles: articles.length, books: books.length }} settings={settings} />
-      <RenewalHomeBlocks settings={settings} />
     </main>
     {settings.showFooter && settings.showNexusFooter && <SiteFooter settings={settings} />}
     {settings.showBackToTop && showTop && <button className="nexus-top" type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑</button>}
