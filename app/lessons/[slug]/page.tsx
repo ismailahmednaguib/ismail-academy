@@ -11,6 +11,7 @@ import MediaPlayer from "@/components/MediaPlayer";
 import MemberNotes from "@/components/MemberNotes";
 import LessonQuiz from "@/components/LessonQuiz";
 import StructuredData from "@/components/StructuredData";
+import FocusModeToggle from "@/components/FocusModeToggle";
 
 export const revalidate = 0;
 
@@ -45,7 +46,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
         <Link href="/lessons" className="text-button back-link">→ {settings.lessonsTitle}</Link>
         <p className="kicker">{meta}</p>
         <h1 className="page-title">{title}</h1>
-        <ShareButtons title={title} />
+        <div className="detail-tools"><ShareButtons title={title} /><FocusModeToggle /></div>
         <LearningActions id={"lesson:" + decodeURIComponent(slug)} title={title} />
         {videoUrl ? <MediaPlayer src={videoUrl} contentId={"lesson:" + decodeURIComponent(slug) + ":video"} kind="video" /> : null}
         {audioUrl ? (

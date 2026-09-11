@@ -9,6 +9,7 @@ import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
 import MemberNotes from "@/components/MemberNotes";
 import StructuredData from "@/components/StructuredData";
+import FocusModeToggle from "@/components/FocusModeToggle";
 
 export const revalidate = 0;
 
@@ -48,7 +49,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
           {cat} · {time}
         </p>
         <h1 className="page-title">{title}</h1>
-        <ShareButtons title={title} />
+        <div className="detail-tools"><ShareButtons title={title} /><FocusModeToggle /></div>
         <LearningActions id={"article:" + decodeURIComponent(slug)} title={title} />
         {coverImage ? <div className="article-cover" style={{ backgroundImage: `url(${coverImage})` }} role="img" aria-label={title} /> : null}
         {paragraphs.length > 0 ? (

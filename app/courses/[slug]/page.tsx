@@ -10,6 +10,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import CourseProgress from "@/components/CourseProgress";
 import CourseCertificate from "@/components/CourseCertificate";
 import StructuredData from "@/components/StructuredData";
+import FocusModeToggle from "@/components/FocusModeToggle";
 
 export const revalidate = 0;
 
@@ -49,7 +50,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
           <span className="kicker">{count}</span>
         </div>
         <h1 className="page-title">{title}</h1>
-        <ShareButtons title={title} />
+        <div className="detail-tools"><ShareButtons title={title} /><FocusModeToggle /></div>
         <LearningActions id={"course:" + decodeURIComponent(slug)} title={title} />
         <CourseProgress lessonIds={relatedLessons.map(([lessonTitle]) => "lesson:" + slugify(lessonTitle))} />
         <CourseCertificate courseTitle={title} lessonIds={relatedLessons.map(([lessonTitle]) => "lesson:" + slugify(lessonTitle))} />
