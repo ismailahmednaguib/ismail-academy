@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSiteContent, findBySlug } from "@/lib/content";
+import { getSiteContent, getSiteUrl, findBySlug } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
@@ -10,6 +10,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import MediaPlayer from "@/components/MediaPlayer";
 import MemberNotes from "@/components/MemberNotes";
 import LessonQuiz from "@/components/LessonQuiz";
+import StructuredData from "@/components/StructuredData";
 
 export const revalidate = 0;
 
@@ -19,9 +20,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const { lessons, settings } = await getSiteContent();
   const lesson = findBySlug(lessons, decodeURIComponent(slug));
+  const url = `${getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl)}/lessons/${encodeURIComponent(slug)}`;
   return {
     title: lesson ? `${lesson[0]} | ${settings.name}` : "الدرس غير موجود",
     description: lesson?.[1] ?? undefined,
+    alternates: { canonical: url },
+    openGraph: lesson ? { title: lesson[0], description: lesson[1], type: "website", url, images: [{ url: "/opengraph-image" }] } : undefined,
   };
 }
 
@@ -35,6 +39,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   return (
     <>
       <SiteHeader settings={settings} />
+      <StructuredData data={{ "@context": "https://schema.org", "@type": "LearningResource", name: title, description: meta, learningResourceType: "Lesson", isPartOf: { "@type": "EducationalOrganization", name: settings.name }, inLanguage: "ar" }} />
       {settings.showReadingProgress && <ReadingProgress />}
       <main className="section">
         <Link href="/lessons" className="text-button back-link">→ {settings.lessonsTitle}</Link>

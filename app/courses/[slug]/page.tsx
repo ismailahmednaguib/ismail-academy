@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSiteContent, slugify, findBySlug } from "@/lib/content";
+import { getSiteContent, getSiteUrl, slugify, findBySlug } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
@@ -9,6 +9,7 @@ import { LearningActions } from "@/components/LearningTools";
 import ReadingProgress from "@/components/ReadingProgress";
 import CourseProgress from "@/components/CourseProgress";
 import CourseCertificate from "@/components/CourseCertificate";
+import StructuredData from "@/components/StructuredData";
 
 export const revalidate = 0;
 
@@ -18,9 +19,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const { courses, settings } = await getSiteContent();
   const course = findBySlug(courses, decodeURIComponent(slug));
+  const url = `${getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl)}/courses/${encodeURIComponent(slug)}`;
   return {
     title: course ? `${course[0]} | ${settings.name}` : "الدورة غير موجودة",
     description: course?.[1] ?? undefined,
+    alternates: { canonical: url },
+    openGraph: course ? { title: course[0], description: course[1], type: "website", url, images: [{ url: "/opengraph-image" }] } : undefined,
   };
 }
 
@@ -36,6 +40,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
   return (
     <>
       <SiteHeader settings={settings} />
+      <StructuredData data={{ "@context": "https://schema.org", "@type": "Course", name: title, description: desc, provider: { "@type": "EducationalOrganization", name: settings.name }, educationalLevel: level, inLanguage: "ar" }} />
       {settings.showReadingProgress && <ReadingProgress />}
       <main className="section">
         <Link href="/courses" className="text-button back-link">→ {settings.coursesTitle}</Link>
