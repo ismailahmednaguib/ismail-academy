@@ -13,7 +13,7 @@ import "./owner-console.css";
 import "./nexus.css";
 import "./nexus-pages.css";
 import "./responsive-polish.css";
-import { getSiteContent } from "@/lib/content";
+import { getSiteContent, getSiteUrl } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
 
@@ -21,8 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
   const description = settings.seoDescription || settings.heroText || "منصة عربية للعلم النافع والدروس والمجالس والمكتبة.";
   const title = settings.seoTitle || settings.name;
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl;
-  const siteUrl = /^https?:\/\//.test(configuredUrl) ? configuredUrl : "https://ismailahmednaguib.vercel.app";
+  const siteUrl = getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl);
   const keywords = settings.seoKeywords.split(",").map((item) => item.trim()).filter(Boolean);
   return {
     metadataBase: new URL(siteUrl),
@@ -34,6 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "ar_EG",
       alternateLocale: ["en_US"],
       type: "website",
+      images: [{ url: "/opengraph-image" }],
     },
     alternates: {
       canonical: settings.canonicalUrl || "/",
@@ -69,8 +69,7 @@ export default async function RootLayout({
     "--cream": isHex(settings.creamColor) ? settings.creamColor : "#f3f0e6",
     "--sage": isHex(settings.sageColor) ? settings.sageColor : "#dce9df",
   } as CSSProperties;
-  const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl;
-  const siteUrl = /^https?:\/\//.test(configuredUrl) ? configuredUrl : "https://ismailahmednaguib.vercel.app";
+  const siteUrl = getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || settings.canonicalUrl);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
@@ -80,12 +79,13 @@ export default async function RootLayout({
     inLanguage: ["ar", "en"],
     areaServed: "Worldwide",
   };
+  const safeJsonLd = JSON.stringify(jsonLd).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body style={themeStyle} data-density={settings.siteDensity} data-layout={settings.layoutStyle} data-corners={settings.cornerStyle} data-buttons={settings.buttonStyle} data-theme={settings.colorMode}>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd }}
         />
         <PwaRegister />
         <AnalyticsTracker />

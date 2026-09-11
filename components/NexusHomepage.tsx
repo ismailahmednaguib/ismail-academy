@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import type { Settings } from "@/lib/content";
-import { isFeatured, slugify } from "@/lib/content";
+import { isFeatured, safeImageUrl, slugify } from "@/lib/content";
 import { LearningActions } from "@/components/LearningTools";
 import MemberAccount from "@/components/MemberAccount";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -39,6 +39,7 @@ export default function NexusHomepage({ settings, courses, lessons, articles, bo
   const [menuOpen, setMenuOpen] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [intent, setIntent] = useState("");
+  const brandImage = safeImageUrl(settings.brandImage);
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 680);
@@ -106,7 +107,7 @@ export default function NexusHomepage({ settings, courses, lessons, articles, bo
 
   return <div className="nexus-site" id="nexus-top">
     <a href="#nexus-main" className="skip-link">{settings.nexusSkipLink}</a>
-    {settings.showNexusHeader && <header className="nexus-header"><Link href="#nexus-main" className="nexus-brand"><span>{settings.showBrandImage && settings.brandImage ? <i style={{ backgroundImage: `url(\"${settings.brandImage}\")` }} /> : settings.mark}</span><div><b>{settings.name}</b><small>{settings.tagline}</small></div></Link><nav id="nexus-nav" className={menuOpen ? "nexus-nav open" : "nexus-nav"}>{navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav><div className="nexus-actions">{settings.showNexusSearch && settings.showSearch && <button type="button" className="nexus-search-button" onClick={openSearch} aria-expanded={searchOpen} aria-controls="nexus-search-panel">{settings.nexusSearchLabel} <kbd>⌘K</kbd></button>}{settings.showNexusLanguage && <LanguageToggle />}{settings.showNexusTheme && <ThemeToggle defaultMode={settings.colorMode} />}{settings.showNexusAccount && <MemberAccount compact />}{ownerSession && <button type="button" className="nexus-owner-button" onClick={() => void onOpenAdmin()}>{settings.ownerPanelLabel}</button>}<button type="button" className="nexus-menu" onClick={() => setMenuOpen((value) => !value)} aria-label={settings.nexusMenuLabel} aria-expanded={menuOpen} aria-controls="nexus-nav">☰</button></div></header>}
+    {settings.showNexusHeader && <header className="nexus-header"><Link href="#nexus-main" className="nexus-brand"><span>{settings.showBrandImage && brandImage ? <i style={{ backgroundImage: `url(\"${brandImage}\")` }} /> : settings.mark}</span><div><b>{settings.name}</b><small>{settings.tagline}</small></div></Link><nav id="nexus-nav" className={menuOpen ? "nexus-nav open" : "nexus-nav"}>{navigation.map(([label, href]) => <Link href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</Link>)}</nav><div className="nexus-actions">{settings.showNexusSearch && settings.showSearch && <button type="button" className="nexus-search-button" onClick={openSearch} aria-expanded={searchOpen} aria-controls="nexus-search-panel">{settings.nexusSearchLabel} <kbd>⌘K</kbd></button>}{settings.showNexusLanguage && <LanguageToggle />}{settings.showNexusTheme && <ThemeToggle defaultMode={settings.colorMode} />}{settings.showNexusAccount && <MemberAccount compact />}{ownerSession && <button type="button" className="nexus-owner-button" onClick={() => void onOpenAdmin()}>{settings.ownerPanelLabel}</button>}<button type="button" className="nexus-menu" onClick={() => setMenuOpen((value) => !value)} aria-label={settings.nexusMenuLabel} aria-expanded={menuOpen} aria-controls="nexus-nav">☰</button></div></header>}
     {ownerSession && !settings.showNexusHeader && <button type="button" className="nexus-owner-float" onClick={() => void onOpenAdmin()}>{settings.ownerPanelLabel}</button>}
     {settings.showAnnouncement && <div className="nexus-announcement"><span><i /> {settings.announcement}</span>{settings.showNexusAnnouncementAction && settings.showMajlis && <button type="button" onClick={onOpenInterest}>{settings.announcementButton} ↗</button>}</div>}
     {settings.showNexusSearch && settings.showSearch && searchOpen && <div id="nexus-search-panel" className="nexus-search-panel"><div><span>⌕</span><input autoFocus value={search} onChange={(event) => setSearch(event.target.value)} placeholder={settings.searchPlaceholder} aria-label={settings.nexusSearchAriaLabel} />{search && <button type="button" onClick={() => setSearch("")} aria-label="مسح البحث">×</button>}</div>{search.trim() && <section>{results.length ? results.slice(0, 8).map((result) => <Link href={result.href} key={result.href + result.title} onClick={() => { setSearch(""); setSearchOpen(false); }}><span>{result.title}</span><b>↗</b></Link>) : <small>{settings.searchNoResults}</small>}</section>}</div>}

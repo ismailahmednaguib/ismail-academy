@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { Settings } from "@/lib/content";
+import { safeImageUrl, type Settings } from "@/lib/content";
 import MemberAccount from "@/components/MemberAccount";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/LanguageToggle";
@@ -23,6 +23,7 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
   const [menu, setMenu] = useState(false);
   const [locale, setLocale] = useState<Locale>("ar");
   const copy = localeCopy[locale];
+  const brandImage = safeImageUrl(settings.brandImage);
   useEffect(() => {
     const update = (event: Event) => {
       const next = (event as CustomEvent<Locale>).detail;
@@ -44,7 +45,7 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
       <a href="#main" className="skip-link" onClick={focusMain}>{copy.skipToContent}</a>
       {settings.showNexusHeader && <header className="nav">
         <div className="nav-identity"><Link className="brand" href="/">
-          <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
+          <i className={settings.showBrandImage && brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && brandImage ? { backgroundImage: `url("${brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && brandImage ? "" : settings.mark}</i>
           <span>
             {settings.name}
             <small>{settings.tagline}</small>

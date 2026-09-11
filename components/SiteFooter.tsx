@@ -1,6 +1,6 @@
 "use client";
 
-import type { Settings } from "@/lib/content";
+import { safeImageUrl, type Settings } from "@/lib/content";
 
 function telegramHref(value: string) {
   return value.startsWith("http")
@@ -21,10 +21,11 @@ function socialHref(value: string, service: "instagram" | "youtube") {
 
 export default function SiteFooter({ settings }: { settings: Settings }) {
   if (!settings.showFooter) return null;
+  const brandImage = safeImageUrl(settings.brandImage);
   return (
     <footer className="site-footer">
       <div className="brand">
-        <i className={settings.showBrandImage && settings.brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && settings.brandImage ? { backgroundImage: `url("${settings.brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && settings.brandImage ? "" : settings.mark}</i>
+        <i className={settings.showBrandImage && brandImage ? "has-brand-image" : ""} style={settings.showBrandImage && brandImage ? { backgroundImage: `url("${brandImage}")` } : undefined} aria-hidden="true">{settings.showBrandImage && brandImage ? "" : settings.mark}</i>
         <span>
           {settings.name}
           <small>{settings.tagline}</small>

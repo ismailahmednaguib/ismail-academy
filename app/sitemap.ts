@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { getSiteContent, slugify } from "@/lib/content";
+import { getSiteContent, getSiteUrl, slugify } from "@/lib/content";
 
-const base = process.env.NEXT_PUBLIC_SITE_URL || "https://ismailahmednaguib.vercel.app";
+const base = getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { courses, lessons, articles } = await getSiteContent();

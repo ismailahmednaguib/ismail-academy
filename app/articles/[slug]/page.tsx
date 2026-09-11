@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSiteContent, findBySlug } from "@/lib/content";
+import { getSiteContent, findBySlug, safeImageUrl } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
@@ -28,6 +28,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   const article = findBySlug(articles, decodeURIComponent(slug));
   if (!article) notFound();
   const [title, cat, time, body, cover] = article;
+  const coverImage = safeImageUrl(cover);
   // فقرات المقال متفصولة في لوحة المالك بعلامة \n حرفية
   const paragraphs = (body ?? "").split(/\\n|\r?\n/).map((p) => p.trim()).filter(Boolean);
 
@@ -43,7 +44,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         <h1 className="page-title">{title}</h1>
         <ShareButtons title={title} />
         <LearningActions id={"article:" + decodeURIComponent(slug)} title={title} />
-        {cover ? <div className="article-cover" style={{ backgroundImage: `url(${cover})` }} role="img" aria-label={title} /> : null}
+        {coverImage ? <div className="article-cover" style={{ backgroundImage: `url(${coverImage})` }} role="img" aria-label={title} /> : null}
         {paragraphs.length > 0 ? (
           <div className="article-body">
             {paragraphs.map((p, i) => (

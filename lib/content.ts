@@ -586,6 +586,31 @@ export function isFeatured(row: string[], column: number): boolean {
   return row[column] !== "false";
 }
 
+const fallbackSiteUrl = "https://ismailahmednaguib.vercel.app";
+
+/** Returns a safe origin for metadata, sitemap and robots even if an owner enters a bad URL. */
+export function getSiteUrl(value?: string): string {
+  try {
+    const parsed = new URL(value?.trim() || fallbackSiteUrl);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.origin : fallbackSiteUrl;
+  } catch {
+    return fallbackSiteUrl;
+  }
+}
+
+/** Allows only local paths or http(s) images in owner-controlled visual fields. */
+export function safeImageUrl(value?: string): string {
+  const candidate = value?.trim() ?? "";
+  if (!candidate) return "";
+  if (candidate.startsWith("/") && !candidate.startsWith("//")) return candidate;
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : "";
+  } catch {
+    return "";
+  }
+}
+
 // A server-safe client (works in Server Components / route handlers).
 // Kept separate from lib/supabase.ts, which is marked "use client" for the
 // interactive homepage, to avoid crossing that boundary unnecessarily.
