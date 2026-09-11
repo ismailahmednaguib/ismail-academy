@@ -18,6 +18,7 @@ type Props = {
 export default function ContentBrowser({ kind, items, actionLabel, emptyLabel, placeholder, soonLabel }: Props) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("الكل");
+  const [sort, setSort] = useState<"featured" | "alpha">("featured");
   const filters = useMemo(() => {
     if (kind === "courses") return ["الكل", ...Array.from(new Set(items.map((row) => row[3]).filter(Boolean)))];
     if (kind === "articles") return ["الكل", ...Array.from(new Set(items.map((row) => row[1]).filter(Boolean)))];
@@ -25,17 +26,30 @@ export default function ContentBrowser({ kind, items, actionLabel, emptyLabel, p
   }, [items, kind]);
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("ar");
-    return items.filter((row) => {
+    const matches = items.filter((row) => {
       const filterValue = kind === "courses" ? row[3] : kind === "articles" ? row[1] : "الكل";
       const matchesFilter = filter === "الكل" || filterValue === filter;
       return matchesFilter && (!normalized || row.join(" ").toLocaleLowerCase("ar").includes(normalized));
     });
-  }, [filter, items, kind, query]);
+    return [...matches].sort((left, right) => {
+      if (sort === "featured" && (kind === "courses" || kind === "articles")) {
+        const featuredColumn = kind === "courses" ? 5 : 5;
+        const featuredDiff = Number(right[featuredColumn] !== "false") - Number(left[featuredColumn] !== "false");
+        if (featuredDiff !== 0) return featuredDiff;
+      }
+      return (left[0] ?? "").localeCompare(right[0] ?? "", "ar");
+    });
+  }, [filter, items, kind, query, sort]);
+
+  const hasFilters = Boolean(query.trim()) || filter !== "الكل" || sort !== "featured";
+  const clearFilters = () => { setQuery(""); setFilter("الكل"); setSort("featured"); };
 
   return <div className={`content-browser browser-${kind}`}>
     <div className="content-browser-toolbar">
       <label className="content-browser-search"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={placeholder} aria-label={placeholder} /></label>
       {filters.length > 0 && <div className="content-browser-filters" aria-label="تصفية المحتوى">{filters.map((value) => <button type="button" className={filter === value ? "active" : ""} key={value} onClick={() => setFilter(value)}>{value}</button>)}</div>}
+      <label className="content-browser-sort"><span>ترتيب</span><select value={sort} onChange={(event) => setSort(event.target.value as "featured" | "alpha")} aria-label="ترتيب المحتوى"><option value="featured">المميز أولًا</option><option value="alpha">أبجديًا</option></select></label>
+      {hasFilters && <button type="button" className="content-browser-clear" onClick={clearFilters}>مسح</button>}
       <span className="content-browser-count">{filtered.length} من {items.length}</span>
     </div>
     <div className="content-browser-summary"><span>{query || filter !== "الكل" ? "نتائج مطابقة" : "كل المحتوى"}</span><i /></div>

@@ -1,4 +1,4 @@
-const CACHE_NAME = "ismail-academy-shell-v2";
+const CACHE_NAME = "ismail-academy-shell-v3";
 const APP_SHELL = ["/", "/courses", "/lessons", "/articles", "/library", "/search", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
