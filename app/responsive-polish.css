@@ -139,6 +139,9 @@ body:not(:has(.nexus-site)) .article-body, body:not(:has(.nexus-site)) .detail-b
 .focus-mode-toggle{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--muted);font-size:10px;font-weight:800;cursor:pointer}
 .focus-mode-toggle span{display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--cream);color:var(--accent);font-size:13px}
 .focus-mode-toggle[aria-pressed="true"]{border-color:var(--accent);background:var(--ink);color:var(--paper)}
+.reading-resume{position:fixed;left:18px;bottom:18px;z-index:70;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 13px;border:1px solid color-mix(in srgb,var(--accent) 42%,var(--line));border-radius:999px;background:var(--paper);color:var(--ink);box-shadow:0 12px 28px rgba(16,45,53,.14);font-size:10px;font-weight:900;cursor:pointer}
+.reading-resume b{color:var(--accent);font-size:14px}
+.reading-resume:hover{background:var(--accent);color:var(--ink);transform:translateY(-2px)}
 body[data-focus-mode="true"] .nav,body[data-focus-mode="true"] .nexus-header,body[data-focus-mode="true"] .site-footer,body[data-focus-mode="true"] .mobile-quickbar,body[data-focus-mode="true"] .reading-progress{display:none!important}
 body[data-focus-mode="true"] .section:has(> .article-body),body[data-focus-mode="true"] .section:has(.media-player-shell){width:min(900px,calc(100% - 28px));padding-top:42px}
 body[data-focus-mode="true"] .section:has(> .article-body)>.article-body{max-width:900px;padding:clamp(24px,5vw,64px);font-size:clamp(17px,2vw,21px);line-height:2.4;box-shadow:0 24px 80px rgba(16,45,53,.1)}
@@ -146,4 +149,5 @@ body[data-focus-mode="true"] .section:has(> .article-body)>.page-title,body[data
 @media(max-width:430px){.media-player-shell{padding:9px;border-radius:16px}.media-player-toolbar{align-items:flex-start;flex-direction:column;gap:7px}.media-player-toolbar button{width:100%;min-height:40px}}
 @media(max-width:650px){.content-browser-sort{justify-content:space-between}.content-browser-sort select,.content-browser-clear{min-height:40px}.content-browser-clear{width:100%}}
 @media(max-width:650px){.pwa-install-button{right:12px;bottom:calc(70px + env(safe-area-inset-bottom));max-width:calc(100% - 24px);min-height:44px}}
+@media(max-width:650px){.reading-resume{left:12px;bottom:calc(70px + env(safe-area-inset-bottom));max-width:calc(100% - 24px);min-height:44px}}
 @media(max-width:650px){.detail-tools{gap:7px}.focus-mode-toggle{min-height:42px}.detail-tools .share-buttons{width:100%}}

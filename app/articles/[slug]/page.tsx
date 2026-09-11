@@ -42,7 +42,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     <>
       <SiteHeader settings={settings} />
       <StructuredData data={{ "@context": "https://schema.org", "@type": "Article", headline: title, articleSection: cat, timeRequired: time, description: paragraphs.join(" ").slice(0, 160), author: { "@type": "Organization", name: settings.name }, inLanguage: "ar" }} />
-      {settings.showReadingProgress && <ReadingProgress />}
+      {settings.showReadingProgress && <ReadingProgress contentId={`article:${decodeURIComponent(slug)}`} />}
       <main className="section">
         <Link href="/articles" className="text-button back-link">→ {settings.articlesTitle}</Link>
         <p className="kicker">

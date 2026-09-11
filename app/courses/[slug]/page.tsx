@@ -42,7 +42,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
     <>
       <SiteHeader settings={settings} />
       <StructuredData data={{ "@context": "https://schema.org", "@type": "Course", name: title, description: desc, provider: { "@type": "EducationalOrganization", name: settings.name }, educationalLevel: level, inLanguage: "ar" }} />
-      {settings.showReadingProgress && <ReadingProgress />}
+      {settings.showReadingProgress && <ReadingProgress contentId={`course:${decodeURIComponent(slug)}`} />}
       <main className="section">
         <Link href="/courses" className="text-button back-link">→ {settings.coursesTitle}</Link>
         <div className="badge-row">
