@@ -50,7 +50,7 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
             <small>{settings.tagline}</small>
           </span>
         </Link></div>
-        <div className="nav-center"><small className="nav-context">{copy.context}</small><nav className={menu ? "links open" : "links"}>
+        <div className="nav-center"><small className="nav-context">{copy.context}</small><nav id="site-nav" className={menu ? "links open" : "links"}>
           {navItems.map(([label, href]) => (
             <Link key={href} href={href} onClick={() => setMenu(false)}>
               {label}
@@ -64,12 +64,12 @@ export default function SiteHeader({ settings }: { settings: Settings }) {
           {settings.showNexusSearch && settings.showSearch && <Link className="header-search" href="/search" aria-label={copy.search}>⌕</Link>}
           {settings.showNexusAccount && <MemberAccount compact label={copy.account} />}
           <OwnerGateButton settings={settings} />
-          <button className="menu" aria-label={copy.menu} onClick={() => setMenu(!menu)}>
+          <button className="menu" aria-label={copy.menu} aria-expanded={menu} aria-controls="site-nav" onClick={() => setMenu(!menu)}>
             ☰
           </button>
         </div>
       </header>}
-      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label={copy.quickNavigation}><Link href="/" onClick={() => setMenu(false)}><span>{copy.home}</span></Link><Link href="/courses" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.courses : settings.navCourses}</span></Link><Link href="/lessons" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.lessons : settings.navLessons}</span></Link>{settings.showNexusSearch && settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>{copy.search}</span></Link>}{settings.showNexusAccount && <MemberAccount compact label={copy.account} />}</nav>}
+      {settings.showMobileBar && <nav className="mobile-quickbar" aria-label={copy.quickNavigation}><Link href="/" onClick={() => setMenu(false)}><span>{copy.home}</span></Link>{settings.showCourses && <Link href="/courses" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.courses : settings.navCourses}</span></Link>}{settings.showLessons && <Link href="/lessons" onClick={() => setMenu(false)}><span>{locale === "en" ? copy.lessons : settings.navLessons}</span></Link>}{settings.showNexusSearch && settings.showSearch && <Link href="/search" onClick={() => setMenu(false)}><span>{copy.search}</span></Link>}{settings.showNexusAccount && <MemberAccount compact label={copy.account} />}</nav>}
     </>
   );
 }

@@ -55,5 +55,18 @@ export default function OwnerVisibilityPanel({ settings, setSettings }: Props) {
     setSettings({ ...settings, [key]: !Boolean(settings[key]) });
   }
 
-  return <section className="owner-visibility-card owner-control-page"><div className="owner-visibility-head"><div><p className="kicker">تحكم مباشر</p><h3>إظهار وإخفاء عناصر الموقع</h3><small>أزل علامة الصح من أي عنصر لإخفائه، ثم اضغط «حفظ ونشر للجميع».</small></div><span className="owner-control-badge">LIVE CONTROL</span></div><div className="owner-visibility-grid">{options.map(([key, label, hint]) => <label className={settings[key] ? "visibility-toggle is-on" : "visibility-toggle"} key={key}><input type="checkbox" checked={Boolean(settings[key])} onChange={() => toggle(key)} /><span className="visibility-switch" /><span><b>{label}</b><small>{hint}</small></span></label>)}</div></section>;
+  function setAll(value: boolean) {
+    const next = { ...settings };
+    options.forEach(([key]) => { next[key] = value as never; });
+    setSettings(next);
+  }
+
+  function showPublicEssentials() {
+    const next = { ...settings };
+    options.forEach(([key]) => { next[key] = false as never; });
+    ["showNexusHeader", "showNexusHero", "showNexusHeroPanel", "showNexusStart", "showNexusFeatured", "showNexusAccount", "showFooter", "showMobileBar"].forEach((key) => { next[key as VisibilityKey] = true as never; });
+    setSettings(next);
+  }
+
+  return <section className="owner-visibility-card owner-control-page"><div className="owner-visibility-head"><div><p className="kicker">تحكم مباشر</p><h3>إظهار وإخفاء عناصر الموقع</h3><small>أزل علامة الصح من أي عنصر لإخفائه، ثم اضغط «حفظ ونشر للجميع».</small></div><span className="owner-control-badge">LIVE CONTROL</span></div><div className="owner-visibility-actions"><button type="button" className="ghost small-owner-button" onClick={() => setAll(true)}>إظهار الكل</button><button type="button" className="ghost small-owner-button" onClick={showPublicEssentials}>الواجهة الأساسية فقط</button><button type="button" className="text-button" onClick={() => setAll(false)}>إخفاء الكل</button></div><div className="owner-visibility-grid">{options.map(([key, label, hint]) => <label className={settings[key] ? "visibility-toggle is-on" : "visibility-toggle"} key={key}><input type="checkbox" checked={Boolean(settings[key])} onChange={() => toggle(key)} /><span className="visibility-switch" /><span><b>{label}</b><small>{hint}</small></span></label>)}</div></section>;
 }

@@ -113,6 +113,25 @@ export type Settings = {
   nexusDeskTitle: string;
   nexusDeskText: string;
   nexusSendingLabel: string;
+  dashboardKicker: string;
+  dashboardTitle: string;
+  dashboardProgressLabel: string;
+  dashboardProgressHelp: string;
+  dashboardQueueKicker: string;
+  dashboardQueueTitle: string;
+  dashboardQueueText: string;
+  dashboardStartLabel: string;
+  dashboardSavedLabel: string;
+  dashboardSuggestedLabel: string;
+  dashboardRemainingLabel: string;
+  dashboardFinishedKicker: string;
+  dashboardFinishedTitle: string;
+  dashboardFinishedText: string;
+  dashboardExploreLabel: string;
+  dashboardSavedTitle: string;
+  dashboardCompletedTitle: string;
+  dashboardSavedEmpty: string;
+  dashboardCompletedEmpty: string;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -349,6 +368,25 @@ export const defaultSettings: Settings = {
   nexusDeskTitle: "أكمل من حيث توقفت.",
   nexusDeskText: "احفظ المواد المهمة، وستجدها هنا عندما تعود من أي جهاز.",
   nexusSendingLabel: "جارٍ...",
+  dashboardKicker: "مساحتك التعليمية",
+  dashboardTitle: "أهلًا بك في رحلتك.",
+  dashboardProgressLabel: "نسبة الإنجاز في مكتبة الأكاديمية",
+  dashboardProgressHelp: "كلما علّمت مادة كمكتملة، تتحدث النسبة تلقائيًا.",
+  dashboardQueueKicker: "طابور التعلم",
+  dashboardQueueTitle: "الخطوة التالية واضحة.",
+  dashboardQueueText: "رتبنا لك بداية عملية: نكمل أولًا المادة المحفوظة، ثم ننتقل للمحتوى الذي لم تبدأه بعد.",
+  dashboardStartLabel: "ابدأ الآن",
+  dashboardSavedLabel: "محفوظة للمراجعة",
+  dashboardSuggestedLabel: "اقتراح البداية",
+  dashboardRemainingLabel: "مادة متبقية",
+  dashboardFinishedKicker: "رحلة مكتملة",
+  dashboardFinishedTitle: "أنجزت كل المواد المتاحة.",
+  dashboardFinishedText: "ارجع إلى المحفوظ للمراجعة أو استكشف مادة جديدة من الكتالوج.",
+  dashboardExploreLabel: "استكشف المزيد ←",
+  dashboardSavedTitle: "محفوظ للمراجعة",
+  dashboardCompletedTitle: "أنجزته",
+  dashboardSavedEmpty: "لم تحفظ أي مادة بعد. افتح درسًا واضغط «حفظ للمراجعة».",
+  dashboardCompletedEmpty: "ابدأ بأول درس، ثم علّمه كمكتمل عند الانتهاء.",
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",

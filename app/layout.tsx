@@ -12,6 +12,7 @@ import "./ultimate.css";
 import "./owner-console.css";
 import "./nexus.css";
 import "./nexus-pages.css";
+import "./responsive-polish.css";
 import { getSiteContent } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";

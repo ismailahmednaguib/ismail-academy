@@ -1,5 +1,5 @@
-const CACHE_NAME = "ismail-academy-shell-v1";
-const APP_SHELL = ["/", "/manifest.webmanifest", "/icon.svg"];
+const CACHE_NAME = "ismail-academy-shell-v2";
+const APP_SHELL = ["/", "/courses", "/lessons", "/articles", "/library", "/search", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -22,4 +22,3 @@ self.addEventListener("fetch", (event) => {
     return response;
   }).catch(() => caches.match(request).then((cached) => cached || caches.match("/"))));
 });
-
