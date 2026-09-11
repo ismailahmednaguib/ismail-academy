@@ -6,7 +6,7 @@ const base = getSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { courses, lessons, articles } = await getSiteContent();
 
-  const staticRoutes: MetadataRoute.Sitemap = ["", "/courses", "/lessons", "/articles", "/library"].map(
+  const staticRoutes: MetadataRoute.Sitemap = ["", "/courses", "/lessons", "/articles", "/library", "/majalis", "/search", "/about", "/faq", "/contact", "/privacy", "/account"].map(
     (path) => ({ url: `${base}${path}`, lastModified: new Date() })
   );
 

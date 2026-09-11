@@ -258,6 +258,67 @@ export type Settings = {
   seoDescription: string;
   seoKeywords: string;
   canonicalUrl: string;
+  fontChoice: string;
+  heroStyle: string;
+  heroBackground: string;
+  announcementStyle: string;
+  stickyHeader: boolean;
+  headerGlass: boolean;
+  heroGlow: boolean;
+  cardHover: boolean;
+  showTestimonials: boolean;
+  showFaqHome: boolean;
+  showStats: boolean;
+  showCtaBanner: boolean;
+  showPopup: boolean;
+  enableMaintenance: boolean;
+  testimonialsTitle: string;
+  testimonialsText: string;
+  testimonialsData: string;
+  faqHomeTitle: string;
+  faqHomeText: string;
+  faqHomeData: string;
+  statsOneValue: string;
+  statsOneLabel: string;
+  statsTwoValue: string;
+  statsTwoLabel: string;
+  statsThreeValue: string;
+  statsThreeLabel: string;
+  statsFourValue: string;
+  statsFourLabel: string;
+  ctaTitle: string;
+  ctaText: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+  popupTitle: string;
+  popupText: string;
+  popupCta: string;
+  popupDelay: string;
+  maintenanceTitle: string;
+  maintenanceText: string;
+  footerAbout: string;
+  footerQuickTitle: string;
+  footerContactTitle: string;
+  footerCtaText: string;
+  customCss: string;
+  showWisdom: boolean;
+  wisdomTitle: string;
+  wisdomData: string;
+  catalogTopline: string;
+  catalogNewLabel: string;
+  coursesDesc: string;
+  lessonsDesc: string;
+  articlesDesc: string;
+  libraryDesc: string;
+  catalogSearchCourses: string;
+  catalogSearchLessons: string;
+  catalogSearchArticles: string;
+  catalogSearchBooks: string;
+  catalogCountCourse: string;
+  catalogCountLesson: string;
+  catalogCountArticle: string;
+  catalogCountBook: string;
+  heroBadge: string;
 };
 
 export const defaultSettings: Settings = {
@@ -519,6 +580,67 @@ export const defaultSettings: Settings = {
   seoDescription: "أكاديمية عربية للدروس والمقالات والمجالس والمكتبة، بتجربة تعلم هادئة ومنظمة.",
   seoKeywords: "أكاديمية عربية, طلب العلم, دروس, مقالات, مكتبة, مجالس, تعلم ذاتي",
   canonicalUrl: "",
+  fontChoice: "cairo",
+  heroStyle: "grand",
+  heroBackground: "pattern",
+  announcementStyle: "gold",
+  stickyHeader: true,
+  headerGlass: true,
+  heroGlow: true,
+  cardHover: true,
+  showTestimonials: true,
+  showFaqHome: true,
+  showStats: true,
+  showCtaBanner: true,
+  showPopup: false,
+  enableMaintenance: false,
+  testimonialsTitle: "ماذا يقول طلاب الأكاديمية؟",
+  testimonialsText: "آراء حقيقية من رحلات تعلم مستمرة معنا.",
+  testimonialsData: "أحمد محمود || تنظيم الدروس غيّر طريقة مذاكرتي تمامًا، صرت ألتزم بورد يومي ثابت. || طالب علم /// مريم سالم || المقالات القصيرة صارت وردي الصباحي المفضل، عميقة ومختصرة. || معلمة /// يوسف الحسيني || المجالس الأسبوعية أعادت لي الشغف، والمتابعة من لوحة الطالب ممتازة. || مهندس",
+  faqHomeTitle: "أسئلة تتكرر كثيرًا",
+  faqHomeText: "إجابات سريعة قبل أن تبدأ رحلتك معنا.",
+  faqHomeData: "هل المحتوى مجاني بالكامل؟ || نعم، كل الدروس والمقالات والمكتبة مجانية ومتاحة للجميع بلا اشتراك. /// هل أحتاج حسابًا للتعلم؟ || لا، لكن إنشاء حساب مجاني يتيح لك حفظ تقدمك وموادك والعودة إليها من أي جهاز. /// كيف أبدأ من الصفر؟ || ابدأ بمسار مدخل إلى طلب العلم، ثم تابع درسًا واحدًا يوميًا مع دفتر المتابعة من المكتبة. /// هل توجد لقاءات مباشرة؟ || نعم، مجالس أسبوعية مباشرة، سجل اهتمامك من قسم المجالس ليصلك الموعد.",
+  statsOneValue: "+1200",
+  statsOneLabel: "طالب مستمر",
+  statsTwoValue: "+85",
+  statsTwoLabel: "درسًا ومقالًا",
+  statsThreeValue: "12",
+  statsThreeLabel: "دولة يتابعنا منها طلاب",
+  statsFourValue: "100%",
+  statsFourLabel: "محتوى مجاني",
+  ctaTitle: "جاهز تبدأ وردك العلمي اليوم؟",
+  ctaText: "انضم لآلاف الطلاب الذين ينظمون تعلمهم مع الأكاديمية. حساب مجاني، تقدم محفوظ، ومجتمع يعينك على الاستمرار.",
+  ctaPrimary: "أنشئ حسابك مجانًا",
+  ctaSecondary: "استكشف الدورات",
+  popupTitle: "لا تفوّت مجلس الخميس",
+  popupText: "سجل اهتمامك الآن ليصلك رابط اللقاء المباشر قبل الموعد.",
+  popupCta: "سجل اهتمامك",
+  popupDelay: "8",
+  maintenanceTitle: "نطوّر الأكاديمية الآن",
+  maintenanceText: "نعمل على تحسينات جديدة لتجربة أفضل. نعود خلال ساعات قليلة بإذن الله.",
+  footerAbout: "أكاديمية عربية تجمع الدروس المنتقاة والمجالس والمقالات والمكتبة في تجربة تعلم هادئة ومنظمة، بعيدًا عن التشتت.",
+  footerQuickTitle: "أقسام سريعة",
+  footerContactTitle: "تواصل معنا",
+  footerCtaText: "اشترك في النشرة ليصلك الجديد أولًا.",
+  customCss: "",
+  showWisdom: true,
+  wisdomTitle: "✦ حكمة اليوم",
+  wisdomData: "العلمُ صيدٌ والكتابةُ قيدُه، قيّد صيودك بالحبال الواثقة. || الإمام الشافعي /// من سلك طريقًا يلتمس فيه علمًا سهّل الله له به طريقًا إلى الجنة. || حديث شريف /// قليلٌ دائم خيرٌ من كثيرٍ منقطع. || حكمة تربوية /// أفضل الأوقات للتعلم: ساعة تركيز عميق كل يوم. || منهج الأكاديمية /// راجع ما تتعلمه خلال ٢٤ ساعة لتثبيته في الذاكرة. || علم التعلم",
+  catalogTopline: "مساحة منتقاة للمعرفة",
+  catalogNewLabel: "يُضاف الجديد باستمرار",
+  coursesDesc: "مسارات واضحة تبدأ من الأساسيات وتمتد إلى الفهم والتطبيق، لتختار طريقك بهدوء.",
+  lessonsDesc: "دروس قصيرة ومباشرة، صُممت لتسمع فكرة واحدة وتخرج منها بخطوة عملية.",
+  articlesDesc: "قراءات مركزة تمنحك زاوية جديدة، وتترك لك مساحة للتأمل والعودة إليها وقتما تحب.",
+  libraryDesc: "رف هادئ للكتب والملفات التي تستحق أن تحفظها، تقرأها، وتعود إليها وقت الحاجة.",
+  catalogSearchCourses: "ابحث باسم الدورة أو المستوى...",
+  catalogSearchLessons: "ابحث في عناوين الدروس...",
+  catalogSearchArticles: "ابحث في المقالات أو التصنيفات...",
+  catalogSearchBooks: "ابحث باسم الكتاب أو الوصف...",
+  catalogCountCourse: "مسار تعليمي",
+  catalogCountLesson: "درس متاح",
+  catalogCountArticle: "مقال منشور",
+  catalogCountBook: "كتاب وملف",
+  heroBadge: "جديد: أقسام تتحكم فيها بالكامل من لوحة المالك",
 };
 
 // Row shape per section (kept as string[] to stay compatible with the

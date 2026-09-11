@@ -14,9 +14,12 @@ import "./nexus.css";
 import "./nexus-pages.css";
 import "./responsive-polish.css";
 import "./quality-pass.css";
+import "./enhancements.css";
+import "./renewal.css";
 import { getSiteContent, getSiteUrl } from "@/lib/content";
 import PwaRegister from "@/components/PwaRegister";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import ScrollProgress from "@/components/ScrollProgress";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await getSiteContent();
@@ -88,6 +91,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd }}
         />
+        <ScrollProgress />
         <PwaRegister />
         <AnalyticsTracker />
         {children}

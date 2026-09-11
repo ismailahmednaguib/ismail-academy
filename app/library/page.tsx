@@ -21,8 +21,8 @@ export default async function LibraryPage() {
     <>
       <SiteHeader settings={settings} />
       <main className="section catalog-page">
-        <CatalogHero homeLabel={settings.navHome} kicker={settings.libraryEyebrow} title={settings.libraryTitle} description="رف هادئ للكتب والملفات التي تستحق أن تحفظها، تقرأها، وتعود إليها وقت الحاجة." count={books.length} countLabel="كتاب وملف" index="04" />
-        <ContentBrowser kind="books" items={books} actionLabel={settings.libraryButton} emptyLabel={settings.searchNoResults} placeholder="ابحث باسم الكتاب أو الوصف..." soonLabel={settings.downloadSoonLabel} />
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.libraryEyebrow} title={settings.libraryTitle} description={settings.libraryDesc} count={books.length} countLabel={settings.catalogCountBook} index="04" topline={settings.catalogTopline} newLabel={settings.catalogNewLabel} />
+        <ContentBrowser kind="books" items={books} actionLabel={settings.libraryButton} emptyLabel={settings.searchNoResults} placeholder={settings.catalogSearchBooks} soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>

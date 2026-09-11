@@ -21,8 +21,8 @@ export default async function CoursesPage() {
     <>
       <SiteHeader settings={settings} />
       <main className="section catalog-page">
-        <CatalogHero homeLabel={settings.navHome} kicker={settings.coursesEyebrow} title={settings.coursesTitle} description="مسارات واضحة تبدأ من الأساسيات وتمتد إلى الفهم والتطبيق، لتختار طريقك بهدوء." count={courses.length} countLabel="مسار تعليمي" index="01" />
-        <ContentBrowser kind="courses" items={courses} actionLabel={settings.coursesLink} emptyLabel={settings.searchNoResults} placeholder="ابحث باسم الدورة أو المستوى..." soonLabel={settings.downloadSoonLabel} />
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.coursesEyebrow} title={settings.coursesTitle} description={settings.coursesDesc} count={courses.length} countLabel={settings.catalogCountCourse} index="01" topline={settings.catalogTopline} newLabel={settings.catalogNewLabel} />
+        <ContentBrowser kind="courses" items={courses} actionLabel={settings.coursesLink} emptyLabel={settings.searchNoResults} placeholder={settings.catalogSearchCourses} soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>

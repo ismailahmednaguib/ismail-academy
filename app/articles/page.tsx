@@ -21,8 +21,8 @@ export default async function ArticlesPage() {
     <>
       <SiteHeader settings={settings} />
       <main className="section catalog-page">
-        <CatalogHero homeLabel={settings.navHome} kicker={settings.articlesEyebrow} title={settings.articlesTitle} description="قراءات مركزة تمنحك زاوية جديدة، وتترك لك مساحة للتأمل والعودة إليها وقتما تحب." count={articles.length} countLabel="مقال منشور" index="03" />
-        <ContentBrowser kind="articles" items={articles} actionLabel={settings.readArticleLabel} emptyLabel={settings.searchNoResults} placeholder="ابحث في المقالات أو التصنيفات..." soonLabel={settings.downloadSoonLabel} />
+        <CatalogHero homeLabel={settings.navHome} kicker={settings.articlesEyebrow} title={settings.articlesTitle} description={settings.articlesDesc} count={articles.length} countLabel={settings.catalogCountArticle} index="03" topline={settings.catalogTopline} newLabel={settings.catalogNewLabel} />
+        <ContentBrowser kind="articles" items={articles} actionLabel={settings.readArticleLabel} emptyLabel={settings.searchNoResults} placeholder={settings.catalogSearchArticles} soonLabel={settings.downloadSoonLabel} />
       </main>
       <SiteFooter settings={settings} />
     </>
