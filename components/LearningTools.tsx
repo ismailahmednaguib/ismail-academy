@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-type LearningStore = { saved: string[]; completed: string[] };
+type LearningStore = { saved: string[]; completed: string[]; recent: string[] };
 type LearningItem = { id: string; title: string; href: string; kind: string };
 const storageKey = "academy-learning-v1";
 
-function emptyStore(): LearningStore { return { saved: [], completed: [] }; }
+function emptyStore(): LearningStore { return { saved: [], completed: [], recent: [] }; }
 
 function readStore(): LearningStore {
   try {
     const value = JSON.parse(localStorage.getItem(storageKey) ?? "{}") as Partial<LearningStore>;
-    return { saved: Array.isArray(value.saved) ? value.saved : [], completed: Array.isArray(value.completed) ? value.completed : [] };
+    return { saved: Array.isArray(value.saved) ? value.saved : [], completed: Array.isArray(value.completed) ? value.completed : [], recent: Array.isArray(value.recent) ? value.recent : [] };
   } catch { return emptyStore(); }
 }
 
@@ -28,7 +28,7 @@ async function getRemoteStore(): Promise<LearningStore | null> {
   if (!session) return null;
   const { data, error } = await supabase.from("member_learning").select("saved,completed").eq("user_id", session.user.id).maybeSingle();
   if (error || !data) return null;
-  return { saved: Array.isArray(data.saved) ? data.saved : [], completed: Array.isArray(data.completed) ? data.completed : [] };
+  return { saved: Array.isArray(data.saved) ? data.saved : [], completed: Array.isArray(data.completed) ? data.completed : [], recent: [] };
 }
 
 async function saveRemoteStore(store: LearningStore) {
@@ -42,8 +42,14 @@ async function hydrateStore(apply: (store: LearningStore) => void) {
   const local = readStore();
   apply(local);
   const remote = await getRemoteStore();
-  if (remote) { writeStore(remote); apply(remote); }
+  if (remote) { const merged = { ...remote, recent: local.recent }; writeStore(merged); apply(merged); }
   else void saveRemoteStore(local);
+}
+
+function rememberItem(id: string) {
+  const current = readStore();
+  const next = { ...current, recent: [id, ...current.recent.filter((item) => item !== id)].slice(0, 8) };
+  localStorage.setItem(storageKey, JSON.stringify(next));
 }
 
 export function LearningActions({ id, title }: { id: string; title: string }) {
@@ -51,6 +57,7 @@ export function LearningActions({ id, title }: { id: string; title: string }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    rememberItem(id);
     const timer = window.setTimeout(() => { void hydrateStore((next) => { setStore(next); setReady(true); }); }, 0);
     const refresh = () => { void hydrateStore((next) => setStore(next)); };
     window.addEventListener("academy-learning-change", refresh);

@@ -151,6 +151,7 @@ const settingGroups: [keyof Settings, string, boolean][] = [
   ["dashboardQueueTitle", "عنوان الخطوة التالية", false],
   ["dashboardQueueText", "وصف طابور التعلم", true],
   ["dashboardStartLabel", "زر بدء الخطوة التالية", false],
+  ["dashboardRecentLabel", "وسم آخر مادة بدأت", false],
   ["dashboardSavedLabel", "وسم المادة المحفوظة", false],
   ["dashboardSuggestedLabel", "وسم المادة المقترحة", false],
   ["dashboardRemainingLabel", "نص المواد المتبقية", false],

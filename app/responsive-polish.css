@@ -121,3 +121,10 @@ body:not(:has(.nexus-site)) .article-body, body:not(:has(.nexus-site)) .detail-b
 .dashboard-finished>a{margin-right:auto;white-space:nowrap;color:var(--accent);font-size:11px;font-weight:900}
 @media(max-width:800px){.dashboard-next{grid-template-columns:1fr;padding:19px}.dashboard-next-card{min-height:0}.dashboard-finished{align-items:flex-start;flex-wrap:wrap;padding:18px}.dashboard-finished>a{width:100%;margin-right:64px}.dashboard-finished h2{font-size:27px}}
 @media(max-width:430px){.dashboard-next-copy h2{font-size:34px}.dashboard-finished>span{width:40px;height:40px}.dashboard-finished h2{font-size:24px}.dashboard-finished>a{margin-right:0}}
+.media-player-shell{margin:20px 0;padding:12px;border:1px solid var(--line);border-radius:20px;background:color-mix(in srgb,var(--paper) 86%,var(--cream));box-shadow:0 12px 30px rgba(16,45,53,.06)}
+.media-player-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 3px 10px;color:var(--muted);font-size:10px}
+.media-player-toolbar>span{font-weight:800;color:var(--ink)}
+.media-player-toolbar button{border:1px solid color-mix(in srgb,var(--accent) 36%,var(--line));border-radius:999px;background:var(--paper);color:var(--accent);padding:8px 11px;font-size:10px;font-weight:800;cursor:pointer}
+.media-player-toolbar button:hover{background:var(--accent);color:var(--paper)}
+.media-player-shell .lesson-video,.media-player-shell .lesson-audio{display:block;width:100%;margin:0}
+@media(max-width:430px){.media-player-shell{padding:9px;border-radius:16px}.media-player-toolbar{align-items:flex-start;flex-direction:column;gap:7px}.media-player-toolbar button{width:100%;min-height:40px}}

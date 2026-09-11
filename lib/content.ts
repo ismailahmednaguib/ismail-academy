@@ -121,6 +121,7 @@ export type Settings = {
   dashboardQueueTitle: string;
   dashboardQueueText: string;
   dashboardStartLabel: string;
+  dashboardRecentLabel: string;
   dashboardSavedLabel: string;
   dashboardSuggestedLabel: string;
   dashboardRemainingLabel: string;
@@ -376,6 +377,7 @@ export const defaultSettings: Settings = {
   dashboardQueueTitle: "الخطوة التالية واضحة.",
   dashboardQueueText: "رتبنا لك بداية عملية: نكمل أولًا المادة المحفوظة، ثم ننتقل للمحتوى الذي لم تبدأه بعد.",
   dashboardStartLabel: "ابدأ الآن",
+  dashboardRecentLabel: "آخر ما بدأت",
   dashboardSavedLabel: "محفوظة للمراجعة",
   dashboardSuggestedLabel: "اقتراح البداية",
   dashboardRemainingLabel: "مادة متبقية",
@@ -610,10 +612,10 @@ export async function getSiteContent(): Promise<AcademyContent> {
     if (!payload) return base;
     return {
       settings: { ...defaultSettings, ...(payload.settings ?? {}) },
-      courses: payload.courses?.length ? payload.courses : initialCourses,
-      articles: payload.articles?.length ? payload.articles : initialArticles,
-      books: payload.books?.length ? payload.books : initialBooks,
-      lessons: payload.lessons?.length ? payload.lessons : initialLessons,
+      courses: Array.isArray(payload.courses) ? payload.courses : initialCourses,
+      articles: Array.isArray(payload.articles) ? payload.articles : initialArticles,
+      books: Array.isArray(payload.books) ? payload.books : initialBooks,
+      lessons: Array.isArray(payload.lessons) ? payload.lessons : initialLessons,
     };
   } catch {
     return base;
