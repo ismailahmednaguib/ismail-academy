@@ -20,6 +20,7 @@ export type Settings = {
   cornerStyle: "soft" | "rounded" | "sharp";
   showBackToTop: boolean;
   showReadingProgress: boolean;
+  showRelatedContent: boolean;
   buttonStyle: "pill" | "classic" | "outline";
   showMobileBar: boolean;
   showAnnouncement: boolean;
@@ -133,6 +134,9 @@ export type Settings = {
   dashboardCompletedTitle: string;
   dashboardSavedEmpty: string;
   dashboardCompletedEmpty: string;
+  detailRelatedEyebrow: string;
+  detailRelatedTitle: string;
+  detailRelatedText: string;
   homeLeadKicker: string;
   homeLeadTitle: string;
   homeLeadText: string;
@@ -276,6 +280,7 @@ export const defaultSettings: Settings = {
   cornerStyle: "rounded",
   showBackToTop: true,
   showReadingProgress: true,
+  showRelatedContent: true,
   buttonStyle: "classic",
   showMobileBar: true,
   showAnnouncement: true,
@@ -389,6 +394,9 @@ export const defaultSettings: Settings = {
   dashboardCompletedTitle: "أنجزته",
   dashboardSavedEmpty: "لم تحفظ أي مادة بعد. افتح درسًا واضغط «حفظ للمراجعة».",
   dashboardCompletedEmpty: "ابدأ بأول درس، ثم علّمه كمكتمل عند الانتهاء.",
+  detailRelatedEyebrow: "خطوتك التالية",
+  detailRelatedTitle: "محتوى يكمل الصورة.",
+  detailRelatedText: "اقتراحات قريبة من هذه الصفحة لتتابع التعلم من دون تشتت.",
   homeLeadKicker: "تعلمٌ مرتب، أثرٌ متدرّج",
   homeLeadTitle: "خذ من العلم ما يغيّر يومك.",
   homeLeadText: "ابدأ من مادة صغيرة، تابع بهدوء، واصنع لنفسك مسارًا يمكن أن يستمر.",
@@ -490,8 +498,8 @@ export const defaultSettings: Settings = {
   heroText:
     "مساحة عربية تجمع الدروس المنتقاة، المجالس، المقالات والمكتبة؛ لتتعلم بخطوات واضحة وتعود إلى ما ينفعك كل يوم.",
   announcement: "المجلس القادم: كيف نبدأ طلب العلم بثبات؟ الخميس بعد المغرب",
-  email: "hello@example.com",
-  telegram: "@your_username",
+  email: "",
+  telegram: "",
   whatsapp: "",
   instagram: "",
   youtube: "",
@@ -635,8 +643,11 @@ export async function getSiteContent(): Promise<AcademyContent> {
       .single();
     const payload = data?.payload as Partial<AcademyContent> | undefined;
     if (!payload) return base;
+    const settings = { ...defaultSettings, ...(payload.settings ?? {}) };
+    if (settings.email === "hello@example.com") settings.email = "";
+    if (settings.telegram.includes("your_username")) settings.telegram = "";
     return {
-      settings: { ...defaultSettings, ...(payload.settings ?? {}) },
+      settings,
       courses: Array.isArray(payload.courses) ? payload.courses : initialCourses,
       articles: Array.isArray(payload.articles) ? payload.articles : initialArticles,
       books: Array.isArray(payload.books) ? payload.books : initialBooks,

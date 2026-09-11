@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSiteContent, getSiteUrl, findBySlug } from "@/lib/content";
+import { getSiteContent, getSiteUrl, findBySlug, slugify } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
@@ -12,6 +12,7 @@ import MemberNotes from "@/components/MemberNotes";
 import LessonQuiz from "@/components/LessonQuiz";
 import StructuredData from "@/components/StructuredData";
 import FocusModeToggle from "@/components/FocusModeToggle";
+import RelatedContent from "@/components/RelatedContent";
 
 export const revalidate = 0;
 
@@ -32,10 +33,13 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function LessonPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const { settings, lessons } = await getSiteContent();
+  const { settings, lessons, articles, courses } = await getSiteContent();
   const lesson = findBySlug(lessons, decodeURIComponent(slug));
   if (!lesson) notFound();
   const [title, meta, audioUrl, , , videoUrl, quiz] = lesson;
+  const lessonCourse = lesson[3] ? courses.find(([courseTitle]) => courseTitle === lesson[3]) : undefined;
+  const relatedLessons = lessons.filter(([candidateTitle, , , courseTitle]) => candidateTitle !== title && lessonCourse && courseTitle === lessonCourse[0]).slice(0, 2);
+  const relatedArticles = articles.slice(0, 2);
 
   return (
     <>
@@ -56,6 +60,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
         ) : null}
         <MemberNotes contentId={"lesson:" + decodeURIComponent(slug)} />
         <LessonQuiz definition={quiz} />
+        <RelatedContent enabled={settings.showRelatedContent} eyebrow={settings.detailRelatedEyebrow} title={settings.detailRelatedTitle} text={settings.detailRelatedText} items={[...relatedLessons.map(([lessonTitle, lessonMeta]) => ({ href: `/lessons/${encodeURIComponent(slugify(lessonTitle))}`, title: lessonTitle, meta: lessonMeta, kind: "درس قريب" })), ...relatedArticles.map(([articleTitle, category, time]) => ({ href: `/articles/${encodeURIComponent(slugify(articleTitle))}`, title: articleTitle, meta: `${category} · ${time}`, kind: "قراءة مقترحة" }))]} />
       </main>
       <SiteFooter settings={settings} />
     </>

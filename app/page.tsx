@@ -46,6 +46,8 @@ export default function Home() {
     if (!payload) return;
     if (payload.settings) {
       const publishedSettings = { ...defaults, ...payload.settings };
+      if (publishedSettings.email === "hello@example.com") publishedSettings.email = "";
+      if (publishedSettings.telegram.includes("your_username")) publishedSettings.telegram = "";
       if (!Object.prototype.hasOwnProperty.call(payload.settings, "homeLeadTitle")) publishedSettings.showHomeSignals = false;
       if (publishedSettings.homeLeadPrimaryCta === "أنشئ حسابك الآن" || publishedSettings.homeLeadPrimaryCta === "ابدأ رحلتك") publishedSettings.homeLeadPrimaryCta = "سجل الآن";
       if (publishedSettings.homeLeadSecondaryCta === "شاهد المجالس") publishedSettings.homeLeadSecondaryCta = "";

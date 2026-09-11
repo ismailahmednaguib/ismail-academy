@@ -13,6 +13,7 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [accountEmail, setAccountEmail] = useState("");
@@ -73,6 +74,10 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
       setNotice("كلمة المرور يجب أن تكون 6 أحرف على الأقل.");
       return;
     }
+    if (mode === "signup" && password !== confirmPassword) {
+      setNotice("كلمتا المرور غير متطابقتين.");
+      return;
+    }
     setBusy(true);
     if (mode === "login") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -83,6 +88,7 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
       }
       setNotice("تم تسجيل الدخول بنجاح.");
       setPassword("");
+      setConfirmPassword("");
       setOpen(false);
       return;
     }
@@ -97,6 +103,7 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
       return;
     }
     setPassword("");
+    setConfirmPassword("");
     setOpen(false);
     setNotice(data.session ? "تم إنشاء الحساب وتسجيل الدخول." : "تم إنشاء الحساب. راجع بريدك لتأكيده قبل الدخول.");
   }
@@ -135,17 +142,18 @@ export default function MemberAccount({ compact = false, initialMode = "login", 
           <h2>{mode === "login" ? "أكمل رحلتك." : mode === "signup" ? "ابدأ حسابك." : "استعد دخولك."}</h2>
           <p className="admin-note">{mode === "reset" ? "اكتب بريدك لنرسل لك رابطًا آمنًا لتعيين كلمة مرور جديدة." : "احفظ تقدمك وارجع للمحتوى من أي وقت."}</p>
           <form onSubmit={submit} className="account-form">
-            {mode === "signup" && <label>الاسم<input required value={name} onChange={(event) => setName(event.target.value)} /></label>}
-            {mode === "signup" && <label>الدولة<select required value={countryCode} onChange={(event) => setCountryCode(event.target.value)}><option value="">اختر دولتك</option>{countryOptions.map((country) => <option value={country.code} key={country.code}>{country.name}</option>)}</select></label>}
-            <label>البريد الإلكتروني<input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-            {mode !== "reset" && <label>كلمة المرور<input type="password" required minLength={6} value={password} onChange={(event) => setPassword(event.target.value)} /></label>}
+            {mode === "signup" && <label>الاسم<input required autoComplete="name" maxLength={80} value={name} onChange={(event) => setName(event.target.value)} /></label>}
+            {mode === "signup" && <label>الدولة<select required autoComplete="country-name" value={countryCode} onChange={(event) => setCountryCode(event.target.value)}><option value="">اختر دولتك</option>{countryOptions.map((country) => <option value={country.code} key={country.code}>{country.name}</option>)}</select></label>}
+            <label>البريد الإلكتروني<input type="email" required autoComplete={mode === "signup" ? "email" : "username"} value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+            {mode !== "reset" && <label>كلمة المرور<input type="password" required minLength={6} autoComplete={mode === "signup" ? "new-password" : "current-password"} value={password} onChange={(event) => setPassword(event.target.value)} /></label>}
+            {mode === "signup" && <label>تأكيد كلمة المرور<input type="password" required minLength={6} autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} /></label>}
             <button className="primary account-submit" disabled={busy}>{busy ? "جارٍ التنفيذ..." : mode === "login" ? "تسجيل الدخول" : mode === "signup" ? "إنشاء حساب" : "إرسال رابط الاستعادة"}</button>
           </form>
           {mode === "login" && <button type="button" className="account-link" onClick={() => { setMode("reset"); setNotice(""); }}>نسيت كلمة المرور؟</button>}
-          <button type="button" className="account-switch" onClick={() => { setMode(mode === "login" || mode === "reset" ? "signup" : "login"); setNotice(""); }}>
+          <button type="button" className="account-switch" onClick={() => { setMode(mode === "login" || mode === "reset" ? "signup" : "login"); setConfirmPassword(""); setNotice(""); }}>
             {mode === "signup" ? "لديك حساب؟ سجّل الدخول" : "ليس لديك حساب؟ أنشئ حسابًا"}
           </button>
-          {mode === "reset" && <button type="button" className="account-switch account-switch-muted" onClick={() => { setMode("login"); setNotice(""); }}>العودة لتسجيل الدخول</button>}
+          {mode === "reset" && <button type="button" className="account-switch account-switch-muted" onClick={() => { setMode("login"); setConfirmPassword(""); setNotice(""); }}>العودة لتسجيل الدخول</button>}
         </>}
       </div>
     </div>}

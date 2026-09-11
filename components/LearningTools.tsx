@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 type LearningStore = { saved: string[]; completed: string[]; recent: string[] };
 type LearningItem = { id: string; title: string; href: string; kind: string };
 const storageKey = "academy-learning-v1";
+const momentumKey = "academy-study-momentum-v1";
 
 function emptyStore(): LearningStore { return { saved: [], completed: [], recent: [] }; }
 
@@ -52,6 +53,20 @@ function rememberItem(id: string) {
   localStorage.setItem(storageKey, JSON.stringify(next));
 }
 
+function markStudySession() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const value = JSON.parse(localStorage.getItem(momentumKey) ?? "{}") as { sessions?: unknown };
+    const sessions = Array.isArray(value.sessions) ? value.sessions.filter((item): item is string => typeof item === "string") : [];
+    if (!sessions.includes(today)) {
+      localStorage.setItem(momentumKey, JSON.stringify({ sessions: [...sessions, today].slice(-365) }));
+      window.dispatchEvent(new CustomEvent("academy-momentum-change"));
+    }
+  } catch {
+    localStorage.setItem(momentumKey, JSON.stringify({ sessions: [today] }));
+  }
+}
+
 export function LearningActions({ id, title }: { id: string; title: string }) {
   const [store, setStore] = useState<LearningStore>(emptyStore());
   const [ready, setReady] = useState(false);
@@ -66,6 +81,7 @@ export function LearningActions({ id, title }: { id: string; title: string }) {
   }, [id]);
 
   function updateStore(bucket: "saved" | "completed") {
+    markStudySession();
     const current = readStore();
     const exists = current[bucket].includes(id);
     const next = { ...current, [bucket]: exists ? current[bucket].filter((item) => item !== id) : [...current[bucket], id] };

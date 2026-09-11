@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getSiteContent, getSiteUrl, findBySlug, safeImageUrl } from "@/lib/content";
+import { getSiteContent, getSiteUrl, findBySlug, safeImageUrl, slugify } from "@/lib/content";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ShareButtons from "@/components/ShareButtons";
@@ -10,6 +10,7 @@ import ReadingProgress from "@/components/ReadingProgress";
 import MemberNotes from "@/components/MemberNotes";
 import StructuredData from "@/components/StructuredData";
 import FocusModeToggle from "@/components/FocusModeToggle";
+import RelatedContent from "@/components/RelatedContent";
 
 export const revalidate = 0;
 
@@ -30,13 +31,15 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 
 export default async function ArticlePage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const { settings, articles } = await getSiteContent();
+  const { settings, articles, lessons } = await getSiteContent();
   const article = findBySlug(articles, decodeURIComponent(slug));
   if (!article) notFound();
   const [title, cat, time, body, cover] = article;
   const coverImage = safeImageUrl(cover);
   // فقرات المقال متفصولة في لوحة المالك بعلامة \n حرفية
   const paragraphs = (body ?? "").split(/\\n|\r?\n/).map((p) => p.trim()).filter(Boolean);
+  const relatedArticles = articles.filter(([candidateTitle, candidateCategory]) => candidateTitle !== title && candidateCategory === cat).slice(0, 3);
+  const relatedLessons = lessons.slice(0, 2);
 
   return (
     <>
@@ -62,6 +65,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
           <p className="detail-body">نص المقال الكامل سيُضاف قريبًا بإذن الله.</p>
         )}
         <MemberNotes contentId={"article:" + decodeURIComponent(slug)} />
+        <RelatedContent enabled={settings.showRelatedContent} eyebrow={settings.detailRelatedEyebrow} title={settings.detailRelatedTitle} text={settings.detailRelatedText} items={[...relatedArticles.map(([articleTitle, category, readTime]) => ({ href: `/articles/${encodeURIComponent(slugify(articleTitle))}`, title: articleTitle, meta: `${category} · ${readTime}`, kind: "مقال قريب" })), ...relatedLessons.map(([lessonTitle, lessonMeta]) => ({ href: `/lessons/${encodeURIComponent(slugify(lessonTitle))}`, title: lessonTitle, meta: lessonMeta, kind: "درس مقترح" }))]} />
       </main>
       <SiteFooter settings={settings} />
     </>

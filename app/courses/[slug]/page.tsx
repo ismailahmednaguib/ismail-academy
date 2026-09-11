@@ -11,6 +11,7 @@ import CourseProgress from "@/components/CourseProgress";
 import CourseCertificate from "@/components/CourseCertificate";
 import StructuredData from "@/components/StructuredData";
 import FocusModeToggle from "@/components/FocusModeToggle";
+import RelatedContent from "@/components/RelatedContent";
 
 export const revalidate = 0;
 
@@ -78,7 +79,7 @@ export default async function CoursePage({ params }: { params: Promise<Params> }
             </div>
           </div>
         )}
-        {recommendations.length > 0 && <section className="recommendations"><div className="section-head"><div><p className="kicker">قد يناسبك أيضًا</p><h2>مسارات قريبة من رحلتك</h2></div></div><div className="recommendation-grid">{recommendations.map(([candidateTitle, candidateDesc, candidateCount, candidateLevel]) => <Link href={`/courses/${encodeURIComponent(slugify(candidateTitle))}`} className="recommendation-card" key={candidateTitle}><span>{candidateLevel}</span><b>{candidateTitle}</b><small>{candidateDesc}</small><i>{candidateCount} ←</i></Link>)}</div></section>}
+        <RelatedContent enabled={settings.showRelatedContent} eyebrow={settings.detailRelatedEyebrow} title={settings.detailRelatedTitle} text={settings.detailRelatedText} items={recommendations.map(([candidateTitle, candidateDesc, candidateCount, candidateLevel]) => ({ href: `/courses/${encodeURIComponent(slugify(candidateTitle))}`, title: candidateTitle, meta: `${candidateLevel} · ${candidateCount} · ${candidateDesc}`, kind: "مسار قريب" }))} />
       </main>
       <SiteFooter settings={settings} />
     </>

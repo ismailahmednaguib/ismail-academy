@@ -31,7 +31,9 @@ export default function StudyMomentum({ completedCount }: { completedCount: numb
 
   useEffect(() => {
     const timer = window.setTimeout(() => { setStore(readStore()); setReady(true); }, 0);
-    return () => window.clearTimeout(timer);
+    const refresh = () => setStore(readStore());
+    window.addEventListener("academy-momentum-change", refresh);
+    return () => { window.clearTimeout(timer); window.removeEventListener("academy-momentum-change", refresh); };
   }, []);
 
   const streak = useMemo(() => {
